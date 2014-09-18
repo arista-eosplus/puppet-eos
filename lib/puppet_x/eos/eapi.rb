@@ -134,7 +134,6 @@ module PuppetX
       def execute(commands)
         commands.insert(0, cmd: 'enable', input: @enable_pwd)
         resp = invoke(request(commands))
-        Puppet.debug(resp)
         fail Puppet::Error if resp.key?("error")
         result = resp['result']
         result.shift
@@ -180,10 +179,17 @@ module PuppetX
     end
 
     module EapiProvider
-        def eapi
-            options = {username: 'eapi', password: 'password', protocol: 'http'}
-            @eapi ||= PuppetX::Eos::Eapi.new(options)
-         end
+      def eapi
+        options = {username: 'eapi', password: 'password', protocol: 'http'}
+        @eapi ||= PuppetX::Eos::Eapi.new(options)
+      end
+
+      def flowcontrol_to_value(name)
+        resp = eapi.enable("show interfaces #{name} flowcontrol")
+        tx = resp.first['interfaceFlowControls'][name]['txAdminState']
+        rx = resp.first['interfaceFlowControls'][name]['rxAdminState']
+        {flowcontrol_send: tx, flowcontrol_receive: rx}
+      end
     end
   end
 end

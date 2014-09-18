@@ -51,7 +51,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
       state = attr_hash['interfaceStatus'] == 'disabled' ? :false : :true
       provider_hash[:enable] = state
       provider_hash[:description] = attr_hash['description']
-
+      provider_hash.merge! flowcontrol_to_value(name)
       new(provider_hash)
     end
   end
@@ -79,9 +79,18 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_flush[:description] = val
   end
 
+  def flowcontrol_send=(val)
+    @property_flush[:flowcontrol_send] = val
+  end
+
+  def flowcontrol_receive=(val)
+    @property_flush[:flowcontrol_receive] = val
+  end
+
   def flush
     flush_enable_state
     flush_description
+    flush_flowcontrol
     @property_hash = resource.to_hash
   end
 
@@ -96,5 +105,24 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     return nil unless value
     arg = value ? 'no shutdown' : 'shutdown'
     eapi.config(["interface #{resource[:name]}", arg])
+  end
+
+  def flush_flowcontrol
+    [:flowcontrol_send, :flowcontrol_receive].each do |param|
+      value = @property_flush[param]
+      cmds = []
+      if value do
+        case param
+        when :flowcontrol_send
+          cmds = ["flowcontrol send #{value}"]
+        when :flowcontrol_receive
+          cmds = ["flowcontrol receive #{value}"]
+        end
+      end
+      return nil unless cmds
+      cmds.insert(0, "interface #{resource[:name]}") 
+      eapi.config(cmds)
+    end
+  end
   end
 end

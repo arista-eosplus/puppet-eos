@@ -77,9 +77,14 @@ Puppet::Type.newtype(:eos_interface) do
     newvalues(:true, :false)
   end
 
-  newproperty(:flowcontrol) do
-    desc 'Flow control settings for the interface'
-    newvalues(:send, :receive, :both, :none)
+  newproperty(:flowcontrol_send) do
+    desc 'Flow control settings for TX'
+    newvalues(:on, :off, :desired)
+  end
+
+  newproperty(:flowcontrol_receive) do
+    desc 'Flow contorl settings for RX'
+    newvalues(:on, :off, :desired)
   end
 
 end

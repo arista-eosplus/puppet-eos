@@ -78,13 +78,24 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'rejected parameter values'
   end
 
-  describe 'flowcontrol' do
-    let(:attribute) { :flowcontrol }
+  describe 'flowcontrol_send' do
+    let(:attribute) { :flowcontrol_send }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:send, :receive, :both, :none]
+    include_examples 'accepts values', [:on, :off, :desired]
+    include_examples 'rejected parameter values'
+  end
+
+
+  describe 'flowcontrol_receive' do
+    let(:attribute) { :flowcontrol_receive }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values', [:on, :off, :desired]
     include_examples 'rejected parameter values'
   end
 
