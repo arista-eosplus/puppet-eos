@@ -134,6 +134,7 @@ module PuppetX
       def execute(commands)
         commands.insert(0, cmd: 'enable', input: @enable_pwd)
         resp = invoke(request(commands))
+        Puppet.debug "EAPI response: #{resp}"
         fail Puppet::Error if resp.key?("error")
         result = resp['result']
         result.shift
@@ -151,12 +152,8 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def enable(commands)
-        begin
-          commands = [*commands] unless commands.respond_to?('each')
-          execute(commands)
-        rescue Puppet::Error => e
-          Puppet.debug("Failed to execute #{commands}")
-        end
+        commands = [*commands] unless commands.respond_to?('each')
+        execute(commands)
       end
 
       ##

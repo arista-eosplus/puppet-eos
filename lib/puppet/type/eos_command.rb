@@ -34,8 +34,6 @@
 Puppet::Type.newtype(:eos_command) do
   @doc = 'Execute commands in enable or config mode'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do
