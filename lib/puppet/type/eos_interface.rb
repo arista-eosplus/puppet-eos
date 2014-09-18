@@ -41,19 +41,6 @@ Puppet::Type.newtype(:eos_interface) do
 
   # Properties (state management)
 
-  newproperty(:interface) do
-    desc 'The name of the interface'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
   newproperty(:description) do
     desc 'The description for the interface'
 
@@ -65,11 +52,6 @@ Puppet::Type.newtype(:eos_interface) do
       else fail "value #{value.inspect} is invalid, must be a string."
       end
     end
-  end
-
-  newproperty(:admin) do
-    desc 'Interface admin state'
-    newvalues(:enable, :disable)
   end
 
   newproperty(:enable) do

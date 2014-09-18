@@ -97,13 +97,13 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'rejects values', ['string', [1, 2], 10]
   end
 
-  describe 'admin' do
-    let(:attribute) { :admin }
+  describe 'enable' do
+    let(:attribute) { :enable }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:enable, :disable]
+    include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
 

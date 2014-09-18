@@ -37,25 +37,12 @@ describe Puppet::Type.type(:eos_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(name: 'Ethernet 42', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Ethernet 42'
-
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-  end
-
-  describe 'interface' do
-    let(:attribute) { :interface }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', \
-                     %w(ethernet 29, management 2, et4/3)
-    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'description' do
@@ -68,13 +55,13 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'admin' do
-    let(:attribute) { :admin }
+  describe 'enable' do
+    let(:attribute) { :enable }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:enable, :disable]
+    include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
 
@@ -87,7 +74,6 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'accepts values', [:on, :off, :desired]
     include_examples 'rejected parameter values'
   end
-
 
   describe 'flowcontrol_receive' do
     let(:attribute) { :flowcontrol_receive }

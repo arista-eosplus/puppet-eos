@@ -47,15 +47,6 @@ describe Puppet::Type.type(:eos_ipinterface) do
     include_examples '#doc Documentation'
   end
 
-  describe 'interface' do
-    let(:attribute) { :interface }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    # XXX Add interface check
-  end
-
   describe 'address' do
     let(:attribute) { :address }
     subject { described_class.attrclass(attribute) }

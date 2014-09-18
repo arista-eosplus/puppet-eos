@@ -44,19 +44,6 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
   # Properties (state management)
 
-  newproperty(:interface) do
-    desc 'Specifies interface to configure'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
   newproperty(:address) do
     desc 'Specifies IP address for the interface'
 
