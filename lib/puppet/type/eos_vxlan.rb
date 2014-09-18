@@ -45,12 +45,8 @@ Puppet::Type.newtype(:eos_vxlan) do
   # Properties (state management)
 
   newproperty(:source_interface) do
-    desc 'The vxlan source-interface property specifies the loopback '\
-         'interface from which the VTEP derives the source address '\
-         '(IP) that it uses when exchanging VXLAN frames. This address '\
-         'is used by UDP headers to specify source and destination '\
-         'addresses of hosts that send or receive VXLAN encapsulated '\
-         'packets.'
+    desc 'Specifies the loopback interface from which the VTEP derives '\
+         'the source IP address'
 
     validate do |value|
       case value
@@ -63,10 +59,7 @@ Puppet::Type.newtype(:eos_vxlan) do
   end
 
   newproperty(:multicast_group) do
-    desc 'The vxlan multicast-group property associates a specified '\
-         'multicast group with the configuration mode VXLAN interface '\
-         '(VTI), which handles multicast and broadcast traffic as a '\
-         'layer 2 interface in a bridging domain.'
+    desc 'Associates a specified multicast group with the interface'
 
     validate do |value|
       case value

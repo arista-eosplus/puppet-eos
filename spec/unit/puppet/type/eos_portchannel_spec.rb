@@ -72,7 +72,8 @@ describe Puppet::Type.type(:eos_portchannel) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Need to test the array of interfaces
+    include_examples 'array of strings value'
+    include_examples 'rejects values', [0, [1], { two: :three }]
   end
 
   describe 'lacp_fallback' do
