@@ -56,8 +56,8 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples 'channel group id value'
   end
 
-  describe 'lacp' do
-    let(:attribute) { :lacp }
+  describe 'lacp_mode' do
+    let(:attribute) { :lacp_mode }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
@@ -73,6 +73,26 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples 'property'
     include_examples '#doc Documentation'
     # XXX Need to test the array of interfaces
+  end
+
+  describe 'lacp_fallback' do
+    let(:attribute) { :lacp_fallback }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejects values', [0, [1], { two: :three }]
+  end
+
+  describe 'lacp_timeout' do
+    let(:attribute) { :lacp_timeout }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'numeric parameter', min: 1, max: 100
+    include_examples 'rejected parameter values'
   end
 
 end

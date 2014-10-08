@@ -32,11 +32,7 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_portchannel) do
-  @doc = 'A port channel is a communication link between two switches '\
-         'that consists of matching channel group interfaces on each '\
-         'switch. A port channel is also referred to as a Link '\
-         'Aggregation Group (LAG). Port channels combine the bandwidth '\
-         'of multiple Ethernet ports into a single logical link.'
+  @doc = 'Manage port channels'
 
   ensurable
 
@@ -54,7 +50,7 @@ Puppet::Type.newtype(:eos_portchannel) do
     # Validate each value is a valid channel group id
     validate do |value|
       unless value.between?(1, 1000)
-        fail "value #{value.inspect} is not between 1 and 1000"
+        fail 'value #{value.inspect} is not between 1 and 1000'
       end
     end
 
@@ -64,7 +60,7 @@ Puppet::Type.newtype(:eos_portchannel) do
     end
   end
 
-  newproperty(:lacp) do
+  newproperty(:lacp_mode) do
     desc 'Specifies the interface LACP mode'
     newvalues(:active, :passive, :off)
   end
@@ -77,7 +73,24 @@ Puppet::Type.newtype(:eos_portchannel) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      else fail 'value #{value.inspect} is invalid, must be a string.'
+      end
+    end
+  end
+
+  newproperty(:lacp_fallback) do
+    desc 'Specifies the LACP fallback setting'
+    newvalues(:true, :false)
+  end
+
+  newproperty(:lacp_timeout) do
+    desc 'LACP fallback timeout'
+    munge { |v| Integer(v) }
+    validate do |v|
+      begin
+        Integer(v) ? true : false
+      rescue TypeError => err
+        error "Cannot convert #{v.inspect} to an integer: #{err.message}"
       end
     end
   end
