@@ -75,7 +75,7 @@ Puppet::Type.newtype(:eos_switchport) do
     end
   end
 
-  newproperty(:trunk_allowed_vlans, :array_matching => :all) do
+  newproperty(:trunk_allowed_vlans, array_matching: :all) do
     desc 'Array of VLANs to trunk on the interface'
 
     # Validate each value is a valid VLAN number

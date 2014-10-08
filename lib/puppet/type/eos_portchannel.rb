@@ -69,7 +69,7 @@ Puppet::Type.newtype(:eos_portchannel) do
     newvalues(:active, :passive, :off)
   end
 
-  newproperty(:members, :array_matching => :all) do
+  newproperty(:members, array_matching: :all) do
     desc 'Array of interfaces that belong to the channel group'
 
     validate do |value|
