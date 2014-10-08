@@ -72,7 +72,7 @@ describe Puppet::Type.type(:eos_vlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', %w(enable disable)
+    include_examples 'accepts values', [:enable, :disable]
     include_examples 'rejected parameter values'
   end
 
