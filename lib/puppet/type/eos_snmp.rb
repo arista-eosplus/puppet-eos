@@ -45,9 +45,8 @@ Puppet::Type.newtype(:eos_snmp) do
   # Properties (state management)
 
   newproperty(:contact) do
-    desc 'The SNMP contact property is information text that typically '\
-         'displays the name of a person or organization associated with '\
-         'the SNMP agent.'
+    desc 'Informative text that typically displays the name of a person '\
+         'or organization associated with the SNMP agent.'
 
     validate do |value|
       case value
@@ -60,8 +59,33 @@ Puppet::Type.newtype(:eos_snmp) do
   end
 
   newproperty(:location) do
-    desc 'The location property typically provides information about the '\
-         'physical location of the SNMP agent.'
+    desc 'Provides information about the physical location of the SNMP agent.'
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
+
+  newproperty(:chassis_id) do
+    desc 'The chassis ID of the switch'
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
+
+  newproperty(:source_interface) do
+    desc 'Specifies interface from which a SNMP inform or trap originates'
 
     validate do |value|
       case value

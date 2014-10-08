@@ -67,4 +67,24 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
+  describe 'chassis_id' do
+    let(:attribute) { :chassis_id }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', 'xyz-1234'
+    include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'source_interface' do
+    let(:attribute) { :source_interface }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', 'Ethernet1'
+    include_examples 'rejects values', [[1], { two: :three }]
+  end
+
 end
