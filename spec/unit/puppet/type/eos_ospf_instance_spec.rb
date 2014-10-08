@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_instance) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Vxlan5000', catalog: catalog) }
+  let(:type) { described_class.new(name: 'OSPF 100', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Vxlan5000'
+  it_behaves_like 'an ensurable type', name: 'OSPF 100'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -47,13 +47,13 @@ describe Puppet::Type.type(:eos_ospf_instance) do
     include_examples '#doc Documentation'
   end
 
-  describe 'process' do
-    let(:attribute) { :process }
+  describe 'process_id' do
+    let(:attribute) { :process_id }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(XXX)
+    include_examples 'accepts values without munging', %w(1, 65535)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
@@ -63,7 +63,8 @@ describe Puppet::Type.type(:eos_ospf_instance) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(10.2.1.1)
+    include_examples 'accepts values without munging',\
+                     %w(0.0.0.0, 255.255.255.255)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 

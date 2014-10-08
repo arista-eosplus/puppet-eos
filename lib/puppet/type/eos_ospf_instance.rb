@@ -44,9 +44,10 @@ Puppet::Type.newtype(:eos_ospf_instance) do
 
   # Properties (state management)
 
-  newproperty(:process) do
-    desc 'XXX'
+  newproperty(:process_id) do
+    desc 'Process ID for OSPF instance'
 
+    # min: 1 max: 65535
     validate do |value|
       case value
       when String
@@ -58,10 +59,10 @@ Puppet::Type.newtype(:eos_ospf_instance) do
   end
 
   newproperty(:router_id) do
-    desc 'The router ID property is a 32-bit number assigned to a router '\
-         'running OSPFv2. This number uniquely labels the router within '\
-         'an Autonomous System.'
+    desc 'Set the router ID for the OSPF instance'
 
+    # IPV4 Address
+    # min: 0.0.0.0 max: 255.255.255.255
     validate do |value|
       case value
       when String
