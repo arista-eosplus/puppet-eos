@@ -1,0 +1,14 @@
+{
+  "name": "arista-eos",
+  "version": "0.1.0",
+  "author": "Arista EOS+",
+  "summary": "Arista EOS provides Puppet modules to configure EOS devices",
+  "license": "BSD-3",
+  "source": "http://github.com/arista-eosplus/swisscom",
+  "project_page": "https://github.com/arista-eosplus/swisscom",
+  "issues_url": "https://github.com/arista-eosplus/swisscom/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
