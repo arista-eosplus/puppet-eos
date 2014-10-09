@@ -115,9 +115,9 @@ Puppet::Type.newtype(:eos_mlag) do
 
   end
 
-  newproperty(:admin) do
+  newproperty(:enable) do
     desc 'Enables or disables the MLAG.'
-    newvalues(:enable, :disable)
+    newvalues(:true, :false)
   end
 
 end
