@@ -54,15 +54,15 @@ Puppet::Type.newtype(:eos_mlag) do
     desc 'Specifies the VLAN of the SVI upon which the switch sends '\
          'MLAG control traffic.'
 
-    validate do |value|
-      unless value.between?(1, 4094)
-        fail "value #{value.inspect} is not between 1 and 4094"
-      end
-    end
-
     # Make sure we have a string for the ID
     munge do |value|
       Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 4094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
     end
   end
 
@@ -92,20 +92,6 @@ Puppet::Type.newtype(:eos_mlag) do
       else fail "value #{value.inspect} is invalid, must be a string."
       end
     end
-  end
-
-  newproperty(:interfaces) do
-    desc 'Hash of Ethernet or Port-channel interfaces to be '\
-         'configured as peer links.'
-
-    # interfaces => hash {interface: mlag_id}
-
-    validate do |value|
-      if value.is_a? Hash then super(value)
-      else fail "value #{value.inspect} is invalid, must be a Hash."
-      end
-    end
-
   end
 
   newproperty(:enable) do

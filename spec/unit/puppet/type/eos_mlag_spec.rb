@@ -78,17 +78,6 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'interfaces' do
-    let(:attribute) { :interfaces }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     [{ Ethernet1: 12, Ethernet20: 13 }]
-    include_examples 'rejects values', ['string', [1, 2], 10]
-  end
-
   describe 'enable' do
     let(:attribute) { :enable }
     subject { described_class.attrclass(attribute) }
