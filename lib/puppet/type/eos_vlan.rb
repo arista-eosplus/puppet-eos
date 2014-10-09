@@ -82,7 +82,7 @@ Puppet::Type.newtype(:eos_vlan) do
     end
   end
 
-  newproperty(:trunk_group, array_matching: :all) do
+  newproperty(:trunk_groups, array_matching: :all) do
     desc 'An array of VLAN IDs strings in the trunk group'
 
     validate do |value|

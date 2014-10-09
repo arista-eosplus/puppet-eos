@@ -86,8 +86,8 @@ describe Puppet::Type.type(:eos_vlan) do
                      [{ two: :three }, 'abc', '0', '16_777_216', -1]
   end
 
-  describe 'trunk_group' do
-    let(:attribute) { :trunk_group }
+  describe 'trunk_groups' do
+    let(:attribute) { :trunk_groups }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
