@@ -38,9 +38,9 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   mk_resource_methods
 
   # Mix in the api as instance methods
-  include PuppetX::Eos::EapiProvider
+  include PuppetX::Eos::EapiProviderMixin
   # Mix in the api as class methods
-  extend PuppetX::Eos::EapiProvider
+  extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
     resp = eapi.enable('show interfaces')
@@ -49,13 +49,20 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     interfaces.map do |name, attr_hash|
       resp = eapi.enable("show interfaces #{name} switchport", format: 'text')
       output = resp.first['output']
+      provider_hash = { name: name }
+      
+      enabled = switchport_enabled(output) ? :present : :absent
+      provider_hash[:ensure] = enabled 
 
-      if switchport_enabled(output)
-        provider_hash = { name: name, ensure: :present }
+      if enabled == 'present'
         provider_hash[:mode] = switchport_mode_to_value(output)
         provider_hash[:trunk_allowed_vlans] = switchport_trunk_vlans_to_value(output)
-        new(provider_hash)
+      else
+        provider_hash[:mode] = :access
+        provider_hash[:trunk_allowed_vlans] = 'ALL'
       end
+
+      new(provider_hash)
     end
   end
 
@@ -96,7 +103,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   end
 
   def destroy
-    id = resource[:id]
+    id = resource[:name]
     eapi.config(["interface #{id}", "no switchport"])
     @property_hash = { name: id, ensure: :absent }
   end
@@ -109,21 +116,31 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def flush_mode
     value = @property_flush[:mode]
-    name = @resource[:name]
+    name = resource[:name]
     return nil unless value
     eapi.config(["interface #{name}", "switchport mode #{value}"])
   end
 
   def flush_trunk_allowed_vlans
-    value = @property_flush[:trunk_allowed_vlans]
-    name = @resource[:name]
-    return nil unless value
-    eapi.config(["interface #{name}", "switchport trunk allowed vlans #{value}"])
-  end
+    Puppet.debug("flush_trunk_allowed_vlans")
+    proposed = @property_flush[:trunk_allowed_vlans]
+    return nil unless proposed
+    name = resource[:name]
+    current = @property_hash[:trunk_allowed_vlans]
+    #current = (1..4094).to_a if current == 'ALL'
+    current = [] if current == 'ALL'
 
+    Puppet.debug("PROPOSED #{proposed}")
+    Puppet.debug("CURRENT #{current}")
 
-  def mode_re
-    Regexp.new('(?<=Operational Mode:\s)(?<mode>[[:alnum:]|\s]+)\n')
+    eapi.config(["interface #{name}", "switchport trunk allowed vlan none"])
+
+    #(current - proposed).each do |vid|
+    #  eapi.config(["interface #{name}", "switchport trunk allowed vlan remove #{vid}"])
+    #end
+    (proposed - current).each do |vid|
+      eapi.config(["interface #{name}", "switchport trunk allowed vlan add #{vid}"])
+    end
   end
 end
 

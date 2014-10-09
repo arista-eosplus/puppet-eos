@@ -59,11 +59,11 @@ Puppet::Type.newtype(:eos_switchport) do
     desc 'Array of VLANs to trunk on the interface'
 
     # Validate each value is a valid VLAN number
-    validate do |value|
-      unless value.between?(1, 4094)
-        fail "value #{value.inspect} is not between 1 and 4094"
-      end
-    end
+    #validate do |value|
+    #  unless value.between?(1, 4094)
+    #    fail "value #{value.inspect} is not between 1 and 4094"
+    #  end
+    #end
   end
 
 end
