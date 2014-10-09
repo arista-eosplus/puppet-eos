@@ -38,26 +38,16 @@ Puppet::Type.newtype(:eos_vlan) do
 
   # Parameters
 
-  newparam(:name) do
-    desc 'The resource name for the VLAN instance'
-  end
-
-  # Properties (state management)
-
-  newproperty(:vlanid) do
+  newparam(:vlanid, namevar: true) do
     desc 'The VLAN number, e.g. 100'
-
-    validate do |value|
-      unless value.between?(1, 4094)
-        fail "value #{value.inspect} is not between 1 and 4094"
-      end
-    end
 
     # Make sure we have a string for the ID
     munge do |value|
       Integer(value).to_s
     end
   end
+
+  # Properties (state management)
 
   newproperty(:vlan_name) do
     desc 'The VLAN name, e.g. VLAN100, Marketing'
@@ -72,9 +62,9 @@ Puppet::Type.newtype(:eos_vlan) do
     end
   end
 
-  newproperty(:admin) do
-    desc 'VLAN admin state'
-    newvalues(:enable, :disable)
+  newproperty(:enable) do
+    desc 'VLAN enable boolean'
+    newvalues(:true, :false)
   end
 
   newproperty(:vni) do
