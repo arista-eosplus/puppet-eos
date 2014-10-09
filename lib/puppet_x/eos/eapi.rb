@@ -166,6 +166,7 @@ module PuppetX
       def config(commands)
         commands = [*commands] unless commands.respond_to?('each')
         commands.insert(0, 'configure')
+        Puppet.debug("EAPI CONFIG: #{commands}")
         result = enable(commands)
         result.shift
         result
