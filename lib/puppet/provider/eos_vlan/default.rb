@@ -38,19 +38,23 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   mk_resource_methods
 
   # Mix in the api as instance methods
-  include PuppetX::Eos::EapiProvider
+  include PuppetX::Eos::EapiProviderMixin
   # Mix in the api as class methods
-  extend PuppetX::Eos::EapiProvider
+  extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
     resp = eapi.enable('show vlan')
     vlans = resp.first['vlans']
 
+    resp = eapi.enable('show vlan trunk group')
+    trunks = resp.first['trunkGroups'] 
+
     vlans.map do |name, attr_hash|
       provider_hash = { name: name, vlanid: name, ensure: :present }
-      provider_hash['vlan_name'] = attr_hash['name']
+      provider_hash[:vlan_name] = attr_hash['name']
       enable = attr_hash['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
+      provider_hash[:trunk_group] = trunks[name]
       new(provider_hash)
     end
   end
@@ -78,6 +82,12 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     @property_flush[:vlan_name] = val
   end
 
+
+  def trunk_group=(val)
+    Puppet.debug("trunk group val #{val}")
+    @property_flush[:trunk_group] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -88,6 +98,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     @property_hash = { vlanid: vid, ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
+    self.trunk_group = resource[:trunk_group] if resource[:trunk_group]
   end
 
   def destroy
@@ -99,6 +110,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   def flush
     flush_enable_state
     flush_vlan_name
+    flush_trunk_groups
     @property_hash = resource.to_hash
   end
 
@@ -106,6 +118,13 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     value = @property_flush[:vlan_name]
     return nil unless value
     eapi.config(["vlan #{resource[:vlanid]}", "name #{value}"])
+  end
+ 
+  def flush_trunk_groups
+    value = @property_flush[:trunk_group]
+    return nil unless value
+    id = resource[:vlanid]
+    eapi.config(["vlan #{id}", "trunk group #{value}"])
   end
 
   def flush_enable_state

@@ -176,7 +176,7 @@ module PuppetX
     class CommandError < Puppet::Error
     end
 
-    module EapiProvider
+    module EapiProviderMixin
       def eapi
         options = {username: 'eapi', password: 'password', protocol: 'http'}
         @eapi ||= PuppetX::Eos::Eapi.new(options)
@@ -187,6 +187,24 @@ module PuppetX
         tx = resp.first['interfaceFlowControls'][name]['txAdminState']
         rx = resp.first['interfaceFlowControls'][name]['rxAdminState']
         {flowcontrol_send: tx, flowcontrol_receive: rx}
+      end
+
+      def switchport_enabled(config)
+        enabled_re = Regexp.new('(?<=Switchport:\s)(?<enabled>\w+)')
+        m = enabled_re.match(config)
+        m['enabled'] == 'Enabled'
+      end
+
+      def switchport_mode_to_value(config)
+        mode_re = Regexp.new('(?<=Operational Mode:\s)(?<mode>[[:alnum:]|\s]+)\n')
+        m = mode_re.match(config)
+        m['mode'] == 'static access' ? 'trunk' : 'access'
+      end
+
+      def switchport_trunk_vlans_to_value(config)
+        trunk_vlans_re = Regexp.new('(?<=Trunking VLANs Enabled:\s)(?<trunking_vlans>[[:alnum:]]+)')
+        m = trunk_vlans_re.match(config)
+        m['trunking_vlans'] 
       end
     end
   end

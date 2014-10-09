@@ -32,31 +32,35 @@
 require 'puppet/type'
 require 'puppet_x/eos/eapi'
 
-Puppet::Type.type(:eos_interface).provide(:eos) do
+Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
   # Mix in the api as instance methods
-  include PuppetX::Eos::EapiProviderMixin
+  include PuppetX::Eos::EapiProvider
   # Mix in the api as class methods
-  extend PuppetX::Eos::EapiProviderMixin
+  extend PuppetX::Eos::EapiProvider
 
   def self.instances
-    interfaces = eapi.enable('show interfaces')
-    interfaces = interfaces.first['interfaces']
+    resp = eapi.enable('show interfaces')
+    interfaces = resp.first['interfaces']
 
     interfaces.map do |name, attr_hash|
-      provider_hash = { name: name }
-      state = attr_hash['interfaceStatus'] == 'disabled' ? :false : :true
-      provider_hash[:enable] = state
-      provider_hash[:description] = attr_hash['description']
-      provider_hash.merge! flowcontrol_to_value(name)
-      new(provider_hash)
+      resp = eapi.enable("show interfaces #{name} switchport", format: 'text')
+      output = resp.first['output']
+
+      if switchport_enabled(output)
+        provider_hash = { name: name, ensure: :present }
+        provider_hash[:mode] = switchport_mode_to_value(output)
+        provider_hash[:trunk_allowed_vlans] = switchport_trunk_vlans_to_value(output)
+        new(provider_hash)
+      end
     end
   end
 
   def self.prefetch(resources)
+    Puppet.debug("#{instances}")
     provider_hash = instances.each_with_object({}) do |provider, hsh|
       hsh[provider.name] = provider
     end
@@ -71,55 +75,55 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_flush = {}
   end
 
-  def enable=(val)
-    @property_flush[:enable] = val
+  def mode=(val)
+    @property_flush[:mode] = val
   end
 
-  def description=(val)
-    @property_flush[:description] = val
+  def trunk_allowed_vlans=(val)
+    @property_flush[:trunk_allowed_vlans] = val
   end
 
-  def flowcontrol_send=(val)
-    @property_flush[:flowcontrol_send] = val
+  def exists?
+    @property_hash[:ensure] == :present
   end
 
-  def flowcontrol_receive=(val)
-    @property_flush[:flowcontrol_receive] = val
+  def create
+    id = resource[:name]
+    eapi.config(["interface #{id}", "switchport"])
+    @property_hash = { name: id, ensure: :present }
+    self.mode = resource[:mode] if resource[:mode]
+    self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] if resource[:trunk_allowed_vlans]
+  end
+
+  def destroy
+    id = resource[:id]
+    eapi.config(["interface #{id}", "no switchport"])
+    @property_hash = { name: id, ensure: :absent }
   end
 
   def flush
-    flush_enable
-    flush_description
-    flush_flowcontrol
+    flush_mode
+    flush_trunk_allowed_vlans
     @property_hash = resource.to_hash
   end
 
-  def flush_description
-    description = @property_flush[:description]
-    return nil unless description
-    eapi.config(["interface #{resource[:name]}", "description #{description}"])
-  end
-
-  def flush_enable
-    value = @property_flush[:enable]
+  def flush_mode
+    value = @property_flush[:mode]
+    name = @resource[:name]
     return nil unless value
-    arg = value ? 'shutdown' : 'no shutdown'
-    eapi.config(["interface #{resource[:name]}", arg])
+    eapi.config(["interface #{name}", "switchport mode #{value}"])
   end
 
-  def flush_flowcontrol
-    [:flowcontrol_send, :flowcontrol_receive].each do |param|
-      value = @property_flush[param]
-      cmds = []
-      case param
-      when :flowcontrol_send
-          cmds = ["flowcontrol send #{value}"] if !value.nil?
-      when :flowcontrol_receive
-          cmds = ["flowcontrol receive #{value}"] if !value.nil?
-      end
-      return nil unless cmds
-      cmds.insert(0, "interface #{resource[:name]}") 
-      eapi.config(cmds)
-    end
+  def flush_trunk_allowed_vlans
+    value = @property_flush[:trunk_allowed_vlans]
+    name = @resource[:name]
+    return nil unless value
+    eapi.config(["interface #{name}", "switchport trunk allowed vlans #{value}"])
+  end
+
+
+  def mode_re
+    Regexp.new('(?<=Operational Mode:\s)(?<mode>[[:alnum:]|\s]+)\n')
   end
 end
+
