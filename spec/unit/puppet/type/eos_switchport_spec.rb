@@ -35,23 +35,15 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_switchport) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'SwitchPort22', catalog: catalog) }
+  let(:type) { described_class.new(name: 'Ethernet77', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'SwitchPort22'
+  it_behaves_like 'an ensurable type', name: 'Ethernet77'
 
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'parameter'
-    include_examples '#doc Documentation'
-  end
-
-  describe 'interface' do
-    let(:attribute) { :interface }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Ethernet1 Ethernet29)
     include_examples 'rejects values', [[1], { two: :three }]
@@ -65,16 +57,6 @@ describe Puppet::Type.type(:eos_switchport) do
     include_examples '#doc Documentation'
     include_examples 'accepts values', [:access, :trunk]
     include_examples 'rejected parameter values'
-  end
-
-  describe 'trunk_group' do
-    let(:attribute) { :trunk_group }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(mlagpeer)
-    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'trunk_allowed_vlans' do

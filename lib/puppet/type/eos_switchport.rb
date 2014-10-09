@@ -39,40 +39,20 @@ Puppet::Type.newtype(:eos_switchport) do
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the switchport instance'
+    desc 'Interface to configure switch port on'
+
+    validate do |value|
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   # Properties (state management)
 
-  newproperty(:interface) do
-    desc 'Interface to configure switch port on'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
   newproperty(:mode) do
     desc 'The switchport mode access or trunk'
     newvalues(:access, :trunk)
-  end
-
-  newproperty(:trunk_group) do
-    desc 'The name of a trunk group to assign the VLAN to'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
   end
 
   newproperty(:trunk_allowed_vlans, array_matching: :all) do
