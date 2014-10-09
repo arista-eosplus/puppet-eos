@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
       provider_hash[:vlan_name] = attr_hash['name']
       enable = attr_hash['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
-      provider_hash[:trunk_group] = trunks[name]
+      provider_hash[:trunk_groups] = trunks[name]
       new(provider_hash)
     end
   end
@@ -82,10 +82,8 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     @property_flush[:vlan_name] = val
   end
 
-
-  def trunk_group=(val)
-    Puppet.debug("trunk group val #{val}")
-    @property_flush[:trunk_group] = val
+  def trunk_groups=(val)
+    @property_flush[:trunk_groups] = val
   end
 
   def exists?
@@ -98,7 +96,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     @property_hash = { vlanid: vid, ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
-    self.trunk_group = resource[:trunk_group] if resource[:trunk_group]
+    self.trunk_groups = resource[:trunk_groups] if resource[:trunk_groups]
   end
 
   def destroy
@@ -121,10 +119,16 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   end
  
   def flush_trunk_groups
-    value = @property_flush[:trunk_group]
-    return nil unless value
+    proposed = @property_flush[:trunk_groups]
+    return nil unless proposed
+    current = @property_hash[:trunk_groups]['names']
     id = resource[:vlanid]
-    eapi.config(["vlan #{id}", "trunk group #{value}"])
+    (current - proposed).each do |grp|
+      eapi.config(["vlan #{id}", "no trunk group #{grp}"])
+    end
+    (proposed - current).each do |grp|
+      eapi.config(["vlan #{id}", "trunk group #{grp}"])
+    end
   end
 
   def flush_enable_state
