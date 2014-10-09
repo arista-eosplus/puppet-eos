@@ -131,9 +131,9 @@ module PuppetX
       #
       # @raise [Eos::Eapi::CommandError] if the response from invoke contains
       #   the key error
-      def execute(commands)
+      def execute(commands, options = {})
         commands.insert(0, cmd: 'enable', input: @enable_pwd)
-        resp = invoke(request(commands))
+        resp = invoke(request(commands, options))
         Puppet.debug "EAPI response: #{resp}"
         fail Puppet::Error if resp.key?("error")
         result = resp['result']
@@ -151,9 +151,9 @@ module PuppetX
       # @param [Array<String>] commands An ordered list of commands to execute
       #
       # @return [Array<Hash>] ordered list of output from commands
-      def enable(commands)
+      def enable(commands, options = {})
         commands = [*commands] unless commands.respond_to?('each')
-        execute(commands)
+        execute(commands, options)
       end
 
       ##
