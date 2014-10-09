@@ -45,12 +45,12 @@ Puppet::Type.newtype(:eos_lacp_interface) do
   # Properties (state management)
 
   newproperty(:rate_fast) do
-    desc 'Set LACP fast transmission interval on configuration mode interface'
+    desc 'Set LACP fast transmission interval on the interface'
     newvalues(:true, :false)
   end
 
   newproperty(:port_priority) do
-    desc 'Set aggregating port priority for the configuration mode interface'
+    desc 'Set aggregating port priority for the interface'
     munge { |v| Integer(v) }
     validate do |v|
       begin

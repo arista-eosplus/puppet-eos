@@ -45,7 +45,7 @@ Puppet::Type.newtype(:eos_user) do
   # Properties (state management)
 
   newproperty(:password) do
-    desc 'XXX'
+    desc 'User password'
 
     validate do |value|
       case value
@@ -58,7 +58,7 @@ Puppet::Type.newtype(:eos_user) do
   end
 
   newproperty(:encryption) do
-    desc 'Encryption settings'
+    desc 'Password encryption type'
     newvalues(:nopassword, :cleartext, :md5, :sha512)
   end
 

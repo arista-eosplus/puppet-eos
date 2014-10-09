@@ -32,7 +32,7 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_vlan) do
-  @doc = "Manage VLAN's.  Layer-2 VLAN's are managed by this resource type."
+  @doc = "Manage Layer-2 VLAN's"
 
   ensurable
 
