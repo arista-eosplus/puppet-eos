@@ -63,7 +63,8 @@ describe Puppet::Type.type(:eos_command) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Need to test the array of commands
+    include_examples 'array of strings value'
+    include_examples 'rejects values', [0, [1], { two: :three }]
   end
 
 end
