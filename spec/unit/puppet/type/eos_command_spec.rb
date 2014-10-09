@@ -37,8 +37,6 @@ describe Puppet::Type.type(:eos_command) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(name: 'ConfigureMlag', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'ConfigureMlag'
-
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
