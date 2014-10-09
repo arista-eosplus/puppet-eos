@@ -38,9 +38,9 @@ Puppet::Type.type(:eos_command).provide(:eos) do
   mk_resource_methods
 
   # Mix in the api as instance methods
-  include PuppetX::Eos::EapiProvider
+  include PuppetX::Eos::EapiProviderMixin
   # Mix in the api as class methods
-  extend PuppetX::Eos::EapiProvider
+  extend PuppetX::Eos::EapiProviderMixin
 
 
   def initialize(resource = {})
