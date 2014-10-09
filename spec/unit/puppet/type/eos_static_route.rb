@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_static_route) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Vxlan5000', catalog: catalog) }
+  let(:type) { described_class.new(name: 'Firewall_1A', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Vxlan5000'
+  it_behaves_like 'an ensurable type', name: 'Firewall_1A'
 
   describe 'name' do
     let(:attribute) { :name }
