@@ -31,56 +31,47 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_ipinterface) do
-  @doc = 'Manage the IP address of an interface'
+require 'spec_helper'
 
-  ensurable
+describe Puppet::Type.type(:eos_ipinterface) do
+  let(:catalog) { Puppet::Resource::Catalog.new }
+  let(:type) { described_class.new(name: 'Ethernet12', catalog: catalog) }
 
-  # Parameters
+  it_behaves_like 'an ensurable type', name: 'Ethernet12'
 
-  newparam(:name) do
-    desc 'The resource name for the IP interface instance'
+  describe 'name' do
+    let(:attribute) { :name }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'parameter'
+    include_examples '#doc Documentation'
   end
 
-  # Properties (state management)
+  describe 'interface' do
+    let(:attribute) { :interface }
+    subject { described_class.attrclass(attribute) }
 
-  newproperty(:interface) do
-    desc 'Specifies interface to configure'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    # XXX Add interface check
   end
 
-  newproperty(:address) do
-    desc 'Specifies IP address for the interface'
+  describe 'address' do
+    let(:attribute) { :address }
+    subject { described_class.attrclass(attribute) }
 
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    # XXX Validate IP address
   end
 
-  newproperty(:helper_address) do
-    desc 'Specifies forwarding address for DHCP relay agent'
+  describe 'helper_address' do
+    let(:attribute) { :helper_address }
+    subject { described_class.attrclass(attribute) }
 
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    # XXX Validate IP address
   end
 
 end
