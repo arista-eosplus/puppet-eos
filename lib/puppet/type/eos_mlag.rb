@@ -102,8 +102,10 @@ Puppet::Type.newtype(:eos_mlag) do
   end
 
   newproperty(:interfaces) do
-    desc 'Specifies Ethernet or Port-channel interfaces to be '\
+    desc 'Hash of Ethernet or Port-channel interfaces to be '\
          'configured as peer links.'
+
+    # interfaces => hash {interface: mlag_id}
 
     validate do |value|
       if value.is_a? Hash then super(value)
