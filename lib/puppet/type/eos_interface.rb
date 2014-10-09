@@ -34,10 +34,7 @@
 Puppet::Type.newtype(:eos_interface) do
   @doc = 'Manage Ethernet and Management Interfaces'
 
-  ensurable
-
   # Parameters
-
   newparam(:name) do
     desc 'The resource name for the interface instance'
   end
@@ -71,8 +68,13 @@ Puppet::Type.newtype(:eos_interface) do
   end
 
   newproperty(:admin) do
-    desc 'VLAN admin state'
+    desc 'Interface admin state'
     newvalues(:enable, :disable)
+  end
+
+  newproperty(:enable) do
+    desc 'Interface admin state'
+    newvalues(:true, :false)
   end
 
   newproperty(:flowcontrol) do
