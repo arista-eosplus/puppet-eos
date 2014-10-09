@@ -45,9 +45,7 @@ Puppet::Type.newtype(:eos_mlag) do
   # Properties (state management)
 
   newproperty(:domain_id) do
-    desc 'The MLAG domain ID property is a text string configured in '\
-         'each peer switch. MLAG switches use this string to identify '\
-         'their peers.'
+    desc 'Specifies the MLAG domain ID'
 
     validate do |value|
       case value
@@ -60,8 +58,8 @@ Puppet::Type.newtype(:eos_mlag) do
   end
 
   newproperty(:local_interface) do
-    desc 'The local_interface property specifies the VLAN of the SVI '\
-         'upon which the switch sends MLAG control traffic.'
+    desc 'Specifies the VLAN of the SVI upon which the switch sends '\
+         'MLAG control traffic.'
 
     validate do |value|
       unless value.between?(1, 4094)
@@ -76,8 +74,8 @@ Puppet::Type.newtype(:eos_mlag) do
   end
 
   newproperty(:peer_address) do
-    desc 'The peer_address property specifies the destination address on '\
-         'the peer switch for MLAG control traffic.'
+    desc 'Specifies destination address on peer switch for MLAG control '\
+         'traffic.'
 
     validate do |value|
       case value
@@ -90,8 +88,8 @@ Puppet::Type.newtype(:eos_mlag) do
   end
 
   newproperty(:peer_link) do
-    desc 'The peer-link property specifies the interface the switch uses '\
-         'to communicates MLAG control traffic.'
+    desc 'Specifies switch interface used to communicate MLAG '\
+         'control traffic.'
 
     validate do |value|
       case value
@@ -104,14 +102,19 @@ Puppet::Type.newtype(:eos_mlag) do
   end
 
   newproperty(:interfaces) do
-    desc 'The interfaces property specifies Ethernet or Port-channel '\
-         'interfaces to be configured as peer links.'
-    # XXX How to do the interfaces as a hash? Is the mlag_id the same
-    # as domain_id?
+    desc 'Specifies Ethernet or Port-channel interfaces to be '\
+         'configured as peer links.'
+
+    validate do |value|
+      if value.is_a? Hash then super(value)
+      else fail "value #{value.inspect} is invalid, must be a Hash."
+      end
+    end
+
   end
 
   newproperty(:admin) do
-    desc 'The admin property enables or disables the MLAG.'
+    desc 'Enables or disables the MLAG.'
     newvalues(:enable, :disable)
   end
 

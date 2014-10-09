@@ -92,7 +92,9 @@ describe Puppet::Type.type(:eos_mlag) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Validate the interfaces hash
+    include_examples 'accepts values without munging',\
+                     [{ Ethernet1: 12, Ethernet20: 13 }]
+    include_examples 'rejects values', ['string', [1, 2], 10]
   end
 
   describe 'admin' do
