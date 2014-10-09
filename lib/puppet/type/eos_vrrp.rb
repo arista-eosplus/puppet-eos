@@ -45,8 +45,7 @@ Puppet::Type.newtype(:eos_vrrp) do
   # Properties (state management)
 
   newproperty(:mac_address) do
-    desc 'The mac_address property assigns a virtual MAC address to the '\
-         'switch'
+    desc 'Assigns a virtual MAC address to the switch'
 
     validate do |value|
       case value
@@ -59,15 +58,13 @@ Puppet::Type.newtype(:eos_vrrp) do
   end
 
   newproperty(:interfaces) do
-    desc 'XXX'
+    desc 'Hash of the interfaces'
 
-    # XXX Need to do a hash on the interfaces
+    # interfaces => hash {interface: address}
+
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      if value.is_a? Hash then super(value)
+      else fail "value #{value.inspect} is invalid, must be a Hash."
       end
     end
   end

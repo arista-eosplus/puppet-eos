@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_vrrp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Vxlan5000', catalog: catalog) }
+  let(:type) { described_class.new(name: 'VRRP 10', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Vxlan5000'
+  it_behaves_like 'an ensurable type', name: 'VRRP 10'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -63,7 +63,10 @@ describe Puppet::Type.type(:eos_vrrp) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Add test for interfaces hash
+    include_examples 'accepts values without munging',\
+                     [{ Ethernet1: '1.2.3.4',\
+                        Ethernet20: '2001:db8:ac10:fe01::' }]
+    include_examples 'rejects values', ['string', [1, 2], 10]
   end
 
 end
