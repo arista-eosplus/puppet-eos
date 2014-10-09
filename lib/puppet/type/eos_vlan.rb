@@ -70,20 +70,20 @@ Puppet::Type.newtype(:eos_vlan) do
   newproperty(:vni) do
     desc 'The VXLAN Virtual Network Identifier'
 
-    validate do |value|
-      unless value.between?(1, 16_777_215)
-        fail "value #{value.inspect} is not between 1 and 16777215"
-      end
-    end
-
     # Make sure we have a string for the ID
     munge do |value|
       Integer(value).to_s
     end
+
+    validate do |value|
+      unless value.to_i.between?(1, 16_777_215)
+        fail "value #{value.inspect} is not between 1 and 16777215"
+      end
+    end
   end
 
-  newproperty(:trunk_group) do
-    desc 'The name of a trunk group to assign the VLAN to'
+  newproperty(:trunk_group, array_matching: :all) do
+    desc 'An array of VLAN IDs strings in the trunk group'
 
     validate do |value|
       case value

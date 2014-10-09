@@ -39,23 +39,16 @@ Puppet::Type.newtype(:eos_static_route) do
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the static route instance'
-  end
-
-  # Properties (state management)
-
-  newproperty(:prefix) do
     desc 'The destination network prefix'
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
+
+  # Properties (state management)
 
   newproperty(:next_hop) do
     desc 'Is either an IP address or a routable interface port'

@@ -35,23 +35,15 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_static_route) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Firewall_1A', catalog: catalog) }
+  let(:type) { described_class.new(name: '1.2.3.0', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Firewall_1A'
+  it_behaves_like 'an ensurable type', name: '1.2.3.0'
 
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'parameter'
-    include_examples '#doc Documentation'
-  end
-
-  describe 'prefix' do
-    let(:attribute) { :prefix }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
                      %w(1.2.3.4/24, 3012:D678::/64)
