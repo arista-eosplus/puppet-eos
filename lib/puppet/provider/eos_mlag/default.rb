@@ -54,13 +54,6 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     provider_hash[:peer_address] = result['peerAddress']
     provider_hash[:peer_link] = result['peerLink']
 
-    resp = eapi.enable('show mlag interfaces')
-    interfaces_hash = {}
-    resp.first['interfaces'].each do |id, values|
-      interfaces_hash[id] = values['localInterface']
-    end
-    provider_hash[:interfaces] = interfaces_hash
-        
     state = result['state'] == 'disabled' ? :true : :false
     provider_hash[:enable] = state
 
@@ -99,10 +92,6 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     @property_flush[:enable] = val
   end
 
-  def interfaces=(val)
-    @property_flush[:interfaces] = val
-  end
-
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -115,7 +104,6 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     self.peer_address = resource[:peer_address] if resource[:peer_address]
     self.peer_link = resource[:peer_link] if resource[:peer_link]
     self.enable = resource[:enable] if resource[:enable]
-    self.interfaces = resource[:interfaces] if resource[:interfaces]
   end
 
   def destroy
@@ -127,7 +115,6 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     flush_local_interface
     flush_peer_address
     flush_peer_link
-    flush_interfaces
     flush_enable
     @property_hash = resource.to_hash
   end
@@ -157,12 +144,5 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     eapi.config(["mlag configuration", state])
   end
 
-  def flush_interfaces
-    values = @property_flush[:interfaces]
-    return nil unless values
-    values.each do |intf, id|
-      eapi.config(["interface #{intf}", "mlag #{id}"])
-    end
-  end
 end
 
