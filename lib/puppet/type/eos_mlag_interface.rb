@@ -50,8 +50,13 @@ Puppet::Type.newtype(:eos_mlag_interface) do
 
   # Properties (state management)
 
-  newproperty(:mlag_id, array_matching: :all) do
-    desc 'An array of MLAG ID values'
+  newproperty(:mlag_id) do
+    desc 'Specifies the MLAG ID'
+
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
 
     validate do |value|
       unless value.to_i.between?(1, 2_000)
