@@ -132,6 +132,7 @@ module PuppetX
       # @raise [Eos::Eapi::CommandError] if the response from invoke contains
       #   the key error
       def execute(commands, options = {})
+        Puppet.debug "EAPI request: #{commands}"
         commands.insert(0, cmd: 'enable', input: @enable_pwd)
         resp = invoke(request(commands, options))
         Puppet.debug "EAPI response: #{resp}"
@@ -166,7 +167,6 @@ module PuppetX
       def config(commands)
         commands = [*commands] unless commands.respond_to?('each')
         commands.insert(0, 'configure')
-        Puppet.debug("EAPI CONFIG: #{commands}")
         result = enable(commands)
         result.shift
         result
@@ -206,6 +206,20 @@ module PuppetX
         m = trunk_vlans_re.match(config)
         m['trunking_vlans'] 
       end
+
+      def portchannel_members_to_value(name)
+        id = /\d+(\/\d+)*/.match(name)
+        resp = eapi.enable("show port-channel #{id} all-ports", format: 'text')
+        resp.first['output'].scan(/Ethernet\d+/)
+      end
+   
+      def portchannel_lacp_mode_to_value(name)
+        resp = eapi.enable("show running-config interfaces #{name}", format: 'text')
+        result = resp.first['output']
+        match = resp.first['output'].match(/channel-group\s\d+\smode\s(?<lacp>.*)/)
+        match['lacp']
+      end 
+
     end
   end
 end
