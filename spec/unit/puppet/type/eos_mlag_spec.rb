@@ -55,7 +55,9 @@ describe Puppet::Type.type(:eos_mlag) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'vlan id value'
+    include_examples 'accepts values without munging',\
+                     %w(portchannel10 Ethernet42/1)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'peer_address' do
@@ -74,7 +76,7 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
-                     %w(portchannel 10, Ethernet 42/1)
+                     %w(portchannel10 Ethernet42/1)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
