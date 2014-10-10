@@ -70,6 +70,8 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
       provider_hash[:lacp_fallback] = fallback || ''
       provider_hash[:lacp_timeout] = attr_hash['fallbackTimeout'] 
 
+      Puppet.debug("EOS_PORTCHANNEL #{provider_hash}")
+
       new(provider_hash)
     end
 
@@ -115,13 +117,13 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
     eapi.config(["interface #{id}"])
     @property_hash = { name: id, ensure: :present }
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
-    self.members = resource[:members] if resource[:members]
+    self.members = resource[:members] if resource[:members] 
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
     self.lacp_timeout = resource[:lacp_timeout] if resource[:lacp_timeout]
   end
 
   def destroy
-    id = resource[:id]
+    id = resource[:name]
     eapi.config("no interface #{id}")
     @property_hash = { name: id, ensure: :absent }
   end
@@ -149,10 +151,9 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
     proposed = @property_flush[:members]
     return nil unless proposed
     name = resource[:name]
-    current = @property_hash[:members]
+    current = resource[:members]
     lacp = resource[:lacp_mode]
     grp = /\d+(\/\d+)*/.match(name)[0]
-
     (current - proposed).each do |member|
       eapi.config(["interface #{member}", "no channel-group"])
     end

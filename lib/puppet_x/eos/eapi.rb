@@ -183,6 +183,7 @@ module PuppetX
       end
 
       def flowcontrol_to_value(name)
+        return { flowcontrol_send: 'off', flowcontrol_receive: 'off'} if /^[Loop|Port|Vlan]/.match(name)
         resp = eapi.enable("show interfaces #{name} flowcontrol")
         tx = resp.first['interfaceFlowControls'][name]['txAdminState']
         rx = resp.first['interfaceFlowControls'][name]['rxAdminState']
@@ -198,13 +199,15 @@ module PuppetX
       def switchport_mode_to_value(config)
         mode_re = Regexp.new('(?<=Operational Mode:\s)(?<mode>[[:alnum:]|\s]+)\n')
         m = mode_re.match(config)
-        m['mode'] == 'static access' ? 'trunk' : 'access'
+        m['mode'] == 'static access' ? 'access' : 'trunk'
       end
 
       def switchport_trunk_vlans_to_value(config)
         trunk_vlans_re = Regexp.new('(?<=Trunking VLANs Enabled:\s)(?<trunking_vlans>[[:alnum:]]+)')
         m = trunk_vlans_re.match(config)
-        m['trunking_vlans'] 
+        return m['trunking_vlans'] if !m.nil?
+       
+        #m['trunking_vlans'] 
       end
 
       def portchannel_members_to_value(name)

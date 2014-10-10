@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     provider_hash[:peer_address] = result['peerAddress']
     provider_hash[:peer_link] = result['peerLink']
 
-    state = result['state'] == 'disabled' ? :true : :false
+    state = result['state'] == 'disabled' ? :false : :true
     provider_hash[:enable] = state
 
     provider_hash[:primary_priority] = 0

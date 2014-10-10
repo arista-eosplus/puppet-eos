@@ -51,6 +51,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
       addr = attr_hash['interfaceAddress']['primaryIp']['address']
       mask = attr_hash['interfaceAddress']['primaryIp']['maskLen']
       provider_hash[:address] = "#{addr}/#{mask}" if !addr.nil? || !mask.nil?
+      Puppet.debug("EOS_IPINTERFACE #{provider_hash}")
       new(provider_hash)
     end
   end
@@ -80,7 +81,9 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
 
   def create
     id = resource[:name]
-    eapi.config(["interface #{id}", "no switchport"])
+    commands = ["interface #{id}"]
+    commands << 'no switchport' if /^[Eth|Port]/.match(id)
+    eapi.config(commands)
     @property_hash = { name: id, ensure: :present }
     self.address = resource[:address] if resource[:address]
   end

@@ -32,7 +32,9 @@
 require 'puppet/type'
 require 'puppet_x/eos/eapi'
 
-Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
+Puppet::Type.type(:eos_eapi).provide(:eos) do
+  
+  commands :cli => 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -43,15 +45,24 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show mlag interfaces')
-    result = resp.first['interfaces']
-    
-    result.map do |name, attr_hash|
-      provider_hash = { name: attr_hash['localInterface'], ensure: :present }
-      provider_hash[:mlag_id] = name
-      new(provider_hash)
-    end
+    commands = "show running-config section management api http-commands"
+    resp = cli('-p', '15', '-A', '-c', "#{commands}")
+    Puppet.debug("#{resp}")
 
+    provider_hash = { name: 'eapi', ensure: :present }
+    
+    state = !/no\sshutdown/.match(resp).nil?
+    protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
+    port = /'port\s(?<port>\d+)'/.match(resp)
+    if port.nil?
+      port = protocol == 'http' ? '443' : '80'
+    end
+ 
+    provider_hash['enable'] = state
+    provider_hash['protocol'] = protocol
+    provider_hash['port'] = port
+    Puppet.debug("#{provider_hash}")
+    [new(provider_hash)]
   end
 
   def self.prefetch(resources)
@@ -69,38 +80,66 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
     @property_flush = {}
   end
 
-  def mlag_id=(val)
-    @property_flush[:mlag_id] = val
+  def protocol=(val)
+    @property_flush[:protocol] = val
+  end
+
+  def port=(val)
+    @property_flush[:port] = val
+  end
+
+  def enable=(val)
+    @property_flush[:enable] = val
   end
 
   def exists?
-    @property_hash[:ensure] == :present
+    return @property_hash[:ensure] == 'present'
   end
-
-  def create
-    intf = resource[:name]
-    id = resource[:mlag_id]
-    eapi.config(["interface #{intf}", "mlag #{id}"])
-    @property_hash = { name: id, ensure: :present }
-  end
-
-  def destroy
-    id = resource[:name]
-    eapi.config(["interface #{id}", "no mlag"])
-    @property_hash = { name: id, ensure: :absent }
-  end
-
+  
   def flush
-    flush_mlag_id
+    flush_protocol_and_port
+    flush_enable
     @property_hash = resource.to_hash
   end
 
-  def flush_mlag_id
-    value = @property_flush[:mlag_id]
-    return nil unless value
-    name = @resource[:name]
-    eapi.config(["interface #{name}", "mlag #{value}"])
+  def create
+    commands = ['configure', 'management api http-commands']
+    case resource[:protocol]
+    when 'http'
+      commands << 'no protocol https' << "protocol http port #{port}"
+    when 'https'
+      commands << 'no protocol http' << "protocol https port #{port}"
+    end
+    commands << "no shutdown"
+    commands = commands.join('\n')
+    cli('-p', '15', '-A', '-e', '-c', "$'#{commands}'")
+    @property_hash = { name: resource[:name],  ensure: :present }
   end
 
+  def destroy
+    cli('-p', '15', '-A', '-c', 'configure\nmanagement api http-commands\nshutdown') 
+  end
+
+  def flush_protocol_and_port
+    protocol = @property_flush[:protocol] || resource[:protocol]
+    port = @property_flush[:port] || resource[:port]
+    commands = %w(enable, config) << 'management api http-commands'
+    case protocol
+    when 'https'
+      commands << 'no protocol http' << "protocol https port #{port}"
+    when 'http'
+      commands << 'no protocol https' << "protocol http port #{port}"
+    end
+    cli('-p', '15', '-A', '-c', commands)
+  end
+
+  def flush_enable
+    value = @property_flush[:enable]
+    return nil unless value
+    args = value ? 'shutdown' : 'no shutdown'
+    commands = %w(enable, config) << 'management api http-commands'
+    commands << args
+    cli('-p', '15', '-A', '-c', commands)
+  end
 end
 

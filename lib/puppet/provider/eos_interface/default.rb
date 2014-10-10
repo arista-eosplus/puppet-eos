@@ -103,7 +103,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   def flush_enable
     value = @property_flush[:enable]
     return nil unless value
-    arg = value ? 'shutdown' : 'no shutdown'
+    arg = value ? 'no shutdown' : 'shutdown'
     eapi.config(["interface #{resource[:name]}", arg])
   end
 

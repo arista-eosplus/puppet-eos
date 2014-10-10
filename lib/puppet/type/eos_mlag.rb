@@ -55,15 +55,15 @@ Puppet::Type.newtype(:eos_mlag) do
          'MLAG control traffic.'
 
     # Make sure we have a string for the ID
-    munge do |value|
-      Integer(value).to_s
-    end
+    #munge do |value|
+    #  Integer(value).to_s
+    #end
 
-    validate do |value|
-      unless value.to_i.between?(1, 4094)
-        fail "value #{value.inspect} is not between 1 and 4094"
-      end
-    end
+    #validate do |value|
+    #  unless value.to_i.between?(1, 4094)
+    #    fail "value #{value.inspect} is not between 1 and 4094"
+    #  end
+    #end
   end
 
   newproperty(:peer_address) do
