@@ -80,17 +80,21 @@ Puppet::Type.newtype(:eos_portchannel) do
 
   newproperty(:lacp_fallback) do
     desc 'Specifies the LACP fallback setting'
-    newvalues(:true, :false)
+    newvalues(:static, :individual)
   end
 
   newproperty(:lacp_timeout) do
     desc 'LACP fallback timeout'
-    munge { |v| Integer(v) }
-    validate do |v|
-      begin
-        Integer(v) ? true : false
-      rescue TypeError => err
-        error "Cannot convert #{v.inspect} to an integer: #{err.message}"
+
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    # Validate each value is a valid channel group id
+    validate do |value|
+      unless value.to_i.between?(0, 900)
+        fail 'value #{value.inspect} is not between 0 and 900'
       end
     end
   end

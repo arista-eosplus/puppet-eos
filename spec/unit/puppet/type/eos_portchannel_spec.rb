@@ -82,8 +82,8 @@ describe Puppet::Type.type(:eos_portchannel) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'boolean value'
-    include_examples 'rejects values', [0, [1], { two: :three }]
+    include_examples 'accepts values', [:static, :individual]
+    include_examples 'rejected parameter values'
   end
 
   describe 'lacp_timeout' do
@@ -92,8 +92,8 @@ describe Puppet::Type.type(:eos_portchannel) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', min: 1, max: 100
-    include_examples 'rejected parameter values'
+    include_examples 'accepts values without munging', %w(0 900)
+    include_examples 'rejects values', [[-1], 'string', { two: :three }]
   end
 
 end
