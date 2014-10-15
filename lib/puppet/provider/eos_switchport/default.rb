@@ -53,7 +53,6 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
       
       enabled = switchport_enabled(output) ? :present : :absent
       provider_hash[:ensure] = enabled 
-      Puppet.debug("ENABLED #{enabled}")
 
       if enabled == :present
         mode = switchport_mode_to_value(output)
@@ -65,21 +64,14 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
         end
         vlans = switchport_trunk_vlans_to_value(output)
         vlans = [] if vlans == 'ALL'
-        Puppet.debug("VLANS #{vlans}")
         provider_hash[:trunk_allowed_vlans] = vlans
-      #else
-      #  provider_hash[:mode] = :access
-      #  provider_hash[:trunk_allowed_vlans] = 'ALL'
       end
     
-      Puppet.debug("HASH #{provider_hash}")
-
       new(provider_hash)
     end
   end
 
   def self.prefetch(resources)
-    Puppet.debug("#{instances}")
     provider_hash = instances.each_with_object({}) do |provider, hsh|
       hsh[provider.name] = provider
     end
@@ -138,17 +130,10 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     return nil unless proposed
     name = resource[:name]
     current = @property_hash[:trunk_allowed_vlans]
-    #current = [] if current == 'ALL' || current == 'NONE'
     current = []
-
-    Puppet.debug("PROPOSED #{proposed}")
-    Puppet.debug("CURRENT #{current}")
 
     eapi.config(["interface #{name}", "switchport trunk allowed vlan none"])
 
-    #(current - proposed).each do |vid|
-    #  eapi.config(["interface #{name}", "switchport trunk allowed vlan remove #{vid}"])
-    #end
     (proposed - current).each do |vid|
       eapi.config(["interface #{name}", "switchport trunk allowed vlan add #{vid}"])
     end

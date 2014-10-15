@@ -49,6 +49,10 @@ Puppet::Type.newtype(:eos_vlan) do
 
   # Properties (state management)
 
+  newproperty(:eapi) do
+    desc 'test eapi prop'
+  end
+
   newproperty(:vlan_name) do
     desc 'The VLAN name, e.g. VLAN100, Marketing'
 
@@ -93,6 +97,13 @@ Puppet::Type.newtype(:eos_vlan) do
       else fail "value #{value.inspect} is invalid, must be a string."
       end
     end
+  end
+
+
+  autorequire(:eos_node) do
+    node = catalog.resources.select{ |r| r.type == :eos_node }[0]
+    raise "No eos_node found in catalog" unless node
+    node.title
   end
 
 end

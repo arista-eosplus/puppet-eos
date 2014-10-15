@@ -59,7 +59,6 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
     provider_hash = instances.each_with_object({}) do |provider, hsh|
       hsh[provider.name] = provider
     end
-    Puppet.debug("RESOURCES #{resources}")
 
     resources.each_pair do |name, resource|
       resource.provider = provider_hash[name] if provider_hash[name]

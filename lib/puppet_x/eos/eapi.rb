@@ -177,9 +177,20 @@ module PuppetX
     end
 
     module EapiProviderMixin
+      
+      def conf
+        YAML.load_file('/mnt/flash/eapi.conf')
+      end
+
       def eapi
-        options = {username: 'eapi', password: 'password', protocol: 'http'}
-        @eapi ||= PuppetX::Eos::Eapi.new(options)
+        #options = {
+        #  hostname: ENV['eapi_hostname'] || 'localhost',
+        #  username: ENV['eapi_username'] || 'admin',
+        #  password: ENV['eapi_password'] || '',
+        #  protocol: ENV['eapi_protocol'] || 'https',
+        #  port: ENV['eapi_port'] || ''
+        #}
+        @eapi ||= PuppetX::Eos::Eapi.new(conf)
       end
 
       def flowcontrol_to_value(name)

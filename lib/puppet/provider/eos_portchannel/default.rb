@@ -70,8 +70,6 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
       provider_hash[:lacp_fallback] = fallback || ''
       provider_hash[:lacp_timeout] = attr_hash['fallbackTimeout'] 
 
-      Puppet.debug("EOS_PORTCHANNEL #{provider_hash}")
-
       new(provider_hash)
     end
 
