@@ -177,19 +177,12 @@ module PuppetX
     end
 
     module EapiProviderMixin
-      
+
       def conf
         YAML.load_file('/mnt/flash/eapi.conf')
       end
 
       def eapi
-        #options = {
-        #  hostname: ENV['eapi_hostname'] || 'localhost',
-        #  username: ENV['eapi_username'] || 'admin',
-        #  password: ENV['eapi_password'] || '',
-        #  protocol: ENV['eapi_protocol'] || 'https',
-        #  port: ENV['eapi_port'] || ''
-        #}
         @eapi ||= PuppetX::Eos::Eapi.new(conf)
       end
 
@@ -217,8 +210,6 @@ module PuppetX
         trunk_vlans_re = Regexp.new('(?<=Trunking VLANs Enabled:\s)(?<trunking_vlans>[[:alnum:]]+)')
         m = trunk_vlans_re.match(config)
         return m['trunking_vlans'] if !m.nil?
-       
-        #m['trunking_vlans'] 
       end
 
       def portchannel_members_to_value(name)
@@ -226,13 +217,13 @@ module PuppetX
         resp = eapi.enable("show port-channel #{id} all-ports", format: 'text')
         resp.first['output'].scan(/Ethernet\d+/)
       end
-   
+
       def portchannel_lacp_mode_to_value(name)
         resp = eapi.enable("show running-config interfaces #{name}", format: 'text')
         result = resp.first['output']
         match = resp.first['output'].match(/channel-group\s\d+\smode\s(?<lacp>.*)/)
         match['lacp']
-      end 
+      end
 
     end
   end
