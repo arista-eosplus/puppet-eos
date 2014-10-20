@@ -49,10 +49,6 @@ Puppet::Type.newtype(:eos_vlan) do
 
   # Properties (state management)
 
-  newproperty(:eapi) do
-    desc 'test eapi prop'
-  end
-
   newproperty(:vlan_name) do
     desc 'The VLAN name, e.g. VLAN100, Marketing'
 

@@ -99,7 +99,7 @@ module PuppetX
       # @return [Object]
       def method_missing(name)
         name = "PuppetX::Eos::#{name}"
-        klass = name..split('::').inject(Object) { |o, c| o.const_get c }
+        klass = name.split('::').inject(Object) { |o, c| o.const_get c }
         klass.new self
       end
 
