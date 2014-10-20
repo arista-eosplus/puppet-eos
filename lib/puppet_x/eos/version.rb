@@ -29,30 +29,13 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-require 'puppet/type'
-require 'puppet_x/eos/provider'
 
-Puppet::Type.type(:eos_command).provide(:eos) do
-
-  # Create methods that set the @property_hash for the #flush method
-  mk_resource_methods
-
-  # Mix in the api as instance methods
-  include PuppetX::Eos::EapiProviderMixin
-  # Mix in the api as class methods
-  extend PuppetX::Eos::EapiProviderMixin
-
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
+# #
+# PuppetX namespace
+module PuppetX
+  ##
+  # Arista EOS namespace
+  module Eos
+    VERSION = '0.1.0'
   end
-
-  def flush
-    commands = resource[:commands]
-    commands.insert(0, 'configure') if resource[:mode] == :config
-    eapi.enable(commands)
-  end
-
 end
-

@@ -30,7 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_static_route).provide(:eos) do
 
@@ -45,9 +45,9 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
   def self.instances
     resp = eapi.enable('show running-config section ip route', format: 'text')
     result = resp.first['output']
-    
+
     result.split(/\n/).map do |entry|
-      parts = entry.split()
+      parts = entry.split
       provider_hash = { name: parts[2], ensure: :present }
       provider_hash[:next_hop] = parts[3]
       provider_hash[:route_name] = ''
@@ -73,7 +73,7 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
   def next_hop=(val)
     @property_flush[:next_hop] = val
   end
-  
+
   def route_name=(val)
     @property_flush[:route_name] = val
   end
@@ -87,7 +87,7 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
     next_hop = resource[:next_hop]
     eapi.config(["ip route #{prefix} #{next_hop}"])
     @property_hash = { name: prefix, ensure: :present }
-    self.hext_hop = resource[:next_hop] if resource[:next_hop]
+    self.next_hop = resource[:next_hop] if resource[:next_hop]
     self.route_name = resource[:route_name] if resource[:route_name]
   end
 
@@ -104,10 +104,9 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
 
   def flush_next_hop
     prefix = resource[:name]
-    hext_hop = resource[:next_hop]
+    next_hop = resource[:next_hop]
     new_next_hop = @property_flush[:next_hop]
-    eapi.config(["no ip route #{prefix} #{next_hop}", "ip route #{prefix} #{new_next_hop}"])#
+    eapi.config(["no ip route #{prefix} #{next_hop}",
+                 "ip route #{prefix} #{new_next_hop}"])
   end
-
 end
-

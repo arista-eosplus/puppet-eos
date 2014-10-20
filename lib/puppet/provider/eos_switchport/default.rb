@@ -30,7 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_switchport).provide(:eos) do
 
@@ -50,9 +50,9 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
       resp = eapi.enable("show interfaces #{name} switchport", format: 'text')
       output = resp.first['output']
       provider_hash = { name: name }
-      
+
       enabled = switchport_enabled(output) ? :present : :absent
-      provider_hash[:ensure] = enabled 
+      provider_hash[:ensure] = enabled
 
       if enabled == :present
         mode = switchport_mode_to_value(output)
@@ -66,7 +66,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
         vlans = [] if vlans == 'ALL'
         provider_hash[:trunk_allowed_vlans] = vlans
       end
-    
+
       new(provider_hash)
     end
   end
@@ -138,5 +138,5 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
       eapi.config(["interface #{name}", "switchport trunk allowed vlan add #{vid}"])
     end
   end
-end
 
+end

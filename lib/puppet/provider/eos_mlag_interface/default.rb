@@ -30,7 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   def self.instances
     resp = eapi.enable('show mlag interfaces')
     result = resp.first['interfaces']
-    
+
     result.map do |name, attr_hash|
       provider_hash = { name: attr_hash['localInterface'], ensure: :present }
       provider_hash[:mlag_id] = name

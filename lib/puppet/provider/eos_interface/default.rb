@@ -30,7 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_interface).provide(:eos) do
 
@@ -118,7 +118,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
           cmds = ["flowcontrol receive #{value}"] if !value.nil?
       end
       return nil unless cmds
-      cmds.insert(0, "interface #{resource[:name]}") 
+      cmds.insert(0, "interface #{resource[:name]}")
       eapi.config(cmds)
     end
   end

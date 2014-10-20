@@ -30,10 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_eapi).provide(:eos) do
-  
+
   commands :cli => 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method
@@ -50,14 +50,14 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     Puppet.debug("#{resp}")
 
     provider_hash = { name: 'eapi', ensure: :present }
-    
+
     state = !/no\sshutdown/.match(resp).nil?
     protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
     port = /'port\s(?<port>\d+)'/.match(resp)
     if port.nil?
       port = protocol == 'http' ? '443' : '80'
     end
- 
+
     provider_hash['enable'] = state
     provider_hash['protocol'] = protocol
     provider_hash['port'] = port
@@ -95,7 +95,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
   def exists?
     return @property_hash[:ensure] == 'present'
   end
-  
+
   def flush
     flush_protocol_and_port
     flush_enable
@@ -117,7 +117,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
   end
 
   def destroy
-    cli('-p', '15', '-A', '-c', 'configure\nmanagement api http-commands\nshutdown') 
+    cli('-p', '15', '-A', '-c', 'configure\nmanagement api http-commands\nshutdown')
   end
 
   def flush_protocol_and_port

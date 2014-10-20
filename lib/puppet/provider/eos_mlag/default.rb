@@ -30,7 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/eapi'
+require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_mlag).provide(:eos) do
 
@@ -79,7 +79,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   def local_interface=(val)
     @property_flush[:local_interface] = val
   end
-  
+
   def peer_address=(val)
     @property_flush[:peer_address] = val
   end
@@ -87,7 +87,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   def peer_link=(val)
     @property_flush[:peer_link] = val
   end
-  
+
   def enable=(val)
     @property_flush[:enable] = val
   end
@@ -124,19 +124,19 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     return nil unless value
     eapi.config(["mlag configuration", "local-interface #{value}"])
   end
-  
+
   def flush_peer_address
     value = @property_flush[:peer_address]
     return nil unless value
     eapi.config(["mlag configuration", "peer-address #{value}"])
   end
-  
+
   def flush_peer_link
     value = @property_flush[:peer_link]
     return nil unless value
     eapi.config(["mlag configuration", "peer-link #{value}"])
   end
-  
+
   def flush_enable
     value = @property_flush[:enable]
     return nil unless value

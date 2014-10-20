@@ -98,12 +98,4 @@ Puppet::Type.newtype(:eos_vlan) do
       end
     end
   end
-
-
-  autorequire(:eos_node) do
-    node = catalog.resources.select{ |r| r.type == :eos_node }[0]
-    raise "No eos_node found in catalog" unless node
-    node.title
-  end
-
 end

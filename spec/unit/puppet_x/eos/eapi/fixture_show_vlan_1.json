@@ -1,0 +1,12 @@
+[{
+  "sourceDetail": "",
+  "vlans": {
+    "1": {
+      "status": "active",
+      "name": "default",
+      "interfaces": {
+      },
+      "dynamic": false
+    }
+  }
+}]

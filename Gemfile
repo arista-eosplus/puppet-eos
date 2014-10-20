@@ -1,33 +1,35 @@
-# encoding: utf-8
-
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 def location_for(place, fake_version = nil)
-  md1 = /^(git[:@][^#]*)#(.*)/.match(place)
-  md2 = %r{^file://(.*)}.match(place)
-  if md1
-    [fake_version, { git: md1[1], branch: md1[2], require: false }].compact
-  elsif md2
-    ['>= 0', { path: File.expand_path(md2[1]), require: false }]
-  else
-    [place, { require: false }]
+  mdata = /^(git[:@][^#]*)#(.*)/.match(place)
+  if mdata
+    hsh = { git: mdata[1], branch: mdata[2], require: false }
+    return [fake_version, hsh].compact
   end
+  mdata2 = %r{^file:\/\/(.*)}.match(place)
+  if mdata2
+    return ['>= 0', { path: File.expand_path(mdata[1]), require: false }]
+  end
+  [place, { require: false }]
 end
 
 group :development do
   gem 'guard'
-  gem 'guard-rspec', require: false
+  gem 'guard-rspec'
   gem 'guard-rubocop'
-  gem 'pry-doc'
+  gem 'guard-shell'
 end
 
 group :development, :test do
+  gem 'yard'
+  gem 'redcarpet'
   gem 'rake', '~> 10.1.0',       require: false
-  gem 'rspec-puppet',            require: false
-  gem 'rspec', '~> 2.13.0'
-  gem 'puppetlabs_spec_helper',  require: false
+  gem 'rspec', '~> 3.0.0'
+  gem 'rspec-mocks', '~> 3.0.0'
   gem 'pry',                     require: false
+  gem 'pry-doc',                 require: false
   gem 'simplecov',               require: false
+  gem 'puppetlabs_spec_helper'
 end
 
 ENV['GEM_PUPPET_VERSION'] ||= ENV['PUPPET_GEM_VERSION']
@@ -37,5 +39,4 @@ if puppetversion
 else
   gem 'puppet', require: false
 end
-
 # vim:ft=ruby
