@@ -45,7 +45,6 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def self.instances
     result = eapi.Vlan.get(nil)
-    Puppet.debug("RESULT #{result}")
 
     resp = eapi.enable('show vlan trunk group')
     trunks = resp.first['trunkGroups']
@@ -66,15 +65,19 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   end
 
   def enable=(val)
-    @property_flush[:enable] = val
+    arg = val ? 'active' : 'suspend'
+    eapi.Vlan.set_state(id: resource[:vlanid], value: arg)
+    @property_hash[:enable] = val
   end
 
   def vlan_name=(val)
-    @property_flush[:vlan_name] = val
+    eapi.Vlan.set_name(id: resource[:vlanid], value: val)
+    @property_hash[:vlan_name] = val
   end
 
   def trunk_groups=(val)
-    @property_flush[:trunk_groups] = val
+    eapi.Vlan.set_trunk_group(id: resource[:vlanid], value: val)
+    @property_hash[:trunk_groups] = val
   end
 
   def exists?
@@ -83,7 +86,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def create
     eapi.Vlan.add(resource[:name])
-    @property_hash = { vlanid: resource[:name], ensure: :present }
+    @property_hash = { name: resource[:name], vlanid: resource[:vlanid], ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
     self.trunk_groups = resource[:trunk_groups] if resource[:trunk_groups]
@@ -92,42 +95,5 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   def destroy
     eapi.Vlan.delete(resource[:vlanid])
     @property_hash = { vlanid: resource[:vlanid], ensure: :absent }
-  end
-
-  def flush
-    flush_enable_state
-    flush_vlan_name
-    flush_trunk_groups
-    @property_hash = resource.to_hash
-  end
-
-  def flush_vlan_name
-    value = @property_flush[:vlan_name]
-    return nil unless value
-    vlanid = resource[:vlanid]
-    eapi.Vlan.set_name(id: vlanid, value: value)
-  end
-
-  def flush_trunk_groups
-    proposed = @property_flush[:trunk_groups]
-    return nil unless proposed
-    current = @property_hash[:trunk_groups]
-    current = [] if current.nil?
-    id = resource[:vlanid]
-
-    (current - proposed).each do |grp|
-      eapi.Vlan.set_trunk_group(id: id, value: grp)
-    end
-
-    (proposed - current).each do |grp|
-      eapi.Vlan.set_trunk_group(id: id, value: grp)
-    end
-  end
-
-  def flush_enable_state
-    value = @property_flush[:enable]
-    return nil unless value
-    arg = value ? 'suspend' : 'active'
-    eapi.Vlan.set_state(resource[:vlanid], arg)
   end
 end

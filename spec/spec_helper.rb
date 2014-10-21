@@ -5,6 +5,7 @@ SimpleCov.start do
   add_filter '/.bundle/'
 end
 
+require 'pry'
 require 'puppet_x/eos/eapi'
 require 'puppetlabs_spec_helper/puppet_spec_helper'
 
