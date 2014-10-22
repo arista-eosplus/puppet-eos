@@ -29,9 +29,9 @@ describe PuppetX::Eos::Vlan do
     context '#get' do
       subject { instance.get(vlanid) }
 
-      describe 'requested vlan id exists' do
+      describe 'retrieving specific vlan id' do
         let(:vlanid) { '1' }
-        let(:commands) { 'show vlan 1' }
+        let(:commands) { ['show vlan 1', 'show vlan 1 trunk group'] }
 
         let :response do
           dir = File.dirname(__FILE__)
@@ -39,18 +39,21 @@ describe PuppetX::Eos::Vlan do
           JSON.load(File.read(file))
         end
 
-        it 'has only one entry' do
+        it 'has only two entries' do
           expect(subject.size).to eq 1
         end
 
         it { is_expected.to be_a_kind_of Hash }
         it { is_expected.to have_key '1' }
         it { is_expected.not_to have_key 'results' }
+        it 'includes trunkGroups' do
+          expect(subject['1']).to have_key 'trunkGroups'
+        end
       end
 
-      describe 'requested vlan id exists' do
+      describe 'retreiving all vlans' do
         let(:vlanid) { nil }
-        let(:commands) { 'show vlan' }
+        let(:commands) { ['show vlan', 'show vlan trunk group'] }
 
         let :response do
           dir = File.dirname(__FILE__)
@@ -65,6 +68,9 @@ describe PuppetX::Eos::Vlan do
         it { is_expected.to be_a_kind_of Hash }
         it { is_expected.to have_key '1' }
         it { is_expected.not_to have_key 'results' }
+        it 'includes trunkGroups' do
+          expect(subject.values[0]).to have_key 'trunkGroups'
+        end
       end
     end
 

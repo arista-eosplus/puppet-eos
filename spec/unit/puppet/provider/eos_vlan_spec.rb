@@ -56,20 +56,12 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     Fixtures[:all_vlans] = JSON.load(File.read(file))
   end
 
-  def trunk_groups
-    trunk_groups = Fixtures[:trunk_groups]
-    return trunk_groups if trunk_groups
-    file = File.join(File.dirname(__FILE__), 'fixture_show_vlan_trunk_group.json')
-    Fixtures[:trunk_groups] = JSON.load(File.read(file))
-  end
-
   # Stub the Api method class to obtain all vlans.
   before :each do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Vlan)
     allow(described_class.eapi.Vlan).to receive(:get).and_return(all_vlans)
-    allow(described_class.eapi).to receive(:enable).and_return(trunk_groups)
   end
 
   context 'class methods' do

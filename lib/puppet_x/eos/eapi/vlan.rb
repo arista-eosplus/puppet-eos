@@ -65,9 +65,16 @@ module PuppetX
       #   vlan configuration specified by id.  If the id is not
       #   found then nil is returned
       def get(id = nil)
-        cmd = id.nil? ? 'show vlan' : "show vlan #{id}"
-        result = @api.enable(cmd)
-        result.first['vlans']
+        if id.nil?
+          cmd = [ 'show vlan', 'show vlan trunk group' ]
+        else
+          cmd = [ "show vlan #{id}", "show vlan #{id} trunk group" ]
+        end
+        resp = @api.enable(cmd)
+        result = resp.first['vlans']
+        result.each do |vid, hsh|
+          result[vid]['trunkGroups'] = resp[1]['trunkGroups'][vid]['names']
+        end
       end
 
       ##

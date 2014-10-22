@@ -4,6 +4,7 @@
     "name": "default",
     "interfaces": {
     },
+    "trunkGroups": [],
     "dynamic": false
   },
   "2": {
@@ -11,6 +12,7 @@
     "name": "VLAN0002",
     "interfaces": {
     },
+    "trunkGroups": [],
     "dynamic": false
   },
   "3": {
@@ -18,6 +20,7 @@
     "name": "VLAN0003",
     "interfaces": {
     },
+    "trunkGroups": ["foo"],
     "dynamic": false
   }
 }

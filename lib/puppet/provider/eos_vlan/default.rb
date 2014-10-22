@@ -45,16 +45,12 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def self.instances
     result = eapi.Vlan.get(nil)
-
-    resp = eapi.enable('show vlan trunk group')
-    trunks = resp.first['trunkGroups']
-
     result.map do |name, attr_hash|
       provider_hash = { name: name, vlanid: name, ensure: :present }
       provider_hash[:vlan_name] = attr_hash['name']
       enable = attr_hash['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
-      provider_hash[:trunk_groups] = trunks[name]['names']
+      provider_hash[:trunk_groups] = attr_hash['trunkGroups']
       new(provider_hash)
     end
   end
