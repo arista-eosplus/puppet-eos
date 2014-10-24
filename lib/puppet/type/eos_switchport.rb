@@ -39,7 +39,7 @@ Puppet::Type.newtype(:eos_switchport) do
   # Parameters
 
   newparam(:name) do
-    desc 'Interface to configure switch port on'
+    desc 'Full interface name to configure switch port on'
 
     validate do |value|
       if value.is_a? String then super(value)
@@ -56,15 +56,48 @@ Puppet::Type.newtype(:eos_switchport) do
   end
 
   newproperty(:trunk_allowed_vlans, array_matching: :all) do
-    desc 'Array of VLANs to trunk on the interface'
+    desc 'Array of VLANs strings to trunk on the interface'
 
-    # XXX Fix to be an array of strings
-    # Validate each value is a valid VLAN number
-    # validate do |value|
-    #   unless value.between?(1, 4094)
-    #     fail "value #{value.inspect} is not between 1 and 4094"
-    #   end
-    # end
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
+    end
+  end
+
+  newproperty(:trunk_native_vlan) do
+    desc 'Specifies the trunk mode native VLAN'
+
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
+    end
+  end
+
+  newproperty(:native_vlan) do
+    desc 'Specifies the native VLAN'
+
+    # Make sure we have a string for the ID
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
+    end
   end
 
 end

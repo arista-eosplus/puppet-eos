@@ -65,10 +65,25 @@ describe Puppet::Type.type(:eos_switchport) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Need to nail down the type of the array values
-    # include_examples 'vlan range value'
-    # include_examples 'accepts values without munging', [[1, 200, 777, 4094]]
-    # include_examples 'rejects values', [0, 'string', { two: :three }]
+    include_examples 'vlan range string value'
+  end
+
+  describe 'trunk_native_vlan' do
+    let(:attribute) { :trunk_native_vlan }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'vlan id value'
+  end
+
+  describe 'native_vlan' do
+    let(:attribute) { :native_vlan }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'vlan id value'
   end
 
 end
