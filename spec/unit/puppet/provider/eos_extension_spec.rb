@@ -91,7 +91,7 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          autoload: :true
-        end
+      end
 
       context 'eos_extension { bar.rpm: }' do
         subject { described_class.instances.find { |p| p.name == 'bar.rpm' } }
@@ -116,7 +116,8 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
           'foo.swix' => Puppet::Type.type(:eos_extension).new(name: 'foo.swix'),
           'bar.rpm' => Puppet::Type.type(:eos_extension).new(name: 'bar.rpm'),
           'baz.rpm' => Puppet::Type.type(:eos_extension).new(name: 'baz.rpm'),
-          'dummy.rpm' => Puppet::Type.type(:eos_extension).new(name: 'dummy.rpm')
+          'dummy.rpm' =>
+            Puppet::Type.type(:eos_extension).new(name: 'dummy.rpm')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -188,7 +189,7 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
     end
 
     describe '#destroy' do
-      let(:name) { "dummy.rpm" }
+      let(:name) { 'dummy.rpm' }
 
       before :each do
         allow(provider.eapi.Extension).to receive(:delete)

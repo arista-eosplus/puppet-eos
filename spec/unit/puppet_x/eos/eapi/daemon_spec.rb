@@ -25,7 +25,7 @@ describe PuppetX::Eos::Daemon do
       end
 
       describe 'retreiving extensions from eAPI' do
-        let(:commands) { 'show running-config section daemon'}
+        let(:commands) { 'show running-config section daemon' }
 
         let :response do
           dir = File.dirname(__FILE__)
@@ -51,7 +51,7 @@ describe PuppetX::Eos::Daemon do
 
       before :each do
         allow(eapi).to receive(:config)
-          .with(["daemon #{name}", "command #{command}"] )
+          .with(["daemon #{name}", "command #{command}"])
           .and_return([{}, {}])
       end
 

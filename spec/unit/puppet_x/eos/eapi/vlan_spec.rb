@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'puppet_x/eos/eapi/vlan'
 
-
 describe PuppetX::Eos::Vlan do
   let(:eapi) { double }
   let(:instance) { PuppetX::Eos::Vlan.new eapi }
@@ -130,21 +129,21 @@ describe PuppetX::Eos::Vlan do
       subject { instance.set_name(opts) }
 
       describe 'successfully set vlan name' do
-        let(:opts) { {id: '1234', value: 'foo'} }
+        let(:opts) { { id: '1234', value: 'foo' } }
         let(:commands) { ['vlan 1234', 'name foo'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'failed to set vlan name' do
-        let(:opts) { {id: '6789', value: 'foo'} }
+        let(:opts) { { id: '6789', value: 'foo' } }
         let(:commands) { ['vlan 6789', 'name foo'] }
         let(:response) { nil }
         it { is_expected.to be_falsey }
       end
 
       describe 'default the vlan name' do
-        let(:opts) { {id: '1234', default: true} }
+        let(:opts) { { id: '1234', default: true } }
         let(:commands) { ['vlan 1234', 'default name'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }
@@ -155,21 +154,21 @@ describe PuppetX::Eos::Vlan do
       subject { instance.set_state(opts) }
 
       describe 'successfully set vlan state to "active"' do
-        let(:opts) { {id: '1234', value: 'active'} }
+        let(:opts) { { id: '1234', value: 'active' } }
         let(:commands) { ['vlan 1234', 'state active'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'failed to set vlan state to "active"' do
-        let(:opts) { {id: '6789', value: 'active'} }
+        let(:opts) { { id: '6789', value: 'active' } }
         let(:commands) { ['vlan 6789', 'state active'] }
         let(:response) { nil }
         it { is_expected.to be_falsey }
       end
 
       describe 'default the vlan state' do
-        let(:opts) { {id: '1234', default: true} }
+        let(:opts) { { id: '1234', default: true } }
         let(:commands) { ['vlan 1234', 'default state'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }
@@ -181,21 +180,21 @@ describe PuppetX::Eos::Vlan do
       subject { instance.set_trunk_group(opts) }
 
       describe 'successfully set vlan trunk group' do
-        let(:opts) { {id: '1234', value: 'foo'} }
+        let(:opts) { { id: '1234', value: 'foo' } }
         let(:commands) { ['vlan 1234', 'trunk group foo'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'failed to set vlan trunk group' do
-        let(:opts) { {id: '6789', value: 'foo'} }
+        let(:opts) { { id: '6789', value: 'foo' } }
         let(:commands) { ['vlan 6789', 'trunk group foo'] }
         let(:response) { nil }
         it { is_expected.to be_falsey }
       end
 
       describe 'default the vlan trunk group' do
-        let(:opts) { {id: '1234', default: true} }
+        let(:opts) { { id: '1234', default: true } }
         let(:commands) { ['vlan 1234', 'default trunk group'] }
         let(:response) { [{}, {}] }
         it { is_expected.to be_truthy }

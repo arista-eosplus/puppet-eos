@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'puppet_x/eos/eapi/extension'
 
-
 describe PuppetX::Eos::Extension do
   let(:eapi) { double }
   let(:instance) { PuppetX::Eos::Extension.new eapi }
@@ -73,12 +72,12 @@ describe PuppetX::Eos::Extension do
 
         allow(eapi).to receive(:enable)
           .once
-          .with("no extension dummy.rpm")
+          .with('no extension dummy.rpm')
           .and_return([{}])
 
         allow(eapi).to receive(:enable)
           .once
-          .with("delete extension:dummy.rpm")
+          .with('delete extension:dummy.rpm')
           .and_return([{}])
       end
 
@@ -121,7 +120,7 @@ describe PuppetX::Eos::Extension do
 
     context '#autoload?' do
       subject { instance.autoload?(name) }
-      let(:name) { "dummy.rpm" }
+      let(:name) { 'dummy.rpm' }
       let(:file) { double }
 
       before :each do
@@ -135,7 +134,7 @@ describe PuppetX::Eos::Extension do
       end
 
       describe "extension #{name} not yet configured" do
-        let(:contents) { "" }
+        let(:contents) { '' }
         it { is_expected.to be_falsey }
       end
     end
@@ -153,7 +152,7 @@ describe PuppetX::Eos::Extension do
       end
 
       describe 'extension is not yet configured' do
-        let(:contents) { "" }
+        let(:contents) { '' }
         it { is_expected.to be_truthy }
       end
 
