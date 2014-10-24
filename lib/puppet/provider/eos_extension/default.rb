@@ -32,7 +32,7 @@
 require 'puppet/type'
 require 'puppet_x/eos/provider'
 
-Puppet::Type.type(:eos_vlan).provide(:eos) do
+Puppet::Type.type(:eos_extension).provide(:eos) do
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -44,13 +44,11 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Vlan.get(nil)
-    result.map do |name, attr_hash|
-      provider_hash = { name: name, vlanid: name, ensure: :present }
-      provider_hash[:vlan_name] = attr_hash['name']
-      enable = attr_hash['status'] == 'active' ? :true : :false
-      provider_hash[:enable] = enable
-      provider_hash[:trunk_groups] = attr_hash['trunkGroups']
+    eapi.Extension.get.map do |name, hsh|
+      provider_hash = { name: name, ensure: :present }
+      value = eapi.Extension.autoload?(name) ? :true : :false
+      provider_hash[:autoload] = value
+      Puppet.debug(provider_hash)
       new(provider_hash)
     end
   end
@@ -60,39 +58,41 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
     @property_flush = {}
   end
 
-  def enable=(val)
-    arg = val ? 'active' : 'suspend'
-    eapi.Vlan.set_state(id: resource[:vlanid], value: arg)
-    @property_hash[:enable] = val
+  def force=(val)
+    @property_flush[:force] = val
   end
 
-  def vlan_name=(val)
-    eapi.Vlan.set_name(id: resource[:vlanid], value: val)
-    @property_hash[:vlan_name] = val
-  end
-
-  def trunk_groups=(val)
-    eapi.Vlan.set_trunk_group(id: resource[:vlanid], value: val)
-    @property_hash[:trunk_groups] = val
+  def autoload=(val)
+    @property_flush[:autoload] = val
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def create
-    eapi.Vlan.add(resource[:name])
-    @property_hash = { name: resource[:name],
-                       vlanid: resource[:vlanid],
-                       ensure: :present }
+  def flush
+    flush_autoload
+    @property_hash = resource.to_hash
+  end
 
-    self.enable = resource[:enable] if resource[:enable]
-    self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
-    self.trunk_groups = resource[:trunk_groups] if resource[:trunk_groups]
+  def create
+    url = resource[:name]
+    url = url.insert(0, "#{resource[:source_url]}/") if resource[:source_url]
+    eapi.Extension.install(url, resource[:force])
+    @property_hash = { name: resource[:name], ensure: :present }
+    self.autoload = resource[:autoload] if resource[:autoload]
   end
 
   def destroy
-    eapi.Vlan.delete(resource[:vlanid])
-    @property_hash = { vlanid: resource[:vlanid], ensure: :absent }
+    eapi.Extension.delete(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :absent }
+  end
+
+  def flush_autoload
+    value = @property_flush[:autoload]
+    return nil unless value
+    name = resource[:name]
+    force = @property_flush[:force] || false
+    eapi.Extension.set_autoload(value, name, force)
   end
 end
