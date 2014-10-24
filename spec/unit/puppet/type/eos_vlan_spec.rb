@@ -92,9 +92,7 @@ describe Puppet::Type.type(:eos_vlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'array of strings value'
-    include_examples 'accepts values without munging', [%w(1 200 777 4094)]
-    include_examples 'rejects values', [0, { two: :three }]
+    include_examples 'vlan range string value'
   end
 
 end
