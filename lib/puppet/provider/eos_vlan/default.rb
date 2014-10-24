@@ -82,7 +82,10 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def create
     eapi.Vlan.add(resource[:name])
-    @property_hash = { name: resource[:name], vlanid: resource[:vlanid], ensure: :present }
+    @property_hash = { name: resource[:name],
+                       vlanid: resource[:vlanid],
+                       ensure: :present }
+
     self.enable = resource[:enable] if resource[:enable]
     self.vlan_name = resource[:vlan_name] if resource[:vlan_name]
     self.trunk_groups = resource[:trunk_groups] if resource[:trunk_groups]
