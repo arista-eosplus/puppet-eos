@@ -34,5 +34,6 @@ module PuppetX
     autoload :Vlan, 'puppet_x/eos/eapi/vlan'
     autoload :Extension, 'puppet_x/eos/eapi/extension'
     autoload :Daemon, 'puppet_x/eos/eapi/daemon'
+    autoload :Interface, 'puppet_x/eos/eapi/interface'
   end
 end
