@@ -43,12 +43,6 @@ module PuppetX
     # can be instatiated either using the Eos::Eapi::Switch.load_class
     # method or used directly.
     #
-    # @example Get vlan 100
-    #   >> eapi = Eos::Eapi::Switch.new(hostname=>'192.168.1.16')
-    #   >> vlans = Eos::Eapi::Vlan.new(eapi)
-    #   >> vl100 = vlans.get(100)
-    #   >> vl100['name']
-    #   => 'Vlan100'
     class Vlan
       def initialize(api)
         @api = api
@@ -59,22 +53,17 @@ module PuppetX
       # show vlan <id> command.  If the id doesn't exist then
       # nil is returned
       #
-      # @param [String] id The VLAN ID (e.g. 1)
+      # Example:
+      #   [
+      #     { "sourceDetail": <string>, "vlans": {...} },
+      #     { "trunkGroups": {...} }
+      #   ]
       #
       # @return [nil, Hash<String, String|Hash|Array>] Hash describing the
       #   vlan configuration specified by id.  If the id is not
       #   found then nil is returned
-      def get(id = nil)
-        if id.nil?
-          cmd = [ 'show vlan', 'show vlan trunk group' ]
-        else
-          cmd = [ "show vlan #{id}", "show vlan #{id} trunk group" ]
-        end
-        resp = @api.enable(cmd)
-        result = resp.first['vlans']
-        result.each do |vid, hsh|
-          result[vid]['trunkGroups'] = resp[1]['trunkGroups'][vid]['names']
-        end
+      def getall
+        @api.enable(['show vlan', 'show vlan trunk group'])
       end
 
       ##
@@ -84,7 +73,7 @@ module PuppetX
       # @param [String] id The VLAN identifier (e.g. 1)
       #
       # @return [Boolean] returns true if the command completed successfully
-      def add(id)
+      def create(id)
         @api.config("vlan #{id}") == [{}]
       end
 
@@ -122,8 +111,7 @@ module PuppetX
       # @option opts [Boolean] :default The value should be set to default
       #
       # @return [Boolean] returns true if the command completed successfully
-      def set_name(opts = {})
-        id = opts[:id]
+      def set_name(id, opts = {})
         value = opts[:value]
         default = opts[:default] || false
 
@@ -148,8 +136,7 @@ module PuppetX
       # @option opts [Boolean] :default The value should be set to default
       #
       # @return [Boolean] returns true if the command completed successfully
-      def set_state(opts = {})
-        id = opts[:id]
+      def set_state(id, opts = {})
         value = opts[:value]
         default = opts[:default] || false
 
@@ -174,10 +161,9 @@ module PuppetX
       # @option opts [Boolean] :default The value should be set to default
       #
       # @return [Boolean] returns true if the command completed successfully
-      def set_trunk_group(params = {})
-        id = params[:id]
-        value = params[:value]
-        default = params[:default] || false
+      def set_trunk_group(id, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
 
         cmds = ["vlan #{id}"]
         case default

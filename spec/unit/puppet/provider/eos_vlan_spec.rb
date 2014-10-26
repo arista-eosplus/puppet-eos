@@ -69,6 +69,8 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     describe '.instances' do
       subject { described_class.instances }
 
+      binding.pry
+
       it { is_expected.to be_an Array }
 
       it 'has three instances' do

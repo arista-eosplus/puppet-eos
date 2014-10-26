@@ -39,30 +39,21 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    interfaces = eapi.enable('show interfaces')
-    interfaces = interfaces.first['interfaces']
-
-    interfaces.map do |name, attr_hash|
+    result = eapi.get
+    flowcontrols = result['interfaceFlowControls']
+    result['interfaces'].map do |name, attrs|
       provider_hash = { name: name }
-      state = attr_hash['interfaceStatus'] == 'disabled' ? :false : :true
+      state = attrs['interfaceStatus'] == 'disabled' ? :false : :true
       provider_hash[:enable] = state
-      provider_hash[:description] = attr_hash['description']
-      provider_hash.merge! flowcontrol_to_value(name)
+      provider_hash[:description] = attrs['description']
+      provider_hash[:flowcontrol_send] = flowcontrols[name]['txAdminState']
+      provider_hash[:flowcontorl_receive] = flowcontrols[name]['rxAdminState']
       new(provider_hash)
-    end
-  end
-
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
     end
   end
 
@@ -71,55 +62,36 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_flush = {}
   end
 
+  def create
+    eapi.Interface.create(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
+    self.enable = resource[:enable] if resource[:enable]
+    self.description = resource[:description] if resource[:description]
+    self.flowcontrol_send = resource[:flowcontrol_send] if resource[:flowcontrol_send]
+    self.flowcontrol_receive = resource[:flowcontrol_receive] if resource[:flowcontrol_receive]
+  end
+
+  def destroy
+    eapi.Interface.delete(resoruce[:name])
+  end
+
   def enable=(val)
+    eapi.Interface.set_enable(resource[:name], val)
     @property_flush[:enable] = val
   end
 
   def description=(val)
-    @property_flush[:description] = val
+    eapi.Interface.set_description(resource[:name], val)
+    @property_hash[:description] = val
   end
 
   def flowcontrol_send=(val)
-    @property_flush[:flowcontrol_send] = val
+    eapi.Interface.set_flowcontrol(resource[:name], 'send', val)
+    @property_hash[:flowcontrol_send] = val
   end
 
   def flowcontrol_receive=(val)
-    @property_flush[:flowcontrol_receive] = val
-  end
-
-  def flush
-    flush_enable
-    flush_description
-    flush_flowcontrol
-    @property_hash = resource.to_hash
-  end
-
-  def flush_description
-    description = @property_flush[:description]
-    return nil unless description
-    eapi.config(["interface #{resource[:name]}", "description #{description}"])
-  end
-
-  def flush_enable
-    value = @property_flush[:enable]
-    return nil unless value
-    arg = value ? 'no shutdown' : 'shutdown'
-    eapi.config(["interface #{resource[:name]}", arg])
-  end
-
-  def flush_flowcontrol
-    [:flowcontrol_send, :flowcontrol_receive].each do |param|
-      value = @property_flush[param]
-      cmds = []
-      case param
-      when :flowcontrol_send
-          cmds = ["flowcontrol send #{value}"] if !value.nil?
-      when :flowcontrol_receive
-          cmds = ["flowcontrol receive #{value}"] if !value.nil?
-      end
-      return nil unless cmds
-      cmds.insert(0, "interface #{resource[:name]}")
-      eapi.config(cmds)
-    end
+    eapi.Interface.set_flowcontrol(resource[:name], 'receive', val)
+    @property_hash[:flowcontrol_receive] = val
   end
 end

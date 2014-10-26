@@ -57,8 +57,7 @@ module PuppetX
       #
       # @return[Hash<String,String>] returns a Hash of interface attributes
       def get
-        result = @api.enable(['show interfaces', 'show interfaces flowcontrol'])
-        result.first
+        return @api.enable(['show interfaces', 'show interfaces flowcontrol'])
       end
 
       ##
