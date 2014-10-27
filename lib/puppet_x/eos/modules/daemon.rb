@@ -61,7 +61,7 @@ module PuppetX
       #   }
       #
       # @return [Hash<String, String>] Hash of configured agents
-      def get
+      def getall
         result = @api.enable('show running-config section daemon',
                              format: 'text')
         response = {}

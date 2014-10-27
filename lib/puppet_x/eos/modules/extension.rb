@@ -54,22 +54,22 @@ module PuppetX
       # of hashes using the 'show extensions' command over eAPI.
       #
       # Example:
-      #   "ruby-1.9.3-1.swix": {
-      #     "status": "installed",   # installed, forceInstalled
-      #     "version": "1.9.3.484",
-      #     "presence": "present",
-      #     "release": "32.eos4",
-      #     "numRpms": 10,
-      #     "error": false
-      #   }
+      #   [{
+      #     "ruby-1.9.3-1.swix": {
+      #       "status": "installed",   # installed, forceInstalled
+      #       "version": "1.9.3.484",
+      #       "presence": "present",
+      #       "release": "32.eos4",
+      #       "numRpms": 10,
+      #       "error": false
+      #     }
+      #   }]
       #
       # @return [Hash<Hash<String, String>>] Nested hash describing
       #   the extension details.  If there are no extensions then an
       #   empty Hash is returned
       def get
-        result = @api.enable('show extensions')
-        result = result.first['extensions']
-        result
+        @api.enable('show extensions')
       end
 
       ##

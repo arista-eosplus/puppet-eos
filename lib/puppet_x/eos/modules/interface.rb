@@ -55,8 +55,14 @@ module PuppetX
       # Returns the base interface hash representing physical and logical
       # interfaces in EOS using eAPI
       #
-      # @return[Hash<String,String>] returns a Hash of interface attributes
-      def get
+      # Example
+      #   [{
+      #     "interfaces": {...},
+      #     "interfaceFlowControls": {...}
+      #   }]
+      #
+      # @return [Array<Hash>] returns an Array of Hashes
+      def getall
         return @api.enable(['show interfaces', 'show interfaces flowcontrol'])
       end
 
@@ -117,7 +123,7 @@ module PuppetX
         when true
           cmds << 'default shutdown'
         when false
-          cmds << (value ? 'no shutdown' : "shutdown")
+          cmds << (value ? 'shutdown' : "no shutdown")
         end
         @api.config(cmds) == [{}, {}]
       end

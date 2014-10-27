@@ -1,5 +1,36 @@
+#
+# Copyright (c) 2014, Arista Networks, Inc.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#   Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+#
+#   Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+#
+#   Neither the name of Arista Networks nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARISTA NETWORKS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 require 'spec_helper'
-require 'puppet_x/eos/eapi/interface'
+require 'puppet_x/eos/modules/interface'
 
 describe PuppetX::Eos::Interface do
   let(:eapi) { double }
@@ -14,23 +45,40 @@ describe PuppetX::Eos::Interface do
     before :each do
       allow(eapi).to receive(:enable)
         .with(commands)
-        .and_return(response)
+        .and_return(api_response)
     end
-    context '#get' do
-      subject { instance.get }
+
+    context '#getall' do
+      subject { instance.getall }
 
       describe 'retrieve all interfaces' do
         let(:commands) { ['show interfaces', 'show interfaces flowcontrol'] }
 
-        let :response do
+        let :api_response do
           dir = File.dirname(__FILE__)
-          file = File.join(dir, 'fixture_show_interfaces.json')
+          file = File.join(dir, 'fixture_interface_getall.json')
           JSON.load(File.read(file))
         end
 
-        it { is_expected.to be_a_kind_of Hash }
-        it { is_expected.to have_key 'interfaces' }
-        it { is_expected.to have_key 'interfaceFlowControls'}
+        it { is_expected.to be_a_kind_of Array}
+
+        it 'should contain one entry' do
+          expect(subject.size).to eq 1
+        end
+
+        it 'should have an entry for interfaces' do
+          expect(subject[0]).to have_key 'interfaces'
+        end
+
+        it 'should have an entry for interfaceFlowControls' do
+          expect(subject[0]).to have_key 'interfaceFlowControls'
+        end
+
+        it 'has interfaces with a 1:1 mapping to interfaceFlowControls' do
+          subject[0]['interfaces'].keys do |intf|
+            expect(subject[0]['interfaceFlowControls']).to have_key intf
+          end
+        end
       end
     end
   end
@@ -44,42 +92,42 @@ describe PuppetX::Eos::Interface do
 
     context '#default' do
       subject { instance.default(name) }
-      let(:name) { "Ethernet1" }
 
-      describe 'when the interface exists' do
-        let(:commands) { "default interface #{name}" }
-        let(:response) { [{}] }
-        it { is_expected.to be_truthy }
-      end
+      %w(Ethernet1 Ethernet1/1).each do |intf|
+        describe 'default interface #{intf}' do
+          let(:name) { intf }
+          let(:commands) { "default interface #{name}" }
+          let(:response) { [{}] }
 
-      describe 'when the interface does not exist' do
-        let(:name) { "Vlan1234" }
-        let(:commands) { "default interface #{name}" }
-        let(:response) { nil }
-        it { is_expected.to be_falsey }
+          it { is_expected.to be_truthy }
+        end
       end
     end
 
     context '#create' do
       subject { instance.create(name) }
 
-      context 'when the interface is physical' do
-        let(:name) { 'Ethernet1' }
-        let(:commands) { "interface #{name}" }
-        let(:response) { nil }
+      %w(Ethernet1 Ethernet1/1).each do |intf|
+        context 'when the interface is physical' do
+          let(:name) { intf }
+          let(:commands) { "interface #{name}" }
+          let(:response) { nil }
 
-        describe 'the interface already exists' do
-          it { is_expected.to be_falsey }
+          describe 'the interface already exists' do
+            it { is_expected.to be_falsey }
+          end
         end
       end
 
-      context 'when the interface is logical' do
-        let(:name) { 'Vlan1234' }
-        let(:commands) { "interface #{name}" }
-        let(:response) { [{}] }
+      %w(Vlan124, Port-Channel10).each do |intf|
+        context 'when the interface is logical' do
+          let(:name) { intf }
+          let(:commands) { "interface #{name}" }
+          let(:response) { [{}] }
 
-        describe 'the interface does not exist' do
-          it { is_expected.to be_truthy }
+          describe 'the interface does not exist' do
+            it { is_expected.to be_truthy }
+          end
         end
       end
     end
@@ -87,119 +135,142 @@ describe PuppetX::Eos::Interface do
     context '#delete' do
       subject { instance.delete(name) }
 
-      describe 'try to delete physical interface' do
-        let(:name) { 'Ethernet1' }
-        let(:commands) { "no interface #{name}" }
-        let(:response) { nil }
+      %w(Ethernet1 Ethernet1/1 Management1).each do |intf|
+        describe "try to delete physical interface #{intf}" do
+          let(:name) { intf }
+          let(:commands) { "no interface #{name}" }
+          let(:response) { nil }
 
-        it { is_expected.to be_falsey }
+          it { is_expected.to be_falsey }
+        end
       end
 
-      describe 'delete logical interface' do
-        let(:name) { 'Vlan1234' }
-        let(:commands) { "no interface #{name}" }
-        let(:response) { [{}] }
-        it { is_expected.to be_truthy }
+      %w(Vlan124 Port-Channel10).each do |intf|
+        describe "delete logical interface #{intf}" do
+          let(:name) { intf }
+          let(:commands) { "no interface #{name}" }
+          let(:response) { [{}] }
+          it { is_expected.to be_truthy }
+        end
       end
     end
 
     context '#set_description' do
       subject { instance.set_description(name, opts) }
-      let(:name) { 'Ethernet1' }
 
-      describe 'configure interface description' do
-        let(:value) { "this is a test" }
-        let(:opts) { {value: value} }
-        let(:commands) { ["interface #{name}", "description #{value}"]}
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
-      end
+      let(:opts) { {value: value, default: default} }
+      let(:default) { false }
+      let(:value) { nil }
 
-      describe 'configure default interface description' do
-        let(:opts) { {default: true} }
-        let(:commands) { ["interface #{name}", "default description"]}
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
-      end
+      %w(Ethernet1 Ethernet1/1).each do |intf|
+        describe "configure interface description for #{intf}" do
+          let(:name) { intf }
+          let(:value) { "this is a test" }
+          let(:commands) { ["interface #{name}", "description #{value}"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
 
-      describe 'configure no interface description' do
-        let(:opts) { {} }
-        let(:commands) { ["interface #{name}", "no description"] }
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
+        describe "configure default interface description #{intf}" do
+          let(:name) { intf }
+          let(:default) { true }
+          let(:commands) { ["interface #{name}", "default description"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
+
+        describe "configure no interface description for #{intf}" do
+          let(:name) { intf }
+          let(:commands) { ["interface #{name}", "no description"] }
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
       end
     end
 
     context '#set_shutdown' do
       subject { instance.set_shutdown(name, opts) }
-      let(:name) { 'Ethernet1' }
 
-      describe 'configure interface enabled' do
-        let(:value) { true }
-        let(:opts) { {value: value} }
-        let(:commands) { ["interface #{name}", "no shutdown"]}
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
-      end
+      let(:opts) { {value: value, default: default} }
+      let(:default) { false }
+      let(:value) { nil }
 
-      describe 'configure default interface enabled' do
-        let(:opts) { {default: true} }
-        let(:commands) { ["interface #{name}", "default shutdown"]}
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
-      end
+      %w(Ethernet1 Ethernet1/1).each do |intf|
+        describe "configure shutdown=false for #{intf}" do
+          let(:name) { intf }
+          let(:value) { false }
+          let(:commands) { ["interface #{name}", "no shutdown"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
 
-      describe 'configure interface disabled' do
-        let(:opts) { { value: false } }
-        let(:commands) { ["interface #{name}", "shutdown"] }
-        let(:response) { [{}, {}] }
-        it { is_expected.to be_truthy }
+        describe "configure shutdown=true for #{intf}" do
+          let(:name) { intf }
+          let(:value) { true }
+          let(:commands) { ["interface #{name}", "shutdown"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
+
+        describe 'configure default interface shutdown' do
+          let(:name) { intf }
+          let(:default) { true }
+          let(:commands) { ["interface #{name}", "default shutdown"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
+
+        describe "negate interface shutdown for #{intf}" do
+          let(:name) { intf }
+          let(:commands) { ["interface #{name}", "no shutdown"]}
+          let(:response) { [{}, {}] }
+          it { is_expected.to be_truthy }
+        end
       end
     end
 
     context '#set_flowcontrol' do
       subject { instance.set_flowcontrol(name, direction, opts) }
-      let(:name) { 'Ethernet1' }
 
-      context 'when configuring flowcontrol tx options' do
-        let(:direction) { 'send' }
+      let(:opts) { {value: value, default: default} }
+      let(:default) { false }
+      let(:value) { nil }
 
-        describe 'configure flowcontrol values' do
-          ['on', 'off', 'desired'].each do |value|
-            let(:opts) { {value: value} }
+      %w(Ethernet1 Ethernet1/1).each do |intf|
+        %w(send receive).each do |direction|
+          %w(on off desired).each do |state|
+            describe "configure flowcontrol on interface" do
+              let(:name) { intf }
+              let(:direction) { direction }
+              let(:value) { state }
+              let(:commands) { ["interface #{name}",
+                                "flowcontrol #{direction} #{state}"] }
+              let(:response) { [{}, {}] }
+
+              it { is_expected.to be_truthy }
+            end
+          end
+
+          describe "configuring flowcontrol default" do
+            let(:name) { intf }
+            let(:direction) { direction }
+            let(:default) { true }
             let(:commands) { ["interface #{name}",
-                              "flowcontrol send #{value}"]}
+                            "default flowcontrol #{direction}"] }
             let(:response) { [{}, {}] }
+
             it { is_expected.to be_truthy }
           end
-        end
 
-        describe 'configure flowcontrol as default' do
-          let(:opts) { {default: true} }
-          let(:commands) { ["interface #{name}", "default flowcontrol send"]}
-          let(:response) { [{}, {}] }
-          it { is_expected.to be_truthy }
-        end
-      end
-
-      context 'when configuring flowcontrol rx options' do
-        let(:direction) { 'receive' }
-
-        describe 'configure flowcontrol values' do
-          ['on', 'off', 'desired'].each do |value|
-            let(:opts) { {value: value} }
+          describe "negating flowcontrol" do
+            let(:name) { intf }
+            let(:direction) { direction }
             let(:commands) { ["interface #{name}",
-                              "flowcontrol receive #{value}"]}
+                            "no flowcontrol #{direction}"] }
             let(:response) { [{}, {}] }
+
             it { is_expected.to be_truthy }
           end
-        end
-
-        describe 'configure flowcontrol as default' do
-          let(:opts) { {default: true} }
-          let(:commands) { ["interface #{name}", "default flowcontrol receive"]}
-          let(:response) { [{}, {}] }
-          it { is_expected.to be_truthy }
         end
       end
     end

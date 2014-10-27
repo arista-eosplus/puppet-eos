@@ -68,8 +68,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     describe '.instances' do
       subject { described_class.instances }
 
-      binding.pry
-
       it { is_expected.to be_an Array }
 
       it 'has two entries' do
