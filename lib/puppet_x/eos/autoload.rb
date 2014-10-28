@@ -36,5 +36,6 @@ module PuppetX
     autoload :Daemon, 'puppet_x/eos/modules/daemon'
     autoload :Interface, 'puppet_x/eos/modules/interface'
     autoload :Switchport, 'puppet_x/eos/modules/switchport'
+    autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
   end
 end
