@@ -1,0 +1,21 @@
+[
+   {
+      "localInterface": "Vlan4094",
+      "domainId": "foo",
+      "peerLink": "Ethernet7",
+      "localIntfStatus": "lowerLayerDown",
+      "peerAddress": "11.11.11.1",
+      "portsErrdisabled": false,
+      "state": "disabled",
+      "reloadDelay": 300,
+      "reloadDelayNonMlag": 300,
+      "peerLinkStatus": "up",
+      "mlagPorts": {
+         "Disabled": 0,
+         "Active-partial": 0,
+         "Inactive": 0,
+         "Configured": 0,
+         "Active-full": 0
+      }
+   }
+]

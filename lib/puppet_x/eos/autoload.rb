@@ -39,5 +39,6 @@ module PuppetX
     autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
     autoload :Snmp, 'puppet_x/eos/modules/snmp'
     autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
+    autoload :Mlag, 'puppet_x/eos/modules/mlag'
   end
 end
