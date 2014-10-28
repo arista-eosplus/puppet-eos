@@ -44,7 +44,7 @@ Puppet::Type.newtype(:eos_ntp) do
 
   # Properties (state management)
 
-  newproperty(:source) do
+  newproperty(:source_interface) do
     desc 'Configures an interface as the source of NTP packets'
 
     validate do |value|
