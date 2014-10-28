@@ -63,6 +63,28 @@ describe PuppetX::Eos::Mlag do
         it { is_expected.to be_a_kind_of Hash }
       end
     end
+
+    context '#get_interfaces' do
+      subject { instance.get_interfaces }
+
+      let(:commands) { 'show mlag interfaces' }
+
+      let :api_response do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/mlag_get_interfaces.json')
+        JSON.load(File.read(file))
+      end
+
+      it { is_expected.to be_a_kind_of Array }
+
+      it 'has only one entry' do
+        expect(subject.size).to eq 1
+      end
+
+      it 'has includes key interfaces' do
+        expect(subject[0]).to have_key 'interfaces'
+      end
+    end
   end
 
   context 'with Eapi#config' do
@@ -70,6 +92,33 @@ describe PuppetX::Eos::Mlag do
       allow(eapi).to receive(:config)
         .with(commands)
         .and_return(api_response)
+    end
+
+    context '#add_interface' do
+      subject { instance.add_interface(name, mlag_id) }
+
+      let(:name) { 'Port-Channel1' }
+      let(:mlag_id) { 1 }
+      let(:commands) { ["interface #{name}", "mlag #{mlag_id}"] }
+
+      describe 'using mlag id 1' do
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context '#remove_interface' do
+      subject { instance.remove_interface(name) }
+
+      let(:name) { 'Port-Channel1' }
+      let(:commands) { ["interface #{name}", "no mlag"] }
+
+      describe 'delete from mlag' do
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     context '#set_domain_id' do

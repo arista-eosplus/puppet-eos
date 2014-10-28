@@ -65,7 +65,7 @@ module PuppetX
       #
       # @return [Array<Hash>] returns a Hash of attributes derived from eAPI
       def get
-        result =  @api.enable('show mlag')
+        result = @api.enable('show mlag')
         attr_hash = {
           domain_id: result[0]['domainId'],
           peer_link: result[0]['peerLink'],
@@ -74,6 +74,35 @@ module PuppetX
           enable: result[0]['state'] == 'disabled' ? :false : :true
         }
         attr_hash
+      end
+
+      ##
+      # Retrieves the interfaces that are mlag enabled from the running-config
+      #
+      # @return [Array<Hash>] returns an Array of Hashes keyed by the mlag id
+      def get_interfaces
+        @api.enable('show mlag interfaces')
+      end
+
+      ##
+      # Adds a new interface to the MLAG domain with specified Mlag id
+      #
+      # @param [String] name The name of the interface to add
+      # @param [String] id The MLAG ID to assign to the interface
+      #
+      # @return [Boolean] True if the command succeeds otherwise False
+      def add_interface(name, id)
+        return @api.config(["interface #{name}", "mlag #{id}"]) == [{}, {}]
+      end
+
+      ##
+      # Removes a previously configured interface from the Mlag domain
+      #
+      # @param [String] name The name of the interface to remove
+      #
+      # @return [Boolean] True if the command succeeds otherwise False
+      def remove_interface(name)
+        return @api.config(["interface #{name}", "no mlag"]) == [{},  {}]
       end
 
       ##
