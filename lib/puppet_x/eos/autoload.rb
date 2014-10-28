@@ -40,5 +40,6 @@ module PuppetX
     autoload :Snmp, 'puppet_x/eos/modules/snmp'
     autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
     autoload :Mlag, 'puppet_x/eos/modules/mlag'
+    autoload :Ntp, 'puppet_x/eos/modules/ntp'
   end
 end
