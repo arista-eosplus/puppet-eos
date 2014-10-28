@@ -47,8 +47,8 @@ describe Puppet::Type.type(:eos_ntp) do
     include_examples '#doc Documentation'
   end
 
-  describe 'source' do
-    let(:attribute) { :source }
+  describe 'source_interface' do
+    let(:attribute) { :source_interface }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
