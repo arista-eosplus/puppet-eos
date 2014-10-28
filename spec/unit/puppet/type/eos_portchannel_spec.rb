@@ -47,15 +47,6 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples '#doc Documentation'
   end
 
-  describe 'channel' do
-    let(:attribute) { :channel }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'channel group id value'
-  end
-
   describe 'lacp_mode' do
     let(:attribute) { :lacp_mode }
     subject { described_class.attrclass(attribute) }

@@ -44,22 +44,6 @@ Puppet::Type.newtype(:eos_portchannel) do
 
   # Properties (state management)
 
-  newproperty(:channel) do
-    desc 'Specifies the channel group identifier'
-
-    # Validate each value is a valid channel group id
-    validate do |value|
-      unless value.between?(1, 1000)
-        fail 'value #{value.inspect} is not between 1 and 1000'
-      end
-    end
-
-    # Make sure we have a string for the ID
-    munge do |value|
-      Integer(value).to_s
-    end
-  end
-
   newproperty(:lacp_mode) do
     desc 'Specifies the interface LACP mode'
     newvalues(:active, :passive, :off)
