@@ -77,8 +77,8 @@ describe Puppet::Type.type(:eos_switchport) do
     include_examples 'vlan id value'
   end
 
-  describe 'native_vlan' do
-    let(:attribute) { :native_vlan }
+  describe 'access_vlan' do
+    let(:attribute) { :access_vlan }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'

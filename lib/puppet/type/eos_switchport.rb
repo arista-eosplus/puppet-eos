@@ -85,8 +85,8 @@ Puppet::Type.newtype(:eos_switchport) do
     end
   end
 
-  newproperty(:native_vlan) do
-    desc 'Specifies the native VLAN'
+  newproperty(:access_vlan) do
+    desc 'Specifies the access VLAN'
 
     # Make sure we have a string for the ID
     munge do |value|
