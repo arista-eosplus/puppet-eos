@@ -50,6 +50,19 @@ Puppet::Type.newtype(:eos_mlag) do
 
   # Properties (state management)
 
+  newproperty(:domain_id) do
+    desc 'Specifies MLAG domain ID for the running configuration'
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
+
   newproperty(:local_interface) do
     desc 'Specifies the VLAN of the SVI upon which the switch sends '\
          'MLAG control traffic.'

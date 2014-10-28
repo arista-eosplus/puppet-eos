@@ -49,6 +49,15 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
+  describe 'domain_id' do
+    let(:attribute) { :domain_id }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'rejects values', [[1], { two: :three }]
+  end
+
   describe 'local_interface' do
     let(:attribute) { :local_interface }
     subject { described_class.attrclass(attribute) }
