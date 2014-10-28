@@ -37,5 +37,6 @@ module PuppetX
     autoload :Interface, 'puppet_x/eos/modules/interface'
     autoload :Switchport, 'puppet_x/eos/modules/switchport'
     autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
+    autoload :Snmp, 'puppet_x/eos/modules/snmp'
   end
 end

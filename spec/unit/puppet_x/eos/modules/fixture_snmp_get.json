@@ -1,0 +1,14 @@
+[
+      {
+         "output": "Chassis: foo\n"
+      },
+      {
+         "output": "Location: bar\n"
+      },
+      {
+         "output": "Chassis: my chassis\n"
+      },
+      {
+         "output": "SNMP source interface: Loopback0\n"
+      }
+   ]
