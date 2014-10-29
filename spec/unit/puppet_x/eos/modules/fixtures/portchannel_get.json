@@ -1,0 +1,54 @@
+[
+   {
+   "interfaces": {
+      "Port-Channel1": {
+         "lastStatusChangeTimestamp": 1414437956.54,
+         "name": "Port-Channel1",
+         "interfaceStatus": "connected",
+         "memberInterfaces": {
+            "Ethernet2": {
+               "duplex": "duplexFull",
+               "bandwidth": 10000000000
+            },
+            "Ethernet1": {
+               "duplex": "duplexFull",
+               "bandwidth": 10000000000
+            }
+         },
+         "fallbackEnabled": false,
+         "mtu": 9214,
+         "hardware": "portChannel",
+         "bandwidth": 20000000000,
+         "forwardingModel": "bridged",
+         "lineProtocolStatus": "up",
+         "interfaceCounters": {
+            "outBroadcastPkts": 0,
+            "linkStatusChanges": 2,
+            "totalOutErrors": 0,
+            "inMulticastPkts": 20,
+            "counterRefreshTime": 1414445484.92,
+            "inBroadcastPkts": 32,
+            "outOctets": 550848,
+            "outDiscards": 0,
+            "inOctets": 10218,
+            "inUcastPkts": 0,
+            "outUcastPkts": 0,
+            "outMulticastPkts": 4208,
+            "totalInErrors": 0,
+            "inDiscards": 0
+         },
+         "fallbackEnabledType": "fallbackNone",
+         "interfaceStatistics": {
+            "inBitsRate": 22.574270092,
+            "outBitsRate": 582.010233821,
+            "inPktsRate": 0.0156000789598,
+            "updateInterval": 300,
+            "outPktsRate": 0.55693078184
+         },
+         "interfaceAddress": [],
+         "physicalAddress": "00:50:56:3f:0c:0b",
+         "description": ""
+      }
+      }
+   }
+]
