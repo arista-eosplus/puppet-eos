@@ -57,6 +57,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
   # Stub the Api method class to obtain all interfaces.
   before :each do
+    allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Interface)
     allow(described_class.eapi.Interface).to receive(:get)

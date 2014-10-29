@@ -42,7 +42,7 @@ module PuppetX
     #
     class Interface
       ##
-      # Initialize innstance of Interface
+      # Initialize instance of Interface
       #
       # @param [PuppetX::Eos::Eapi] api An instance of Eapi
       #
