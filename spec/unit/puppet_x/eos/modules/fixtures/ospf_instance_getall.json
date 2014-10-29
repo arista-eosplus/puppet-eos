@@ -1,0 +1,58 @@
+[
+   {
+      "vrfs": {
+         "default": {
+            "instList": {
+               "1": {
+                  "asbr": false,
+                  "lsaInformation": {
+                     "numLsa": 0,
+                     "lsaStartInterval": 1000,
+                     "lsaMaxWaitInterval": 5000,
+                     "lsaHoldInterval": 5000,
+                     "lsaArrivalInterval": 1000
+                  },
+                  "numAreas": 0,
+                  "externalLsaInformation": {
+                     "asExternalCksum": 0,
+                     "treeSize": 0
+                  },
+                  "instanceId": 1,
+                  "ecmpMaximumNexthops": 16,
+                  "numStubAreas": 0,
+                  "adjacencyExchangeStartThreshold": 20,
+                  "routerId": "1.1.1.1",
+                  "abr": false,
+                  "numNormalAreas": 0,
+                  "maxLsaInformation": {
+                     "maxLsaCurrentIgnoreCount": 0,
+                     "maxLsaThreshold": 75,
+                     "maxLsaIgnoring": false,
+                     "maxLsaAllowedIgnoreCount": 5,
+                     "maxLsa": 12000,
+                     "maxLsaResetTime": 5,
+                     "maxLsaIgnoreTime": 5
+                  },
+                  "spfInformation": {
+                     "spfStartInterval": 0,
+                     "spfMaxWaitInterval": 5000,
+                     "spfCurrHoldInterval": 5000,
+                     "spfHoldInterval": 5000,
+                     "spfInterval": 5000,
+                     "lastSpf": 19086,
+                     "nextSpf": 0
+                  },
+                  "vrf": "default",
+                  "numNssaAreas": 0,
+                  "opaqueLsaInformation": {
+                     "opaqueTreeSize": 0,
+                     "opaque": true,
+                     "opaqueCksum": 0
+                  },
+                  "areaList": {}
+               }
+            }
+         }
+      }
+   }
+]

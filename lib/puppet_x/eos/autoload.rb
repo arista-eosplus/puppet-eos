@@ -41,5 +41,6 @@ module PuppetX
     autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
     autoload :Mlag, 'puppet_x/eos/modules/mlag'
     autoload :Ntp, 'puppet_x/eos/modules/ntp'
+    autoload :Ospf, 'puppet_x/eos/modules/ospf'
   end
 end
