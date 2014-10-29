@@ -55,7 +55,7 @@ describe PuppetX::Eos::Vxlan do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixture_vxlan_get.json')
+        file = File.join(dir, 'fixtures/vxlan_get.json')
         JSON.load(File.read(file))
       end
 
@@ -83,7 +83,7 @@ describe PuppetX::Eos::Vxlan do
     context '#create' do
       subject { instance.create }
 
-      let(:commands) { "interface vxlan 1" }
+      let(:commands) { 'interface vxlan 1' }
 
       describe 'a new instance of vxlan' do
         let(:api_response) { [{}] }
@@ -95,7 +95,7 @@ describe PuppetX::Eos::Vxlan do
     context '#delete' do
       subject { instance.delete }
 
-      let(:commands) { "no interface vxlan 1" }
+      let(:commands) { 'no interface vxlan 1' }
 
       describe 'a configured instance of vxlan' do
         let(:api_response) { [{}] }
@@ -107,7 +107,7 @@ describe PuppetX::Eos::Vxlan do
     context '#default' do
       subject { instance.default }
 
-      let(:commands) { "default interface vxlan 1" }
+      let(:commands) { 'default interface vxlan 1' }
 
       describe 'a configured instance of vxlan' do
         let(:api_response) { [{}] }
@@ -123,29 +123,29 @@ describe PuppetX::Eos::Vxlan do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to interface loopback 0" do
+      describe 'to interface loopback 0' do
         let(:value) { 'loopback 0' }
         let(:commands) { ['interface vxlan 1',
                           'vxlan source-interface loopback 0'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "to negate vxlan source-interface" do
+      describe 'to negate vxlan source-interface' do
         let(:commands) { ['interface vxlan 1', 'no vxlan source-interface'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default state vxlan source-interface" do
+      describe 'default state vxlan source-interface' do
         let(:default) { true }
         let(:commands) { ['interface vxlan 1',
                           'default vxlan source-interface'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -156,29 +156,28 @@ describe PuppetX::Eos::Vxlan do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to mulitcast address 239.10.10.10" do
+      describe 'to mulitcast address 239.10.10.10' do
         let(:value) { '239.10.10.10' }
         let(:commands) { ['interface vxlan 1',
                           'vxlan multicast-group 239.10.10.10'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "to negate vxlan multicast-group" do
+      describe 'to negate vxlan multicast-group' do
         let(:commands) { ['interface vxlan 1', 'no vxlan multicast-group'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default state vxlan multicast-group" do
+      describe 'default state vxlan multicast-group' do
         let(:default) { true }
-        let(:commands) { ['interface vxlan 1',
-                          'default vxlan multicast-group'] }
+        let(:commands) { ['interface vxlan 1', 'default vxlan multicast-group'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
   end

@@ -109,7 +109,7 @@ describe PuppetX::Eos::Ntp do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to loopback 0" do
+      describe 'to loopback 0' do
         let(:value) { 'Loopback 0' }
         let(:commands) { "ntp source #{value}" }
         let(:api_response) { [{}] }
@@ -117,19 +117,19 @@ describe PuppetX::Eos::Ntp do
         it { is_expected.to be_truthy }
       end
 
-      describe "to negate ntp source interface" do
-        let(:commands) { "no ntp source" }
+      describe 'to negate ntp source interface' do
+        let(:commands) { 'no ntp source' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default ntp source interface" do
+      describe 'default ntp source interface' do
         let(:default) { true }
-        let(:commands) { "default ntp source" }
+        let(:commands) { 'default ntp source' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
   end

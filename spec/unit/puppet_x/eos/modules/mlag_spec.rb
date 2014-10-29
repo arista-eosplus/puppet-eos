@@ -112,7 +112,7 @@ describe PuppetX::Eos::Mlag do
       subject { instance.remove_interface(name) }
 
       let(:name) { 'Port-Channel1' }
-      let(:commands) { ["interface #{name}", "no mlag"] }
+      let(:commands) { ["interface #{name}", 'no mlag'] }
 
       describe 'delete from mlag' do
         let(:api_response) { [{}, {}] }
@@ -128,7 +128,7 @@ describe PuppetX::Eos::Mlag do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to foo" do
+      describe 'to foo' do
         let(:value) { 'foo' }
         let(:commands) { ['mlag configuration', 'domain-id foo'] }
         let(:api_response) { [{}, {}] }
@@ -136,19 +136,19 @@ describe PuppetX::Eos::Mlag do
         it { is_expected.to be_truthy }
       end
 
-      describe "to negate mlag domain-id" do
+      describe 'to negate mlag domain-id' do
         let(:commands) { ['mlag configuration', 'no domain-id'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default mlag domain-id" do
+      describe 'default mlag domain-id' do
         let(:default) { true }
         let(:commands) { ['mlag configuration', 'default domain-id'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -159,27 +159,27 @@ describe PuppetX::Eos::Mlag do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to value vlan 4094" do
+      describe 'to value vlan 4094' do
         let(:value) { 'Vlan 4094' }
         let(:commands) { ['mlag configuration', 'local-interface Vlan 4094'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "to negate mlag local-interface" do
+      describe 'to negate mlag local-interface' do
         let(:commands) { ['mlag configuration', 'no local-interface'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default mlag local-interface" do
+      describe 'default mlag local-interface' do
         let(:default) { true }
         let(:commands) { ['mlag configuration', 'default local-interface'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -190,27 +190,27 @@ describe PuppetX::Eos::Mlag do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to value 10.10.10.10" do
+      describe 'to value 10.10.10.10' do
         let(:value) { '10.10.10.10' }
         let(:commands) { ['mlag configuration', 'peer-address 10.10.10.10'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "to negate mlag peer-address" do
+      describe 'to negate mlag peer-address' do
         let(:commands) { ['mlag configuration', 'no peer-address'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default mlag peer-address" do
+      describe 'default mlag peer-address' do
         let(:default) { true }
         let(:commands) { ['mlag configuration', 'default peer-address'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -221,22 +221,22 @@ describe PuppetX::Eos::Mlag do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "to value Port-Channel 100" do
+      describe 'to value Port-Channel 100' do
         let(:value) { 'Port-Channel 100' }
         let(:commands) { ['mlag configuration', 'peer-link Port-Channel 100'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "to negate mlag peer-link" do
+      describe 'to negate mlag peer-link' do
         let(:commands) { ['mlag configuration', 'no peer-link'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default mlag peer-link" do
+      describe 'default mlag peer-link' do
         let(:default) { true }
         let(:commands) { ['mlag configuration', 'default peer-link'] }
         let(:api_response) { [{}, {}] }
@@ -252,29 +252,29 @@ describe PuppetX::Eos::Mlag do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure shutdown=false" do
+      describe 'configure shutdown=false' do
         let(:value) { false }
-        let(:commands) { ["mlag configuration", "no shutdown"] }
+        let(:commands) { ["mlag configuration", 'no shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
-      describe "configure shutdown=true" do
+      describe 'configure shutdown=true' do
         let(:value) { true }
-        let(:commands) { ["mlag configuration", "shutdown"] }
+        let(:commands) { ["mlag configuration", 'shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'configure default interface shutdown' do
         let(:default) { true }
-        let(:commands) { ["mlag configuration", "default shutdown"] }
+        let(:commands) { ["mlag configuration", 'default shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
-      describe "negate interface shutdown" do
-        let(:commands) { ["mlag configuration", "no shutdown"] }
+      describe 'negate interface shutdown' do
+        let(:commands) { ["mlag configuration", 'no shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end

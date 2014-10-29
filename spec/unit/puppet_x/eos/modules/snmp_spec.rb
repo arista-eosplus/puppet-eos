@@ -58,7 +58,7 @@ describe PuppetX::Eos::Snmp do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixture_snmp_get.json')
+        file = File.join(dir, 'fixtures/snmp_get.json')
         JSON.load(File.read(file))
       end
 
@@ -87,22 +87,22 @@ describe PuppetX::Eos::Snmp do
         let(:commands) { "snmp contact #{value}" }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "negate snmp contact" do
+      describe 'negate snmp contact' do
         let(:commands) { 'no snmp contact' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default snmp contact" do
+      describe 'default snmp contact' do
         let(:default) { true }
         let(:commands) { 'default snmp contact' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -113,27 +113,27 @@ describe PuppetX::Eos::Snmp do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure snmp location" do
+      describe 'configure snmp location' do
         let(:value) { 'foo' }
         let(:commands) { "snmp location #{value}" }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "negate snmp location" do
+      describe 'negate snmp location' do
         let(:commands) { 'no snmp location' }
         let(:api_response) { [{}] }
 
         it {is_expected.to be_truthy }
       end
 
-      describe "default snmp location" do
+      describe 'default snmp location' do
         let(:default) { true }
         let(:commands) { 'default snmp location' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -144,27 +144,27 @@ describe PuppetX::Eos::Snmp do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure snmp chassis id" do
+      describe 'configure snmp chassis id' do
         let(:value) { 'foo' }
         let(:commands) { "snmp chassis #{value}" }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "negate snmp chassis id" do
+      describe 'negate snmp chassis id' do
         let(:commands) { 'no snmp chassis' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default snmp chassis id" do
+      describe 'default snmp chassis id' do
         let(:default) { true }
         let(:commands) { 'default snmp chassis' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -175,27 +175,27 @@ describe PuppetX::Eos::Snmp do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure snmp source-interface" do
+      describe 'configure snmp source-interface' do
         let(:value) { 'Loopback0' }
         let(:commands) { "snmp source-interface #{value}" }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "negate snmp source-interface" do
+      describe 'negate snmp source-interface' do
         let(:commands) { 'no snmp source-interface' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default snmp source-interface" do
+      describe 'default snmp source-interface' do
         let(:default) { true }
         let(:commands) { 'default snmp source-interface' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
   end

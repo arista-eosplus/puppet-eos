@@ -55,7 +55,7 @@ describe PuppetX::Eos::Daemon do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixture_daemon_getall.json')
+        file = File.join(dir, 'fixtures/daemon_getall.json')
         JSON.load(File.read(file))
       end
 
@@ -91,7 +91,7 @@ describe PuppetX::Eos::Daemon do
         let(:name) { 'foo' }
         let(:command) { '/path/to/foo' }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 

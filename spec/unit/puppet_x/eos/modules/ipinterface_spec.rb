@@ -55,7 +55,7 @@ describe PuppetX::Eos::Ipinterface do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixture_ipinterface_getall.json')
+        file = File.join(dir, 'fixtures/ipinterface_getall.json')
         JSON.load(File.read(file))
       end
 
@@ -83,7 +83,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#create' do
       subject { instance.create(name) }
 
-      let(:commands) { ["interface #{name}", "no switchport"] }
+      let(:commands) { ["interface #{name}", 'no switchport'] }
 
       describe 'logical ip interface' do
         let(:name) { 'Ethernet1' }
@@ -96,7 +96,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#delete' do
       subject { instance.delete(name) }
 
-      let(:commands) { ["interface #{name}", "no ip address"] }
+      let(:commands) { ["interface #{name}", 'no ip address'] }
 
       describe 'logical ip address' do
         let(:name) { 'Ethernet1' }
@@ -113,30 +113,30 @@ describe PuppetX::Eos::Ipinterface do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "with valid address and mask" do
+      describe 'with valid address and mask' do
         let(:name) { 'Ethernet1' }
         let(:value) { '10.10.10.10/24' }
         let(:commands) { ["interface #{name}", "ip address #{value}"] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "negate address for interface" do
+      describe 'negate address for interface' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ["interface #{name}", "no ip address"] }
+        let(:commands) { ["interface #{name}", 'no ip address'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
-      describe "default address for interface" do
+      describe 'default address for interface' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
-        let(:commands) { ["interface #{name}", "default ip address"] }
+        let(:commands) { ["interface #{name}", 'default ip address'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
   end

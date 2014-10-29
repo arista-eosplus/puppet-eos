@@ -56,7 +56,7 @@ describe PuppetX::Eos::Interface do
 
         let :api_response do
           dir = File.dirname(__FILE__)
-          file = File.join(dir, 'fixture_interface_getall.json')
+          file = File.join(dir, 'fixtures/interface_getall.json')
           JSON.load(File.read(file))
         end
 
@@ -165,7 +165,7 @@ describe PuppetX::Eos::Interface do
       %w(Ethernet1 Ethernet1/1).each do |intf|
         describe "configure interface description for #{intf}" do
           let(:name) { intf }
-          let(:value) { "this is a test" }
+          let(:value) { 'this is a test' }
           let(:commands) { ["interface #{name}", "description #{value}"]}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
@@ -174,14 +174,14 @@ describe PuppetX::Eos::Interface do
         describe "configure default interface description #{intf}" do
           let(:name) { intf }
           let(:default) { true }
-          let(:commands) { ["interface #{name}", "default description"]}
+          let(:commands) { ["interface #{name}", 'default description']}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
 
         describe "configure no interface description for #{intf}" do
           let(:name) { intf }
-          let(:commands) { ["interface #{name}", "no description"] }
+          let(:commands) { ["interface #{name}", 'no description'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -199,7 +199,7 @@ describe PuppetX::Eos::Interface do
         describe "configure shutdown=false for #{intf}" do
           let(:name) { intf }
           let(:value) { false }
-          let(:commands) { ["interface #{name}", "no shutdown"]}
+          let(:commands) { ["interface #{name}", 'no shutdown']}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -207,7 +207,7 @@ describe PuppetX::Eos::Interface do
         describe "configure shutdown=true for #{intf}" do
           let(:name) { intf }
           let(:value) { true }
-          let(:commands) { ["interface #{name}", "shutdown"]}
+          let(:commands) { ["interface #{name}", 'shutdown']}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -215,14 +215,14 @@ describe PuppetX::Eos::Interface do
         describe 'configure default interface shutdown' do
           let(:name) { intf }
           let(:default) { true }
-          let(:commands) { ["interface #{name}", "default shutdown"]}
+          let(:commands) { ["interface #{name}", 'default shutdown']}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
 
         describe "negate interface shutdown for #{intf}" do
           let(:name) { intf }
-          let(:commands) { ["interface #{name}", "no shutdown"]}
+          let(:commands) { ["interface #{name}", 'no shutdown']}
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -239,7 +239,7 @@ describe PuppetX::Eos::Interface do
       %w(Ethernet1 Ethernet1/1).each do |intf|
         %w(send receive).each do |direction|
           %w(on off desired).each do |state|
-            describe "configure flowcontrol on interface" do
+            describe 'configure flowcontrol on interface' do
               let(:name) { intf }
               let(:direction) { direction }
               let(:value) { state }
@@ -251,22 +251,22 @@ describe PuppetX::Eos::Interface do
             end
           end
 
-          describe "configuring flowcontrol default" do
+          describe 'configuring flowcontrol default' do
             let(:name) { intf }
             let(:direction) { direction }
             let(:default) { true }
             let(:commands) { ["interface #{name}",
-                            "default flowcontrol #{direction}"] }
+                             "default flowcontrol #{direction}"] }
             let(:response) { [{}, {}] }
 
             it { is_expected.to be_truthy }
           end
 
-          describe "negating flowcontrol" do
+          describe 'negating flowcontrol' do
             let(:name) { intf }
             let(:direction) { direction }
             let(:commands) { ["interface #{name}",
-                            "no flowcontrol #{direction}"] }
+                              "no flowcontrol #{direction}"] }
             let(:response) { [{}, {}] }
 
             it { is_expected.to be_truthy }

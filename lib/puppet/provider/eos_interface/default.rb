@@ -51,8 +51,8 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
       state = attrs['interfaceStatus'] == 'disabled' ? :false : :true
       provider_hash[:enable] = state
       provider_hash[:description] = attrs['description']
-      provider_hash[:flowcontrol_send] = flowcontrols[name]['txAdminState']
-      provider_hash[:flowcontorl_receive] = flowcontrols[name]['rxAdminState']
+      provider_hash[:flowcontrol_send] = flowcontrols[name]['txAdminState'].to_sym
+      provider_hash[:flowcontrol_receive] = flowcontrols[name]['rxAdminState'].to_sym
       new(provider_hash)
     end
   end
@@ -76,7 +76,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def enable=(val)
-    eapi.Interface.set_enable(resource[:name], val)
+    eapi.Interface.set_shutdown(resource[:name], value: val)
     @property_flush[:enable] = val
   end
 

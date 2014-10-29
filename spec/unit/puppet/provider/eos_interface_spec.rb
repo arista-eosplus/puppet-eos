@@ -39,8 +39,8 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       name: 'Ethernet1',
       description: 'test interface',
       enable: true,
-      flowcontrol_send: on,
-      flowcontrol_receive: off,
+      flowcontrol_send: :on,
+      flowcontrol_receive: :off,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_interface).new(resource_hash)
@@ -51,7 +51,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   def all_interfaces
     all_interfaces = Fixtures[:all_interfaces]
     return all_interfaces if all_interfaces
-    file = File.join(File.dirname(__FILE__), 'fixture_interface_get.json')
+    file = File.join(File.dirname(__FILE__), 'fixtures/interface_get.json')
     Fixtures[:all_interfaces] = JSON.load(File.read(file))
   end
 
@@ -75,7 +75,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         expect(subject.size).to eq(2)
       end
 
-      %w(Ethernet1, Management1).each do |name|
+      %w(Ethernet1 Management1).each do |name|
         it "has an instance for interface #{name}" do
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
@@ -124,31 +124,29 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        %w(Ethernet1, Management1).each do |intf|
+        %w(Ethernet1 Management1).each do |intf|
           expect(resources[intf].provider.name).to eq(intf)
         end
-      end
-
-      it 'does not set the provider instance of the unmanaged resource' do
-        subject
-          expect(resources['Ethernet2'].provider.name).to eq(:absent)
       end
     end
   end
 
   context 'resource (instance) methods' do
+    let(:eapi) { double }
+
     before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Interface)
+      allow(provider).to receive(:eapi).and_return(eapi)
+      allow(eapi).to receive(:Interface).and_return(eapi.Interface)
     end
 
     describe '#create' do
       before :each do
         allow(provider.eapi.Interface).to receive(:create)
+        allow(eapi.Interface).to receive(:set_shutdown)
       end
 
       it 'calls Interface#create(name) with the resource name' do
-        expect(provider.eapi.Interface).to receive(:create)
+        expect(eapi.Interface).to receive(:create)
           .with(provider.resource[:name])
         provider.create
       end

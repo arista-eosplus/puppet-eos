@@ -48,7 +48,7 @@ describe PuppetX::Eos::Extension do
 
     let :api_response do
       dir = File.dirname(__FILE__)
-      file = File.join(dir, 'fixture_extension_getall.json')
+      file = File.join(dir, 'fixtures/extension_getall.json')
       JSON.load(File.read(file))
     end
 

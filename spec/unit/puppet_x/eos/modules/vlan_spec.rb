@@ -55,7 +55,7 @@ describe PuppetX::Eos::Vlan do
 
       let :api_response do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixture_vlan_getall.json')
+        file = File.join(dir, 'fixtures/vlan_getall.json')
         JSON.load(File.read(file))
       end
 
@@ -144,12 +144,12 @@ describe PuppetX::Eos::Vlan do
           let(:commands) { ["vlan #{vlanid}", "name #{value}"] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
 
         describe "negate name for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
-          let(:commands) { ["vlan #{vlanid}", "no name"] }
+          let(:commands) { ["vlan #{vlanid}", 'no name'] }
           let(:api_response) { [{}, {}] }
 
           it {is_expected.to be_truthy }
@@ -158,10 +158,10 @@ describe PuppetX::Eos::Vlan do
         describe "default name for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
           let(:default) { true }
-          let(:commands) { ["vlan #{vlanid}", "default name"] }
+          let(:commands) { ["vlan #{vlanid}", 'default name'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
       end
     end
@@ -181,25 +181,25 @@ describe PuppetX::Eos::Vlan do
             let(:commands) { ["vlan #{vlanid}", "state #{value}"] }
             let(:api_response) { [{}, {}] }
 
-            it {is_expected.to be_truthy }
+            it { is_expected.to be_truthy }
           end
         end
 
         describe "negate state for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
-          let(:commands) { ["vlan #{vlanid}", "no state"] }
+          let(:commands) { ["vlan #{vlanid}", 'no state'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
 
         describe "default state for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
           let(:default) { true }
-          let(:commands) { ["vlan #{vlanid}", "default state"] }
+          let(:commands) { ["vlan #{vlanid}", 'default state'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
       end
     end
@@ -219,24 +219,24 @@ describe PuppetX::Eos::Vlan do
           let(:commands) { ["vlan #{vlanid}", "trunk group #{value}"] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
 
         describe "negate trunk group for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
-          let(:commands) { ["vlan #{vlanid}", "no trunk group"] }
+          let(:commands) { ["vlan #{vlanid}", 'no trunk group'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
 
         describe "default trunk group for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
           let(:default) { true }
-          let(:commands) { ["vlan #{vlanid}", "default trunk group"] }
+          let(:commands) { ["vlan #{vlanid}", 'default trunk group'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
       end
     end

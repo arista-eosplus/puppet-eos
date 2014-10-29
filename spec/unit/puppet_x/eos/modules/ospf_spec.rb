@@ -88,7 +88,7 @@ describe PuppetX::Eos::Ospf do
     context '#delete' do
       subject { instance.delete(name) }
 
-      describe "negate ospf instance id 1" do
+      describe 'negate ospf instance id 1' do
         let(:name) { '1' }
         let(:commands) { "no router ospf #{name}" }
         let(:api_response) { [{}] }
@@ -116,7 +116,7 @@ describe PuppetX::Eos::Ospf do
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure router id for ospf instance 1" do
+      describe 'configure router id for ospf instance 1' do
         let(:name) { '1' }
         let(:value) { '1.1.1.1' }
         let(:commands) { ["router ospf #{name}", "router-id #{value}"] }
@@ -124,17 +124,17 @@ describe PuppetX::Eos::Ospf do
         it { is_expected.to be_truthy }
       end
 
-      describe "default router id for ospf instance 1" do
+      describe 'default router id for ospf instance 1' do
         let(:name) { '1' }
         let(:default) { true }
-        let(:commands) { ["router ospf #{name}", "default router-id"] }
+        let(:commands) { ["router ospf #{name}", 'default router-id'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
-      describe "negate router id for ospf instance 1" do
+      describe 'negate router id for ospf instance 1' do
         let(:name) { '1' }
-        let(:commands) { ["router ospf #{name}", "no router-id"] }
+        let(:commands) { ["router ospf #{name}", 'no router-id'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
