@@ -251,40 +251,31 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
           provider.flowcontrol_send = val
         end
 
-        it 'updates flowcontrol_send in the provider' do
-          expect(provider.flowcontrol_send).not_to eq(val)
+        it 'updates flowcontrol_receive in the provider' do
+          expect(provider.flowcontrol_receive).not_to eq(val)
           provider.flowcontrol_send = val
           expect(provider.flowcontrol_send).to eq(val)
         end
       end
 
-      # describe '#flowcontrol_receive=(value)' do
-      #   context 'when value is :true' do
-      #     before :each do
-      #       allow(provider.eapi.Vlan).to receive(:set_state)
-      #         .with(id: provider.resource[:vlanid], value: 'active')
-      #     end
+      describe '#flowcontrol_receive=(value)' do
+        before :each do
+          allow(eapi).to receive(:set_flowcontrol)
+            .with(name, 'receive', value: val)
+        end
 
-      #     it 'calls Eapi#set_enable("100", "active")' do
-      #       expect(provider.eapi.Vlan).to receive(:set_state)
-      #         .with(id: provider.resource[:vlanid], value: 'active')
-      #       provider.enable = true
-      #     end
-      #   end
+        it "calls Interface#set_flowcontrol(#{name}, 'receive', #{val})" do
+          expect(eapi).to receive(:set_flowcontrol)
+            .with(name, 'receive', value: val)
+          provider.flowcontrol_receive = val
+        end
 
-      #   context 'when value is :false' do
-      #     before :each do
-      #       allow(provider.eapi.Vlan).to receive(:set_state)
-      #         .with(id: provider.resource[:vlanid], value: 'suspend')
-      #     end
-
-      #     it 'updates enable in the provider' do
-      #       expect(provider.enable).not_to be_falsey
-      #       provider.enable = false
-      #       expect(provider.enable).to be_falsey
-      #     end
-      #   end
-      # end
+        it 'updates flowcontrol_receive in the provider' do
+          expect(provider.flowcontrol_receive).not_to eq(val)
+          provider.flowcontrol_receive = val
+          expect(provider.flowcontrol_receive).to eq(val)
+        end
+      end
     end
   end
 end

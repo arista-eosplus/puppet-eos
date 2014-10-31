@@ -79,7 +79,7 @@ module PuppetX
       #
       # @return [Boolean] True if the commands succeed otherwise False
       def create(inst)
-        return @api.config("router ospf #{inst}") == [{}]
+        @api.config("router ospf #{inst}") == [{}]
       end
 
       ##
@@ -89,7 +89,7 @@ module PuppetX
       #
       # @return [Boolean] True if the commands succeed otherwise False
       def delete(inst)
-        return @api.config("no router ospf #{inst}") == [{}]
+        @api.config("no router ospf #{inst}") == [{}]
       end
 
       ##
@@ -99,7 +99,7 @@ module PuppetX
       #
       # @return [Boolean] True if the commands succeed otherwise False
       def default(inst)
-        return @api.config("default router ospf #{inst}") == [{}]
+        @api.config("default router ospf #{inst}") == [{}]
       end
 
       ##
@@ -120,7 +120,7 @@ module PuppetX
         when true
           cmds << 'default router-id'
         when false
-          cmds << (value ? "router-id #{value}" : "no router-id")
+          cmds << (value ? "router-id #{value}" : 'no router-id')
         end
         @api.config(cmds) == [{}, {}]
       end

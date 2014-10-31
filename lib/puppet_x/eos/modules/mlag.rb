@@ -92,7 +92,7 @@ module PuppetX
       #
       # @return [Boolean] True if the command succeeds otherwise False
       def add_interface(name, id)
-        return @api.config(["interface #{name}", "mlag #{id}"]) == [{}, {}]
+        @api.config(["interface #{name}", "mlag #{id}"]) == [{}, {}]
       end
 
       ##
@@ -102,7 +102,7 @@ module PuppetX
       #
       # @return [Boolean] True if the command succeeds otherwise False
       def remove_interface(name)
-        return @api.config(["interface #{name}", "no mlag"]) == [{},  {}]
+        @api.config(["interface #{name}", 'no mlag']) == [{},  {}]
       end
 
       ##
@@ -122,7 +122,7 @@ module PuppetX
         when true
           cmds << 'default domain-id'
         when false
-          cmds << (value ? "domain-id #{value}" : "no domain-id")
+          cmds << (value ? "domain-id #{value}" : 'no domain-id')
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -144,7 +144,7 @@ module PuppetX
         when true
           cmds << 'default peer-link'
         when false
-          cmds << (value ? "peer-link #{value}" : "no peer-link")
+          cmds << (value ? "peer-link #{value}" : 'no peer-link')
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -166,7 +166,7 @@ module PuppetX
         when true
           cmds << 'default peer-address'
         when false
-          cmds << (value ? "peer-address #{value}" : "no peer-address")
+          cmds << (value ? "peer-address #{value}" : 'no peer-address')
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -188,7 +188,7 @@ module PuppetX
         when true
           cmds << 'default local-interface'
         when false
-          cmds << (value ? "local-interface #{value}" : "no local-interface")
+          cmds << (value ? "local-interface #{value}" : 'no local-interface')
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -210,7 +210,7 @@ module PuppetX
         when true
           cmds << 'default shutdown'
         when false
-          cmds << (value ? 'shutdown' : "no shutdown")
+          cmds << (value ? 'shutdown' : 'no shutdown')
         end
         @api.config(cmds) == [{}, {}]
       end

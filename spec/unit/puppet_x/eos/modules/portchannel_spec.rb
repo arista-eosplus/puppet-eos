@@ -81,23 +81,23 @@ describe PuppetX::Eos::Portchannel do
     end
 
     context '#get_members' do
-        subject { instance.get_members(name) }
+      subject { instance.get_members(name) }
 
-        let(:name) { 'Port-Channel1' }
+      let(:name) { 'Port-Channel1' }
 
-        let :api_response do
-          dir = File.dirname(__FILE__)
-          file = File.join(dir, 'fixtures/portchannel_getmembers.json')
-          JSON.load(File.read(file))
-        end
+      let :api_response do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/portchannel_getmembers.json')
+        JSON.load(File.read(file))
+      end
 
-        before :each do
-          allow(eapi).to receive(:enable)
-            .with("show #{name} all-ports", format: 'text')
-            .and_return(api_response)
-        end
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with("show #{name} all-ports", format: 'text')
+          .and_return(api_response)
+      end
 
-        it { is_expected.to be_a_kind_of Array }
+      it { is_expected.to be_a_kind_of Array }
     end
   end
 
@@ -149,16 +149,14 @@ describe PuppetX::Eos::Portchannel do
     context '#add_member' do
       subject { instance.add_member(name, member) }
 
-      %w(active passive off).each do |mode|
-        describe 'to portchannel interface' do
-          let(:name) { 'Port-Channel1' }
-          let(:member) { 'Ethernet1' }
-          let(:commands) { ['interface Ethernet1', 'channel-group 1 mode on']}
+      describe 'to portchannel interface' do
+        let(:name) { 'Port-Channel1' }
+        let(:member) { 'Ethernet1' }
+        let(:commands) { ['interface Ethernet1', 'channel-group 1 mode on'] }
 
-          let(:api_response) { [{}, {}] }
+        let(:api_response) { [{}, {}] }
 
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -200,14 +198,12 @@ describe PuppetX::Eos::Portchannel do
         describe "configure lacp mode=#{mode}" do
           let(:name) { 'Port-Channel1' }
           let(:mode) { mode }
-          let(:commands) { ['interface Ethernet1',
-                            'no channel-group',
-                            'interface Ethernet2',
-                            'no channel-group',
-                            'interface Ethernet1',
-                            "channel-group 1 mode #{mode}",
-                            'interface Ethernet2',
-                            "channel-group 1 mode #{mode}"] }
+          let(:commands) do
+            ['interface Ethernet1', 'no channel-group',
+             'interface Ethernet2', 'no channel-group',
+             'interface Ethernet1', "channel-group 1 mode #{mode}",
+             'interface Ethernet2', "channel-group 1 mode #{mode}"]
+          end
           let(:config_response) { [{}, {}, {}, {}, {}, {}, {}, {}] }
 
           it { is_expected.to be_truthy }
@@ -218,7 +214,7 @@ describe PuppetX::Eos::Portchannel do
     context '#set_lacp_fallback' do
       subject { instance.set_lacp_fallback(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -226,8 +222,9 @@ describe PuppetX::Eos::Portchannel do
         describe "configure port-channel lacp fallback #{mode}" do
           let(:name) { 'Port-Channel1' }
           let(:value) { mode }
-          let(:commands) { ["interface #{name}",
-                            "port-channel lacp fallback #{value}"] }
+          let(:commands) do
+            ["interface #{name}", "port-channel lacp fallback #{value}"]
+          end
           let(:api_response) { [{}, {}] }
 
           it { is_expected.to be_truthy }
@@ -235,8 +232,9 @@ describe PuppetX::Eos::Portchannel do
 
         describe "negate port-channel lacp fallback #{mode}" do
           let(:name) { 'Port-Channel1' }
-          let(:commands) { ["interface #{name}",
-                            "no port-channel lacp fallback #{value}"] }
+          let(:commands) do
+            ["interface #{name}", "no port-channel lacp fallback #{value}"]
+          end
           let(:api_response) { [{}, {}] }
 
           it { is_expected.to be_truthy }
@@ -245,8 +243,9 @@ describe PuppetX::Eos::Portchannel do
         describe "default port-channel lacp fallback #{mode}" do
           let(:name) { 'Port-Channel1' }
           let(:default) { true }
-          let(:commands) { ["interface #{name}",
-                            "default port-channel lacp fallback"] }
+          let(:commands) do
+            ["interface #{name}", 'default port-channel lacp fallback']
+          end
           let(:api_response) { [{}, {}] }
 
           it { is_expected.to be_truthy }
@@ -257,15 +256,16 @@ describe PuppetX::Eos::Portchannel do
     context '#set_lacp_timeout' do
       subject { instance.set_lacp_timeout(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure portchannel lacp timeout" do
+      describe 'configure portchannel lacp timeout' do
         let(:name) { 'Port-Channel1' }
-        let(:value) { "100" }
-        let(:commands) { ["interface #{name}",
-                          "port-channel lacp fallback timeout #{value}"] }
+        let(:value) { '100' }
+        let(:commands) do
+          ["interface #{name}", "port-channel lacp fallback timeout #{value}"]
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -273,8 +273,9 @@ describe PuppetX::Eos::Portchannel do
 
       describe 'negate portchannel lacp timeout' do
         let(:name) { 'Port-Channel1' }
-        let(:commands) { ["interface #{name}",
-                          'no port-channel lacp fallback timeout'] }
+        let(:commands) do
+          ["interface #{name}", 'no port-channel lacp fallback timeout']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -283,8 +284,9 @@ describe PuppetX::Eos::Portchannel do
       describe 'default portchannel lacp timeout' do
         let(:name) { 'Port-Channel1' }
         let(:default) { true }
-        let(:commands) { ["interface #{name}",
-                          'default port-channel lacp fallback timeout'] }
+        let(:commands) do
+          ["interface #{name}", 'default port-channel lacp fallback timeout']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }

@@ -124,7 +124,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_domain_id' do
       subject { instance.set_domain_id(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -155,7 +155,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_local_interface' do
       subject { instance.set_local_interface(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -186,7 +186,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_peer_address' do
       subject { instance.set_peer_address(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -217,7 +217,7 @@ describe PuppetX::Eos::Mlag do
     context '#set_peer_link' do
       subject { instance.set_peer_link(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -241,40 +241,40 @@ describe PuppetX::Eos::Mlag do
         let(:commands) { ['mlag configuration', 'default peer-link'] }
         let(:api_response) { [{}, {}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
     end
 
     context '#set_shutdown' do
       subject { instance.set_shutdown(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
       describe 'configure shutdown=false' do
         let(:value) { false }
-        let(:commands) { ["mlag configuration", 'no shutdown'] }
+        let(:commands) { ['mlag configuration', 'no shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'configure shutdown=true' do
         let(:value) { true }
-        let(:commands) { ["mlag configuration", 'shutdown'] }
+        let(:commands) { ['mlag configuration', 'shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'configure default interface shutdown' do
         let(:default) { true }
-        let(:commands) { ["mlag configuration", 'default shutdown'] }
+        let(:commands) { ['mlag configuration', 'default shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end
 
       describe 'negate interface shutdown' do
-        let(:commands) { ["mlag configuration", 'no shutdown'] }
+        let(:commands) { ['mlag configuration', 'no shutdown'] }
         let(:api_response) { [{}, {}] }
         it { is_expected.to be_truthy }
       end

@@ -60,7 +60,7 @@ describe PuppetX::Eos::Ospf do
           JSON.load(File.read(file))
         end
 
-        it { is_expected.to be_a_kind_of Hash}
+        it { is_expected.to be_a_kind_of Hash }
         it { is_expected.to have_key :instances }
       end
     end
@@ -112,7 +112,7 @@ describe PuppetX::Eos::Ospf do
     context '#set_router_id' do
       subject { instance.set_router_id(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

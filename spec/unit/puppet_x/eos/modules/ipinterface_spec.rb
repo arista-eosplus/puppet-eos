@@ -109,7 +109,7 @@ describe PuppetX::Eos::Ipinterface do
     context '#set_address' do
       subject { instance.set_address(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

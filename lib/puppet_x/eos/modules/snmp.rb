@@ -103,7 +103,7 @@ module PuppetX
         when true
           cmds = 'default snmp contact'
         when false
-          cmds = (value ? "snmp contact #{value}" : "no snmp contact")
+          cmds = (value ? "snmp contact #{value}" : 'no snmp contact')
         end
         @api.config(cmds) == [{}]
       end
@@ -124,7 +124,7 @@ module PuppetX
         when true
           cmds = 'default snmp location'
         when false
-          cmds = (value ? "snmp location #{value}" : "no snmp location")
+          cmds = (value ? "snmp location #{value}" : 'no snmp location')
         end
         @api.config(cmds) == [{}]
       end
@@ -145,7 +145,7 @@ module PuppetX
         when true
           cmds = 'default snmp chassis'
         when false
-          cmds = (value ? "snmp chassis #{value}" : "no snmp chassis")
+          cmds = (value ? "snmp chassis #{value}" : 'no snmp chassis')
         end
         @api.config(cmds) == [{}]
       end
@@ -167,7 +167,7 @@ module PuppetX
           cmds = 'default snmp source-interface'
         when false
           cmds = (value ? "snmp source-interface #{value}" : \
-                          "no snmp source-interface")
+                          'no snmp source-interface')
         end
         @api.config(cmds) == [{}]
       end

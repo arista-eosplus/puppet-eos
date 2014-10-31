@@ -105,7 +105,7 @@ describe PuppetX::Eos::Ntp do
     context '#set_source_interface' do
       subject { instance.set_source_interface(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

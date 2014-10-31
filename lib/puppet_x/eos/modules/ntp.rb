@@ -82,7 +82,7 @@ module PuppetX
       #
       # @return [Boolean] True if the command succeeds otherwise False
       def add_server(name)
-        return @api.config("ntp server #{name}") == [{}]
+        @api.config("ntp server #{name}") == [{}]
       end
 
       ##
@@ -92,7 +92,7 @@ module PuppetX
       #
       # @return [Boolean] True if the command succeeds otherwise False
       def remove_server(name)
-        return @api.config("no ntp server #{name}") == [{}]
+        @api.config("no ntp server #{name}") == [{}]
       end
 
       ##
@@ -111,7 +111,7 @@ module PuppetX
         when true
           cmd = 'default ntp source'
         when false
-          cmd = (value ? "ntp source #{value}" : "no ntp source")
+          cmd = (value ? "ntp source #{value}" : 'no ntp source')
         end
         @api.config(cmd) == [{}]
       end

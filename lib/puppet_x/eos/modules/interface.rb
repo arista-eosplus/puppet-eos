@@ -63,7 +63,7 @@ module PuppetX
       #
       # @return [Array<Hash>] returns an Array of Hashes
       def getall
-        return @api.enable(['show interfaces', 'show interfaces flowcontrol'])
+        @api.enable(['show interfaces', 'show interfaces flowcontrol'])
       end
 
       ##
@@ -74,7 +74,7 @@ module PuppetX
       #
       # @return [Boolean] True if it succeeds otherwise False
       def default(name)
-        return @api.config("default interface #{name}") == [{}]
+        @api.config("default interface #{name}") == [{}]
       end
 
       ##
@@ -88,7 +88,7 @@ module PuppetX
       #   interface that already exists)
       def create(name)
         return false if name.match(/^[Et|Ma]/)
-        return @api.config("interface #{name}") == [{}]
+        @api.config("interface #{name}") == [{}]
       end
 
       ##
@@ -102,7 +102,7 @@ module PuppetX
       #   interface)
       def delete(name)
         return false if name.match(/^[Et|Ma]/)
-        return @api.config("no interface #{name}") == [{}]
+        @api.config("no interface #{name}") == [{}]
       end
 
       ##

@@ -90,8 +90,7 @@ module PuppetX
       # @return [Boolean] True if the commands succeed otherwise False
       def create(name, command)
         return false unless File.executable?(command)
-        return @api.config(["daemon #{name}",
-                            "command #{command}"]) == [{}, {}]
+        @api.config(["daemon #{name}", "command #{command}"]) == [{}, {}]
       end
 
       ##
@@ -103,7 +102,7 @@ module PuppetX
       # @return [Boolean] True if the operation was successful otherwise
       #   False
       def delete(name)
-        return @api.config("no daemon #{name}") == [{}]
+        @api.config("no daemon #{name}") == [{}]
       end
     end
   end

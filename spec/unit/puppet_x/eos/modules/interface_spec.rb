@@ -60,7 +60,7 @@ describe PuppetX::Eos::Interface do
           JSON.load(File.read(file))
         end
 
-        it { is_expected.to be_a_kind_of Array}
+        it { is_expected.to be_a_kind_of Array }
 
         it 'should contain one entry' do
           expect(subject.size).to eq 1
@@ -158,7 +158,7 @@ describe PuppetX::Eos::Interface do
     context '#set_description' do
       subject { instance.set_description(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -166,7 +166,7 @@ describe PuppetX::Eos::Interface do
         describe "configure interface description for #{intf}" do
           let(:name) { intf }
           let(:value) { 'this is a test' }
-          let(:commands) { ["interface #{name}", "description #{value}"]}
+          let(:commands) { ["interface #{name}", "description #{value}"] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -174,7 +174,7 @@ describe PuppetX::Eos::Interface do
         describe "configure default interface description #{intf}" do
           let(:name) { intf }
           let(:default) { true }
-          let(:commands) { ["interface #{name}", 'default description']}
+          let(:commands) { ["interface #{name}", 'default description'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -191,7 +191,7 @@ describe PuppetX::Eos::Interface do
     context '#set_shutdown' do
       subject { instance.set_shutdown(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -199,7 +199,7 @@ describe PuppetX::Eos::Interface do
         describe "configure shutdown=false for #{intf}" do
           let(:name) { intf }
           let(:value) { false }
-          let(:commands) { ["interface #{name}", 'no shutdown']}
+          let(:commands) { ["interface #{name}", 'no shutdown'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -207,7 +207,7 @@ describe PuppetX::Eos::Interface do
         describe "configure shutdown=true for #{intf}" do
           let(:name) { intf }
           let(:value) { true }
-          let(:commands) { ["interface #{name}", 'shutdown']}
+          let(:commands) { ["interface #{name}", 'shutdown'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -215,14 +215,14 @@ describe PuppetX::Eos::Interface do
         describe 'configure default interface shutdown' do
           let(:name) { intf }
           let(:default) { true }
-          let(:commands) { ["interface #{name}", 'default shutdown']}
+          let(:commands) { ["interface #{name}", 'default shutdown'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
 
         describe "negate interface shutdown for #{intf}" do
           let(:name) { intf }
-          let(:commands) { ["interface #{name}", 'no shutdown']}
+          let(:commands) { ["interface #{name}", 'no shutdown'] }
           let(:response) { [{}, {}] }
           it { is_expected.to be_truthy }
         end
@@ -232,7 +232,7 @@ describe PuppetX::Eos::Interface do
     context '#set_flowcontrol' do
       subject { instance.set_flowcontrol(name, direction, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -243,8 +243,9 @@ describe PuppetX::Eos::Interface do
               let(:name) { intf }
               let(:direction) { direction }
               let(:value) { state }
-              let(:commands) { ["interface #{name}",
-                                "flowcontrol #{direction} #{state}"] }
+              let(:commands) do
+                ["interface #{name}", "flowcontrol #{direction} #{state}"]
+              end
               let(:response) { [{}, {}] }
 
               it { is_expected.to be_truthy }
@@ -255,8 +256,9 @@ describe PuppetX::Eos::Interface do
             let(:name) { intf }
             let(:direction) { direction }
             let(:default) { true }
-            let(:commands) { ["interface #{name}",
-                             "default flowcontrol #{direction}"] }
+            let(:commands) do
+              ["interface #{name}", "default flowcontrol #{direction}"]
+            end
             let(:response) { [{}, {}] }
 
             it { is_expected.to be_truthy }
@@ -265,8 +267,9 @@ describe PuppetX::Eos::Interface do
           describe 'negating flowcontrol' do
             let(:name) { intf }
             let(:direction) { direction }
-            let(:commands) { ["interface #{name}",
-                              "no flowcontrol #{direction}"] }
+            let(:commands) do
+              ["interface #{name}", "no flowcontrol #{direction}"]
+            end
             let(:response) { [{}, {}] }
 
             it { is_expected.to be_truthy }

@@ -114,7 +114,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_mode' do
       subject { instance.set_mode(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -154,7 +154,7 @@ describe PuppetX::Eos::Switchport do
     context '#set_trunk_allowed_vlans' do
       subject { instance.set_trunk_allowed_vlans(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -200,8 +200,8 @@ describe PuppetX::Eos::Switchport do
 
       describe 'configure trunk native vlan' do
         let(:name) { 'Ethernet1' }
-        let(:value) { "10" }
-        let(:commands) do {
+        let(:value) { '10' }
+        let(:commands) do
           ["interface #{name}", "switchport trunk native vlan #{value}"]
         end
         let(:api_response) { [{}, {}] }
@@ -240,7 +240,7 @@ describe PuppetX::Eos::Switchport do
 
       describe 'configure access vlan' do
         let(:name) { 'Ethernet1' }
-        let(:value) { "10" }
+        let(:value) { '10' }
         let(:commands) do
           ["interface #{name}", "switchport access vlan #{value}"]
         end

@@ -46,7 +46,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     resp = eapi.enable('show interfaces')
     interfaces = resp.first['interfaces']
 
-    interfaces.map do |name, attr_hash|
+    interfaces.map do |name, _|
       resp = eapi.enable("show interfaces #{name} switchport", format: 'text')
       output = resp.first['output']
       provider_hash = { name: name }
@@ -55,7 +55,6 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
       provider_hash[:ensure] = enabled
 
       if enabled == :present
-        mode = switchport_mode_to_value(output)
         case switchport_mode_to_value(output)
         when 'trunk'
           provider_hash[:mode] = :trunk
@@ -100,7 +99,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def create
     id = resource[:name]
-    eapi.config(["interface #{id}", "switchport"])
+    eapi.config(["interface #{id}", 'switchport'])
     @property_hash = { name: id, ensure: :present }
     self.mode = resource[:mode] if resource[:mode]
     self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] if resource[:trunk_allowed_vlans]
@@ -108,7 +107,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def destroy
     id = resource[:name]
-    eapi.config(["interface #{id}", "no switchport"])
+    eapi.config(["interface #{id}", 'no switchport'])
     @property_hash = { name: id, ensure: :absent }
   end
 
@@ -132,7 +131,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     current = @property_hash[:trunk_allowed_vlans]
     current = []
 
-    eapi.config(["interface #{name}", "switchport trunk allowed vlan none"])
+    eapi.config(["interface #{name}", 'switchport trunk allowed vlan none'])
 
     (proposed - current).each do |vid|
       eapi.config(["interface #{name}", "switchport trunk allowed vlan add #{vid}"])

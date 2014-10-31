@@ -113,7 +113,7 @@ describe Puppet::Type.type(:eos_daemon).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        ['foo', 'bar'].each do |d|
+        %w(foo bar).each do |d|
           expect(resources[d].provider.name).to eq(d)
           expect(resources[d].provider.exists?).to eq(true)
         end

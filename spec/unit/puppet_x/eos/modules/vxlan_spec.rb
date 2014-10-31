@@ -119,14 +119,15 @@ describe PuppetX::Eos::Vxlan do
     context '#set_source_interface' do
       subject { instance.set_source_interface(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
       describe 'to interface loopback 0' do
         let(:value) { 'loopback 0' }
-        let(:commands) { ['interface vxlan 1',
-                          'vxlan source-interface loopback 0'] }
+        let(:commands) do
+          ['interface vxlan 1', 'vxlan source-interface loopback 0']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -141,8 +142,9 @@ describe PuppetX::Eos::Vxlan do
 
       describe 'default state vxlan source-interface' do
         let(:default) { true }
-        let(:commands) { ['interface vxlan 1',
-                          'default vxlan source-interface'] }
+        let(:commands) do
+          ['interface vxlan 1', 'default vxlan source-interface']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -152,7 +154,7 @@ describe PuppetX::Eos::Vxlan do
     context '#set_multicast_group' do
       subject { instance.set_multicast_group(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

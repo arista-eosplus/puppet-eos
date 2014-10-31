@@ -52,7 +52,7 @@ module PuppetX
       #   ipinterface configuration specified by id.  If the id is not
       #   found then nil is returned
       def getall
-        @api.enable("show ip interface")
+        @api.enable('show ip interface')
       end
 
       ##
@@ -62,7 +62,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def create(name)
-        return @api.config(["interface #{name}", "no switchport"]) == [{}, {}]
+        @api.config(["interface #{name}", 'no switchport']) == [{}, {}]
       end
 
       ##
@@ -72,7 +72,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def delete(name)
-        return @api.config(["interface #{name}", "no ip address"]) == [{}, {}]
+        @api.config(["interface #{name}", 'no ip address']) == [{}, {}]
       end
 
       ##

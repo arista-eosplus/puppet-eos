@@ -88,9 +88,8 @@ module PuppetX
       #
       # @return [Boolean] True if it succeeds otherwise False
       def create(name)
-        return @api.config(["interface #{name}",
-                            "no ip address",
-                            "switchport"]) == [{}, {}, {}]
+        @api.config(["interface #{name}", 'no ip address',
+                     'switchport']) == [{}, {}, {}]
       end
 
       ##
@@ -100,7 +99,7 @@ module PuppetX
       #
       # @return [Boolean] True if it succeeds otherwise False
       def delete(name)
-        return @api.config(["interface #{name}", "no switchport"]) == [{}, {}]
+        @api.config(["interface #{name}", 'no switchport']) == [{}, {}]
       end
 
       ##
@@ -110,8 +109,8 @@ module PuppetX
       #
       # @return [Boolean] True if it succeeds otherwise False
       def default(name)
-        return @api.config(["interface #{name}",
-                            "default switchport"]) == [{}, {}]
+        @api.config(["interface #{name}",
+                     'default switchport']) == [{}, {}]
       end
 
       ##
@@ -218,6 +217,7 @@ module PuppetX
       end
 
       private
+
       def mode_to_value(config)
         m = /(?<=Operational Mode:\s)(?<mode>[[:alnum:]|\s]+)\n/.match(config)
         m['mode'] == 'static access' ? 'access' : 'trunk'

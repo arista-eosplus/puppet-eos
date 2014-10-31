@@ -51,10 +51,10 @@ describe PuppetX::Eos::Snmp do
     context '#get' do
       subject { instance.get }
 
-      let(:commands) { ['show snmp contact',
-                        'show snmp location',
-                        'show snmp chassis',
-                        'show snmp source-interface'] }
+      let(:commands) do
+        ['show snmp contact', 'show snmp location',
+         'show snmp chassis', 'show snmp source-interface']
+      end
 
       let :api_response do
         dir = File.dirname(__FILE__)
@@ -78,11 +78,11 @@ describe PuppetX::Eos::Snmp do
     context '#set_contact' do
       subject { instance.set_contact(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
-      describe "configure snmp contact" do
+      describe 'configure snmp contact' do
         let(:value) { 'foo' }
         let(:commands) { "snmp contact #{value}" }
         let(:api_response) { [{}] }
@@ -109,7 +109,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_location' do
       subject { instance.set_location(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -125,7 +125,7 @@ describe PuppetX::Eos::Snmp do
         let(:commands) { 'no snmp location' }
         let(:api_response) { [{}] }
 
-        it {is_expected.to be_truthy }
+        it { is_expected.to be_truthy }
       end
 
       describe 'default snmp location' do
@@ -140,7 +140,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_chassis_id' do
       subject { instance.set_chassis_id(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -171,7 +171,7 @@ describe PuppetX::Eos::Snmp do
     context '#set_source_interface' do
       subject { instance.set_source_interface(opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

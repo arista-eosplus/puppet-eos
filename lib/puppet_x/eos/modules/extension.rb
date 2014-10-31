@@ -42,7 +42,6 @@ module PuppetX
     # allows installing, deleting and configuring extensions
     #
     class Extension
-
       BOOTEXT = '/mnt/flash/boot-extensions'
 
       def initialize(api)
@@ -79,8 +78,8 @@ module PuppetX
       #
       # @return [Boolean] True if it loades on boot otherwise False
       def autoload?(name)
-        name = URI(name).to_s.split("/")[-1]
-        return File.open(BOOTEXT).read.scan(/#{name}[\sforce\n|\n]/).size > 0
+        name = URI(name).to_s.split('/')[-1]
+        File.open(BOOTEXT).read.scan(/#{name}[\sforce\n|\n]/).size > 0
       end
 
       ##
@@ -94,8 +93,8 @@ module PuppetX
       #   does not succeed
       def install(url, force)
         force = false if force.nil?
-        result = @api.enable("copy #{url} extension:")
-        return load(url, force)
+        @api.enable("copy #{url} extension:")
+        load(url, force)
       end
 
       ##
@@ -109,10 +108,10 @@ module PuppetX
       # @return [Boolean] True if the command succeeds or False if it does
       #   not succeed
       def load(name, force)
-        name = URI(name).to_s.split("/")[-1]
+        name = URI(name).to_s.split('/')[-1]
         command = "extension #{name}"
         command << ' force' if force
-        return @api.enable(command) == [{}]
+        @api.enable(command) == [{}]
       end
 
       ##
@@ -124,10 +123,10 @@ module PuppetX
       # @return [Boolean] True if the command succeeds or False if it does
       #   not succeed
       def delete(name)
-        name = URI(name).to_s.split("/")[-1]
+        name = URI(name).to_s.split('/')[-1]
         set_autoload(:false, name, false)
         @api.enable("no extension #{name}")
-        return @api.enable("delete extension:#{name}") == [{}]
+        @api.enable("delete extension:#{name}") == [{}]
       end
 
       ##
@@ -143,9 +142,9 @@ module PuppetX
         enabled = :true if enabled.nil?
         force = false if force.nil?
 
-        name = URI(name).to_s.split("/")[-1]
+        name = URI(name).to_s.split('/')[-1]
         entry = "#{name}"
-        entry << " force" if force
+        entry << ' force' if force
 
         case enabled
         when :true
@@ -161,7 +160,7 @@ module PuppetX
           end
           return true
         end
-        return false
+        false
       end
     end
   end

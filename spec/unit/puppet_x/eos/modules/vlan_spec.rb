@@ -36,7 +36,7 @@ describe PuppetX::Eos::Vlan do
   let(:eapi) { double }
   let(:instance) { PuppetX::Eos::Vlan.new eapi }
 
-context 'when initializing a new Vlan instance' do
+  context 'when initializing a new Vlan instance' do
     subject { instance }
     it { is_expected.to be_a_kind_of PuppetX::Eos::Vlan }
   end
@@ -51,7 +51,7 @@ context 'when initializing a new Vlan instance' do
     context '#getall' do
       subject { instance.getall }
 
-      let(:commands) { ['show vlan', 'show vlan trunk group']}
+      let(:commands) { ['show vlan', 'show vlan trunk group'] }
 
       let :api_response do
         dir = File.dirname(__FILE__)
@@ -132,7 +132,7 @@ context 'when initializing a new Vlan instance' do
     context '#set_name' do
       subject { instance.set_name(vlanid, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
@@ -169,7 +169,7 @@ context 'when initializing a new Vlan instance' do
     context '#set_state' do
       subject { instance.set_state(vlanid, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

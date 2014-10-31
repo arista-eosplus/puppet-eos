@@ -63,7 +63,7 @@ module PuppetX
       #
       # @return [Boolean] returns true if the command completed successfully
       def create
-        @api.config("interface vxlan 1") == [{}]
+        @api.config('interface vxlan 1') == [{}]
       end
 
       ##
@@ -71,7 +71,7 @@ module PuppetX
       #
       # @return [Boolean] always returns true
       def delete
-        @api.config("no interface vxlan 1") == [{}]
+        @api.config('no interface vxlan 1') == [{}]
       end
 
       ##
@@ -79,7 +79,7 @@ module PuppetX
       #
       # @return [Boolean] returns true if the command completed successfully
       def default
-        @api.config("default interface vxlan 1") == [{}]
+        @api.config('default interface vxlan 1') == [{}]
       end
 
       ##
@@ -94,7 +94,7 @@ module PuppetX
         value = opts[:value]
         default = opts[:default] || false
 
-        cmds = ["interface vxlan 1"]
+        cmds = ['interface vxlan 1']
         case default
         when true
           cmds << 'default vxlan source-interface'
@@ -117,7 +117,7 @@ module PuppetX
         value = opts[:value]
         default = opts[:default] || false
 
-        cmds = ["interface vxlan 1"]
+        cmds = ['interface vxlan 1']
         case default
         when true
           cmds << 'default vxlan multicast-group'

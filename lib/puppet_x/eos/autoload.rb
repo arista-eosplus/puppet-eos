@@ -29,7 +29,12 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+##
+# PuppetX namespace
 module PuppetX
+  ##
+  # Eos namespace
   module Eos
     autoload :Vlan, 'puppet_x/eos/modules/vlan'
     autoload :Extension, 'puppet_x/eos/modules/extension'

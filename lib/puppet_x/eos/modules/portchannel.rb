@@ -73,7 +73,7 @@ module PuppetX
 
         attr_hash = { name: name }
         attr_hash[:members] = members
-        attr_hash[:lacp_mode] = get_lacp_mode members 
+        attr_hash[:lacp_mode] = get_lacp_mode members
         attr_hash[:lacp_fallback] = get_lacp_fallback interface
         attr_hash[:lacp_timeout] = interface['fallbackTimeout']
         attr_hash
@@ -83,7 +83,7 @@ module PuppetX
       # Retreives the member interfaces for the specified channel group
       #
       # @param [String] name The name of the port-channel interface to return
-      #     members for 
+      #     members for
       #
       # @return [Array] An array of interface names that are members of the
       #   specified channel group id
@@ -100,7 +100,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def create(name)
-        return @api.config("interface #{name}") == [{}]
+        @api.config("interface #{name}") == [{}]
       end
 
       ##
@@ -110,7 +110,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def delete(name)
-        return @api.config("no interface #{name}") == [{}]
+        @api.config("no interface #{name}") == [{}]
       end
 
       ##
@@ -120,7 +120,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def default(name)
-        return @api.config("default interface #{name}") == [{}]
+        @api.config("default interface #{name}") == [{}]
       end
 
       ##
@@ -132,8 +132,8 @@ module PuppetX
       # @return [Boolean] True if the create succeeds otherwise False
       def add_member(name, member)
         id = name.match(/\d+/)
-        return @api.config(["interface #{member}",
-                            "channel-group #{id} mode on"]) == [{}, {}]
+        @api.config(["interface #{member}",
+                     "channel-group #{id} mode on"]) == [{}, {}]
       end
 
       ## Removes a member interface from the channel group
@@ -143,8 +143,7 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def remove_member(name, member)
-        return @api.config(["interface #{member}",
-                            "no channel-group"]) == [{}, {}]
+        @api.config(["interface #{member}", 'no channel-group']) == [{}, {}]
       end
 
       ##
@@ -156,19 +155,19 @@ module PuppetX
       # @return [Boolean] True if the create succeeds otherwise False
       def set_lacp_mode(name, mode)
         id = name.match(/\d+/)
-        members = get_members name 
+        members = get_members name
 
         commands = []
         config = []
 
         members.each do |member|
-          commands << "interface #{member}" << "no channel-group"
+          commands << "interface #{member}" << 'no channel-group'
           config << "interface #{member}" << "channel-group #{id} mode #{mode}"
         end
 
         config.unshift(*commands)
         result =  @api.config(config)
-        return config.size == result.size
+        config.size == result.size
       end
 
       ##
@@ -220,6 +219,7 @@ module PuppetX
       end
 
       private
+
       def get_lacp_mode(members)
         return '' if members.empty?
         name = members.first
