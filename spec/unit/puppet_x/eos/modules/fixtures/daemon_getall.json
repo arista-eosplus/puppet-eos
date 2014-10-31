@@ -1,0 +1,3 @@
+[{
+    "output": "daemon myagent\n   command /usr/bin/eosfacts                \n!\ndaemon myagent2\n   command /usr/bin/eosfacts                \n"
+}]
