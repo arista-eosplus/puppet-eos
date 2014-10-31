@@ -58,7 +58,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Ipinterface)
-    allow(described_class.eapi.Ipinterface).to receive(:get)
+    allow(described_class.eapi.Ipinterface).to receive(:getall)
       .and_return(ipinterfaces)
   end
 
@@ -69,99 +69,79 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has three instances' do
-        expect(subject.size).to eq(3)
+      it 'has two entries' do
+        expect(subject.size).to eq 2
       end
 
-      %w(1 2 3).each do |name|
-        it "has an instance for VLAN #{name}" do
+      %w(Ethernet1 Management1).each do |name|
+        it "has an instance for interface #{name}" do
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
         end
       end
 
-      context 'eos_vlan { 1: }' do
-        subject { described_class.instances.find { |p| p.name == '1' } }
+      context "eos_ipinterface { 'Ethernet1': }" do
+        subject { described_class.instances.find { |p| p.name == 'Ethernet1' } }
 
         include_examples 'provider resource methods',
                          ensure: :present,
-                         vlanid: '1',
-                         vlan_name: 'default',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: [],
-                         vni: :absent
+                         name: 'Ethernet1',
+                         address: '172.16.10.1/24'
       end
 
-      context 'eos_vlan { 2: }' do
-        subject { described_class.instances.find { |p| p.name == '2' } }
+      context "eos_ipinterface { 'Management1': )" do
+        subject do
+          described_class.instances.find do |p|
+            p.name == 'Management1'
+          end
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
-                         vlanid: '2',
-                         vlan_name: 'VLAN0002',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: [],
-                         vni: :absent
-      end
-
-      context 'eos_vlan { 3: }' do
-        subject { described_class.instances.find { |p| p.name == '3' } }
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         vlanid: '3',
-                         vlan_name: 'VLAN0003',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: ['foo'],
-                         vni: :absent
+                         name: 'Management1',
+                         address: '192.168.1.16/24'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '1' => Puppet::Type.type(:eos_vlan).new(vlanid: '1'),
-          '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2'),
-          '3' => Puppet::Type.type(:eos_vlan).new(vlanid: '3'),
-          '4' => Puppet::Type.type(:eos_vlan).new(vlanid: '4')
+          'Ethernet1' => Puppet::Type.type(:eos_ipinterface)
+            .new(name: 'Ethernet1'),
+          'Ethernet2' => Puppet::Type.type(:eos_ipinterface)
+            .new(name: 'Ethernet2')
         }
       end
+
       subject { described_class.prefetch(resources) }
 
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
-          expect(rsrc.provider.vlanid).to eq(:absent)
-          expect(rsrc.provider.vlan_name).to eq(:absent)
+          expect(rsrc.provider.address).to eq(:absent)
         end
       end
 
       it 'sets the provider instance of the managed resource' do
         subject
-        %w(1 2 3).each do |vid|
-          expect(resources[vid].provider.vlanid).to eq(vid)
-          name = vid == '1' ? 'default' : "VLAN000#{vid}"
-          expect(resources[vid].provider.vlan_name).to eq(name)
-          expect(resources[vid].provider.exists?).to eq(true)
-        end
+        expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
+        expect(resources['Ethernet1'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['4'].provider.vlanid).to eq(:absent)
-        expect(resources['4'].provider.vlan_name).to eq(:absent)
-        expect(resources['4'].provider.exists?).to eq(false)
+        expect(resources['Ethernet2'].provider.name).to eq('Ethernet2')
+        expect(resources['Ethernet2'].provider.exists?).to be_falsey
       end
     end
   end
 
   context 'resource (instance) methods' do
 
+    let(:eapi) { double }
+
     before do
       allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Vlan)
+      allow(provider.eapi).to receive(:Ipinterface).and_return(eapi)
     end
 
     describe '#exists?' do
@@ -177,26 +157,15 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       end
     end
 
-    describe '#add' do
-
-      let(:id) { provider.resource[:vlanid] }
+    describe '#create' do
 
       before :each do
-        allow(provider.eapi.Vlan).to receive(:add).with(id)
-
-        allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: id, value: provider.resource[:vlan_name])
-
-        allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: id, value: provider.resource[:trunk_groups])
-
-        allow(provider.eapi.Vlan).to receive(:set_state)
-          .with(id: id, value: 'active')
+        allow(eapi).to receive(:create).with('Ethernet1')
+        allow(eapi).to receive(:set_address).and_return(true)
       end
 
-      it 'calls Eapi#add(id) with the resource id' do
-        expect(provider.eapi.Vlan).to receive(:add)
-          .with(provider.resource[:vlanid])
+      it "calls Ipinterface#create('Ethernet1')" do
+        expect(eapi).to receive(:create).with('Ethernet1')
         provider.create
       end
 
@@ -205,37 +174,22 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(provider.ensure).to eq(:present)
       end
 
-      it 'sets enable to the resource value' do
+      it 'sets address to the resource value' do
         provider.create
-        expect(provider.enable).to be_truthy
+        expect(provider.address).to eq(provider.resource[:address])
       end
 
-      it 'sets vlan_name to the resource value' do
-        provider.create
-        expect(provider.vlan_name).to eq(provider.resource[:vlan_name])
-      end
-
-      it 'sets trunk_groups to the resource value array' do
-        provider.create
-        expect(provider.trunk_groups).to eq(provider.resource[:trunk_groups])
-      end
     end
 
     describe '#destroy' do
-
-      let(:id) { provider.resource[:vlanid] }
-
       before :each do
-        allow(provider.eapi.Vlan).to receive(:add).with(id)
-        allow(provider.eapi.Vlan).to receive(:delete).with(id)
-        allow(provider.eapi.Vlan).to receive(:set_state)
-        allow(provider.eapi.Vlan).to receive(:set_name)
-        allow(provider.eapi.Vlan).to receive(:set_trunk_group)
+        allow(eapi).to receive(:delete).with('Ethernet1')
+        allow(eapi).to receive(:create)
+        allow(eapi).to receive(:set_address)
       end
 
-      it 'calls Eapi#delete(id)' do
-        expect(provider.eapi.Vlan).to receive(:delete)
-          .with(id)
+      it "calls Ipinterface#delete('Ethernet1')" do
+        expect(eapi).to receive(:delete).with('Ethernet1')
         provider.destroy
       end
 
@@ -253,77 +207,27 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         it 'clears the property hash' do
           subject
           expect(provider.instance_variable_get(:@property_hash))
-            .to eq(vlanid: id, ensure: :absent)
+            .to eq(name: 'Ethernet1', ensure: :absent)
         end
       end
     end
 
-    describe '#vlan_name=(value)' do
+    describe '#address=(val)' do
       before :each do
-        allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: provider.resource[:vlanid], value: 'foo')
+        allow(provider.eapi.Ipinterface).to receive(:set_address)
+          .with('Ethernet1', value: '1.2.3.4/5')
       end
 
-      it 'calls Eapi#set_vlan_name("100", "foo")' do
-        expect(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: provider.resource[:vlanid], value: 'foo')
-        provider.vlan_name = 'foo'
+      it "calls Ipinterface#set_address('Ethernet1', val: '1.2.3.4/5')" do
+        expect(eapi).to receive(:set_address)
+          .with('Ethernet1', value: '1.2.3.4/5')
+        provider.address = '1.2.3.4/5'
       end
 
-      it 'updates vlan_name in the provider' do
-        expect(provider.vlan_name).not_to eq('foo')
-        provider.vlan_name = 'foo'
-        expect(provider.vlan_name).to eq('foo')
-      end
-    end
-
-    describe '#enable=(value)' do
-    end
-
-    describe '#trunk_groups=(value)' do
-      before :each do
-        allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: provider.resource[:vlanid], value: ['foo'])
-      end
-
-      it 'calls Eapi#set_trunk_group("100", ["foo"])' do
-        expect(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: provider.resource[:vlanid], value: ['foo'])
-        provider.trunk_groups = ['foo']
-      end
-
-      it 'updates trunk_groups in the provider' do
-        expect(provider.trunk_groups).not_to eq(['foo'])
-        provider.trunk_groups = ['foo']
-        expect(provider.trunk_groups).to eq(['foo'])
-      end
-    end
-
-    describe '#enable=(value)' do
-      context 'when value is :true' do
-        before :each do
-          allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'active')
-        end
-
-        it 'calls Eapi#set_enable("100", "active")' do
-          expect(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'active')
-          provider.enable = true
-        end
-      end
-
-      context 'when value is :false' do
-        before :each do
-          allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'suspend')
-        end
-
-        it 'updates enable in the provider' do
-          expect(provider.enable).not_to be_falsey
-          provider.enable = false
-          expect(provider.enable).to be_falsey
-        end
+      it 'updates the address property in the provider' do
+        expect(provider.address).not_to eq '1.2.3.4/5'
+        provider.address = '1.2.3.4/5'
+        expect(provider.address).to eq '1.2.3.4/5'
       end
     end
   end

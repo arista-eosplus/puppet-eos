@@ -39,14 +39,13 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show ip interface')
-    result = resp.first['interfaces']
-
-    result.map do |name, attr_hash|
+    result = eapi.Ipinterface.getall
+    result.first['interfaces'].map do |name, attr_hash|
       provider_hash = { name: name, ensure: :present }
       addr = attr_hash['interfaceAddress']['primaryIp']['address']
       mask = attr_hash['interfaceAddress']['primaryIp']['maskLen']
@@ -55,23 +54,9 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     end
   end
 
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
-    end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
-  end
-
   def address=(val)
-    @property_flush[:address] = val
+    eapi.Ipinterface.set_address(resource['name'], value: val)
+    @property_hash[:address] = val
   end
 
   def exists?
@@ -79,31 +64,13 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   end
 
   def create
-    id = resource[:name]
-    commands = ["interface #{id}"]
-    commands << 'no switchport' if /^[Eth|Port]/.match(id)
-    eapi.config(commands)
-    @property_hash = { name: id, ensure: :present }
+    eapi.Ipinterface.create(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
     self.address = resource[:address] if resource[:address]
   end
 
   def destroy
-    id = resource[:name]
-    eapi.config(["interface #{id}", "no ip address"])
-    @property_hash = { name: id, ensure: :absent }
+    eapi.Ipinterface.delete(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :absent }
   end
-
-  def flush
-    flush_address
-    @property_hash = resource.to_hash
-  end
-
-  def flush_address
-    value = @property_flush[:address]
-    id = resource[:name]
-    return nil unless value
-    eapi.config(["interface #{id}", "ip address #{value}"])
-  end
-
 end
-
