@@ -40,12 +40,6 @@ Puppet::Type.newtype(:eos_ospf_instance) do
 
   newparam(:name) do
     desc 'The resource name for the OSPF instance'
-  end
-
-  # Properties (state management)
-
-  newproperty(:process_id) do
-    desc 'Process ID for OSPF instance'
 
     # min: 1 max: 65535
     validate do |value|
@@ -57,6 +51,8 @@ Puppet::Type.newtype(:eos_ospf_instance) do
       end
     end
   end
+
+  # Properties (state management)
 
   newproperty(:router_id) do
     desc 'Set the router ID for the OSPF instance'

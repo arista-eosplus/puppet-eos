@@ -36,7 +36,7 @@ describe PuppetX::Eos::Vlan do
   let(:eapi) { double }
   let(:instance) { PuppetX::Eos::Vlan.new eapi }
 
-  context 'when initializing a new Vlan instance' do
+context 'when initializing a new Vlan instance' do
     subject { instance }
     it { is_expected.to be_a_kind_of PuppetX::Eos::Vlan }
   end
@@ -152,7 +152,7 @@ describe PuppetX::Eos::Vlan do
           let(:commands) { ["vlan #{vlanid}", 'no name'] }
           let(:api_response) { [{}, {}] }
 
-          it {is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
         end
 
         describe "default name for vlan #{vlanid}" do
@@ -207,7 +207,7 @@ describe PuppetX::Eos::Vlan do
     context '#set_trunk_group' do
       subject { instance.set_trunk_group(vlanid, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 

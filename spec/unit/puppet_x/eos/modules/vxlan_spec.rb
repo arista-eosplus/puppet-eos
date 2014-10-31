@@ -158,8 +158,9 @@ describe PuppetX::Eos::Vxlan do
 
       describe 'to mulitcast address 239.10.10.10' do
         let(:value) { '239.10.10.10' }
-        let(:commands) { ['interface vxlan 1',
-                          'vxlan multicast-group 239.10.10.10'] }
+        let(:commands) do
+          ['interface vxlan 1', 'vxlan multicast-group 239.10.10.10']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -174,7 +175,9 @@ describe PuppetX::Eos::Vxlan do
 
       describe 'default state vxlan multicast-group' do
         let(:default) { true }
-        let(:commands) { ['interface vxlan 1', 'default vxlan multicast-group'] }
+        let(:commands) do
+          ['interface vxlan 1', 'default vxlan multicast-group']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }

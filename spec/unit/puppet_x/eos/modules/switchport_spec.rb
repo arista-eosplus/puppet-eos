@@ -131,8 +131,9 @@ describe PuppetX::Eos::Switchport do
 
       describe 'negate switchport mode' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ['interface Ethernet1',
-                          'no switchport mode'] }
+        let(:commands) do
+          ['interface Ethernet1', 'no switchport mode']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -141,8 +142,9 @@ describe PuppetX::Eos::Switchport do
       describe 'default switchport mode' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
-        let(:commands) { ['interface Ethernet1',
-                          'default switchport mode'] }
+        let(:commands) do
+          ['interface Ethernet1', 'default switchport mode']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -159,8 +161,9 @@ describe PuppetX::Eos::Switchport do
       describe 'configure trunk allowed vlans' do
         let(:name) { 'Ethernet1' }
         let(:value) { '1,10-20,30' }
-        let(:commands) { ["interface #{name}",
-                          "switchport trunk allowed vlan #{value}"] }
+        let(:commands) do
+          ["interface #{name}", "switchport trunk allowed vlan #{value}"]
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -168,8 +171,9 @@ describe PuppetX::Eos::Switchport do
 
       describe 'negate switchport trunk allowed vlans' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ["interface #{name}",
-                          'no switchport trunk allowed vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'no switchport trunk allowed vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -178,8 +182,9 @@ describe PuppetX::Eos::Switchport do
       describe 'default switchport trunk allowed vlans' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
-        let(:commands) { ["interface #{name}",
-                          'default switchport trunk allowed vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'default switchport trunk allowed vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -189,15 +194,16 @@ describe PuppetX::Eos::Switchport do
     context '#set_trunk_native_vlan' do
       subject { instance.set_trunk_native_vlan(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
       describe 'configure trunk native vlan' do
         let(:name) { 'Ethernet1' }
         let(:value) { "10" }
-        let(:commands) { ["interface #{name}",
-                          "switchport trunk native vlan #{value}"] }
+        let(:commands) do {
+          ["interface #{name}", "switchport trunk native vlan #{value}"]
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -205,8 +211,9 @@ describe PuppetX::Eos::Switchport do
 
       describe 'negate switchport trunk native vlan' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ["interface #{name}",
-                          'no switchport trunk native vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'no switchport trunk native vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -215,8 +222,9 @@ describe PuppetX::Eos::Switchport do
       describe 'default switchport trunk native vlan' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
-        let(:commands) { ["interface #{name}",
-                          'default switchport trunk native vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'default switchport trunk native vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -226,15 +234,16 @@ describe PuppetX::Eos::Switchport do
     context '#set_access_vlan' do
       subject { instance.set_access_vlan(name, opts) }
 
-      let(:opts) { {value: value, default: default} }
+      let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
       describe 'configure access vlan' do
         let(:name) { 'Ethernet1' }
         let(:value) { "10" }
-        let(:commands) { ["interface #{name}",
-                          "switchport access vlan #{value}"] }
+        let(:commands) do
+          ["interface #{name}", "switchport access vlan #{value}"]
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -242,8 +251,9 @@ describe PuppetX::Eos::Switchport do
 
       describe 'negate switchport access vlan' do
         let(:name) { 'Ethernet1' }
-        let(:commands) { ["interface #{name}",
-                          'no switchport access vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'no switchport access vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -252,8 +262,9 @@ describe PuppetX::Eos::Switchport do
       describe 'default switchport access vlan' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
-        let(:commands) { ["interface #{name}",
-                          'default switchport access vlan'] }
+        let(:commands) do
+          ["interface #{name}", 'default switchport access vlan']
+        end
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }

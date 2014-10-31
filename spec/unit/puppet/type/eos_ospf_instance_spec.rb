@@ -45,14 +45,6 @@ describe Puppet::Type.type(:eos_ospf_instance) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-  end
-
-  describe 'process_id' do
-    let(:attribute) { :process_id }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(1, 65535)
     include_examples 'rejects values', [[1], { two: :three }]
   end
