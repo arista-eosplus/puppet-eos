@@ -94,7 +94,11 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       end
 
       context 'eos_interface { Management1: }' do
-        subject { described_class.instances.find { |p| p.name == 'Management1' } }
+        subject do
+          described_class.instances.find do
+            |p| p.name == 'Management1'
+          end
+        end
 
         include_examples 'provider resource methods',
                          name: 'Management1',
@@ -166,12 +170,14 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
       it 'sets flowcontrol_send to the resource value' do
         provider.create
-        expect(provider.flowcontrol_send).to eq(provider.resource[:flowcontrol_send])
+        value = provider.resource[:flowcontrol_send]
+        expect(provider.flowcontrol_send).to eq(value)
       end
 
       it 'sets flowcontrol_receive to the resource value' do
         provider.create
-        expect(provider.flowcontrol_receive).to eq(provider.resource[:flowcontrol_receive])
+        value = provider.resource[:flowcontrol_receive]
+        expect(provider.flowcontrol_receive).to eq(value)
       end
     end
 

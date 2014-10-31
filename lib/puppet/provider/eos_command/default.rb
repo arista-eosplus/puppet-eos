@@ -43,7 +43,6 @@ Puppet::Type.type(:eos_command).provide(:eos) do
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
-
   def initialize(resource = {})
     super(resource)
     @property_flush = {}
@@ -56,4 +55,3 @@ Puppet::Type.type(:eos_command).provide(:eos) do
   end
 
 end
-

@@ -52,7 +52,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
   def all_vlans
     all_vlans = Fixtures[:all_vlans]
     return all_vlans if all_vlans
-    file = File.join(File.dirname(__FILE__), 'fixture_show_vlan.json')
+    file = File.join(File.dirname(__FILE__), 'fixtures/vlans.json')
     Fixtures[:all_vlans] = JSON.load(File.read(file))
   end
 

@@ -99,7 +99,7 @@ module PuppetX
         when true
           cmds << 'default vxlan source-interface'
         when false
-          cmds << (value.nil? ?  'no vxlan source-interface': \
+          cmds << (value.nil? ?  'no vxlan source-interface' : \
                                  "vxlan source-interface #{value}")
         end
         @api.config(cmds) == [{}, {}]
@@ -122,7 +122,7 @@ module PuppetX
         when true
           cmds << 'default vxlan multicast-group'
         when false
-          cmds << (value.nil? ?  'no vxlan multicast-group': \
+          cmds << (value.nil? ?  'no vxlan multicast-group' : \
                                  "vxlan multicast-group #{value}")
         end
         @api.config(cmds) == [{}, {}]

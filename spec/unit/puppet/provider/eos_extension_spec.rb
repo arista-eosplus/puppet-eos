@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
   def all_extensions
     extensions = Fixtures[:all_extensions]
     return extensions if extensions
-    file = File.join(File.dirname(__FILE__), 'fixture_show_extensions.json')
+    file = File.join(File.dirname(__FILE__), 'fixtures/extensions.json')
     Fixtures[:all_extensions] = JSON.load(File.read(file))
   end
 

@@ -68,10 +68,11 @@ module PuppetX
                                'show snmp location',
                                'show snmp chassis',
                                'show snmp source-interface'],
-                               format: 'text')
+                              format: 'text')
 
         attr_hash = {}
-        for i in 0..3
+
+        (0..3).each do |i|
           m = /(?<=:\s)(.*)$/.match(result[i]['output'])
           case i
           when 0

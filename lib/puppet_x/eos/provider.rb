@@ -40,7 +40,6 @@ module PuppetX
     ##
     # EapiProviderMixin module
     module EapiProviderMixin
-
       def prefetch(resources)
         provider_hash = instances.each_with_object({}) do |provider, hsh|
           hsh[provider.name] = provider

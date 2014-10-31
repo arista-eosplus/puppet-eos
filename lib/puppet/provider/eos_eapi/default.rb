@@ -34,18 +34,19 @@ require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_eapi).provide(:eos) do
 
-  commands :cli => 'FastCli'
+  commands cli: 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    commands = "show running-config section management api http-commands"
+    commands = 'show running-config section management api http-commands'
     resp = cli('-p', '15', '-A', '-c', "#{commands}")
     Puppet.debug("#{resp}")
 
@@ -54,14 +55,12 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     state = !/no\sshutdown/.match(resp).nil?
     protocol = /no\sprotocol\shttp/.match(resp).nil? ? 'https' : 'http'
     port = /'port\s(?<port>\d+)'/.match(resp)
-    if port.nil?
-      port = protocol == 'http' ? '443' : '80'
-    end
+    port = protocol == 'http' ? '443' : '80' if port.nil?
 
     provider_hash['enable'] = state
     provider_hash['protocol'] = protocol
     provider_hash['port'] = port
-    Puppet.debug("#{provider_hash}")
+
     [new(provider_hash)]
   end
 
@@ -110,14 +109,15 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     when 'https'
       commands << 'no protocol http' << "protocol https port #{port}"
     end
-    commands << "no shutdown"
+    commands << 'no shutdown'
     commands = commands.join('\n')
     cli('-p', '15', '-A', '-e', '-c', "$'#{commands}'")
     @property_hash = { name: resource[:name],  ensure: :present }
   end
 
   def destroy
-    cli('-p', '15', '-A', '-c', 'configure\nmanagement api http-commands\nshutdown')
+    cli('-p', '15', '-A', '-c',
+        'configure\nmanagement api http-commands\nshutdown')
   end
 
   def flush_protocol_and_port

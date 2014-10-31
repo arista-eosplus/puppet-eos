@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_daemon).provide(:eos) do
 
   def self.instances
     eapi.Daemon.get.map do |name, command|
-      provider_hash = { name: name, ensure: :present, command: command}
+      provider_hash = { name: name, ensure: :present, command: command }
       new(provider_hash)
     end
   end

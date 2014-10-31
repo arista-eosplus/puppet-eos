@@ -68,12 +68,12 @@ module PuppetX
         key = nil
         result.first['output'].split("\n").each do |entry|
           token = entry.strip.match(/^daemon\s(?<name>.*)$/)
-          if !token.nil?
+          unless token.nil?
             key = token['name']
             response[key] = nil
           end
           token = entry.strip.match(/^command\s(?<command>.*)$/)
-          if !token.nil?
+          unless token.nil?
             value = token['command']
             response[key] = value
           end

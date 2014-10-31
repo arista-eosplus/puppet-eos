@@ -48,9 +48,40 @@ module PuppetX
       # Retrieves all logical IP interfaces from the running-configuration
       # and returns all instances
       #
-      # @return [nil, Hash<String, String|Hash|Array>] Hash describing the
-      #   ipinterface configuration specified by id.  If the id is not
-      #   found then nil is returned
+      # Example:
+      #   {
+      #     "interfaces": {
+      #       "Ethernet1": {
+      #           "interfaceAddress": {
+      #              "secondaryIpsOrderedList": [],
+      #              "broadcastAddress": "255.255.255.255",
+      #              "secondaryIps": {},
+      #              "primaryIp": {
+      #                 "maskLen": 32,
+      #                 "address": "1.1.1.1"
+      #              },
+      #              "virtualIp": {
+      #                 "maskLen": 0,
+      #                 "address": "0.0.0.0"
+      #              }
+      #           },
+      #           "name": "Loopback0",
+      #           "urpf": "disable",
+      #           "interfaceStatus": "connected",
+      #           "enabled": true,
+      #           "mtu": 65535,
+      #           "vrf": "default",
+      #           "localProxyArp": false,
+      #           "proxyArp": false,
+      #           "lineProtocolStatus": "up",
+      #           "description": "managed by PE"
+      #       },
+      #       "Ethernet2": { ... },
+      #       "Ethernet3": { ... }
+      #     }
+      #   }
+      #
+      # @return [Hash]
       def getall
         @api.enable('show ip interface')
       end

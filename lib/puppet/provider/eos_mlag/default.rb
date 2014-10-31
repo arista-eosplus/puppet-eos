@@ -98,7 +98,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   def create
     id = resource[:name]
-    eapi.config(["mlag configuration", "domain-id #{id}"])
+    eapi.config(['mlag configuration', "domain-id #{id}"])
     @property_hash = { name: id, ensure: :present }
     self.local_interface = resource[:local_interface] if resource[:local_interface]
     self.peer_address = resource[:peer_address] if resource[:peer_address]
@@ -122,26 +122,26 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   def flush_local_interface
     value = @property_flush[:local_interface]
     return nil unless value
-    eapi.config(["mlag configuration", "local-interface #{value}"])
+    eapi.config(['mlag configuration', "local-interface #{value}"])
   end
 
   def flush_peer_address
     value = @property_flush[:peer_address]
     return nil unless value
-    eapi.config(["mlag configuration", "peer-address #{value}"])
+    eapi.config(['mlag configuration', "peer-address #{value}"])
   end
 
   def flush_peer_link
     value = @property_flush[:peer_link]
     return nil unless value
-    eapi.config(["mlag configuration", "peer-link #{value}"])
+    eapi.config(['mlag configuration', "peer-link #{value}"])
   end
 
   def flush_enable
     value = @property_flush[:enable]
     return nil unless value
     state = value ? 'no shutdown' : 'shutdown'
-    eapi.config(["mlag configuration", state])
+    eapi.config(['mlag configuration', state])
   end
 
 end

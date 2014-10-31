@@ -120,7 +120,7 @@ module PuppetX
         when true
           cmds << 'default name'
         when false
-          cmds << (value.nil? ?  'no name': "name #{value}")
+          cmds << (value.nil? ?  'no name' : "name #{value}")
         end
         @api.config(cmds) == [{}, {}]
       end

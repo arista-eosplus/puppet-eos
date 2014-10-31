@@ -69,7 +69,7 @@ module PuppetX
         result[0]['vrfs']['default']['instList'].map do |inst, attrs|
           instances[inst] = { router_id: attrs['routerId'] }
         end
-        return { instances: instances }
+        { instances: instances }
       end
 
       ##

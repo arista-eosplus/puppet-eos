@@ -50,7 +50,7 @@ describe Puppet::Type.type(:eos_daemon).provider(:eos) do
   def daemons
     daemons = Fixtures[:daemons]
     return daemons if daemons
-    file = File.join(File.dirname(__FILE__), 'fixture_daemon.json')
+    file = File.join(File.dirname(__FILE__), 'fixtures/daemons.json')
     Fixtures[:daemons] = JSON.load(File.read(file))
   end
 
@@ -77,7 +77,7 @@ describe Puppet::Type.type(:eos_daemon).provider(:eos) do
         expect(subject.size).to eq(2)
       end
 
-      ['foo', 'bar'].each do |name|
+      %w(foo bar).each do |name|
         it "has an instance for daemon #{name}" do
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
@@ -90,7 +90,7 @@ describe Puppet::Type.type(:eos_daemon).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          command: '/path/to/foo'
-        end
+      end
 
       context 'eos_daemon { bar: }' do
         subject { described_class.instances.find { |p| p.name == 'bar' } }
@@ -106,7 +106,7 @@ describe Puppet::Type.type(:eos_daemon).provider(:eos) do
         {
           'foo' => Puppet::Type.type(:eos_daemon).new(name: 'foo'),
           'bar' => Puppet::Type.type(:eos_daemon).new(name: 'bar'),
-          'baz' => Puppet::Type.type(:eos_daemon).new(name: 'baz'),
+          'baz' => Puppet::Type.type(:eos_daemon).new(name: 'baz')
         }
       end
       subject { described_class.prefetch(resources) }

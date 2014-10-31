@@ -224,18 +224,19 @@ module PuppetX
       end
 
       def trunk_vlans_to_value(config)
-        m = /(?<=Trunking VLANs Enabled:\s)(?<vlans>[[[:alnum:]]+|ALL])/.match(config)
-        return m['vlans'] if !m.nil?
+        m = /(?<=Trunking VLANs Enabled:\s)(?<vlans>[[[:alnum:]]+|ALL])/
+          .match(config)
+        return m['vlans'] unless m.nil?
       end
 
       def trunk_native_to_value(config)
         m = /(?<=Trunking Native Mode VLAN:\s)(?<trunk_vlan>\d+)/.match(config)
-        return m['trunk_vlan'] if !m.nil?
+        return m['trunk_vlan'] unless m.nil?
       end
 
       def access_vlan_to_value(config)
         m = /(?<=Access Mode VLAN:\s)(?<access_vlan>\d+)/.match(config)
-        return m['access_vlan'] if !m.nil?
+        return m['access_vlan'] unless m.nil?
       end
     end
   end
