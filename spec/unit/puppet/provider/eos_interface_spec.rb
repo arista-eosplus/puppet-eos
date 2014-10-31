@@ -38,7 +38,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     resource_hash = {
       name: 'Ethernet1',
       description: 'test interface',
-      enable: true,
+      enable: :true,
       flowcontrol_send: :on,
       flowcontrol_receive: :off,
       provider: described_class.name
@@ -132,28 +132,26 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
+
+    let(:name) { provider.resource[:name] }
     let(:eapi) { double }
 
-    before do
-      allow(provider).to receive(:eapi).and_return(eapi)
-      allow(eapi).to receive(:Interface).and_return(eapi.Interface)
+    before :each do
+      allow(provider).to receive(:eapi)
+      allow(provider.eapi).to receive(:Interface).and_return(eapi)
     end
 
     describe '#create' do
       before :each do
-        allow(provider.eapi.Interface).to receive(:create)
-        allow(eapi.Interface).to receive(:set_shutdown)
+        allow(eapi).to receive(:create).with(name).and_return(true)
+        allow(eapi).to receive(:set_shutdown).and_return(true)
+        allow(eapi).to receive(:set_description).and_return(true)
+        allow(eapi).to receive(:set_flowcontrol).and_return(true)
       end
 
       it 'calls Interface#create(name) with the resource name' do
-        expect(eapi.Interface).to receive(:create)
-          .with(provider.resource[:name])
+        expect(eapi).to receive(:create).with(name)
         provider.create
-      end
-
-      it 'sets ensure to :present' do
-        provider.create
-        expect(provider.ensure).to eq(:present)
       end
 
       it 'sets enable to the resource value' do
@@ -177,110 +175,116 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       end
     end
 
-    # describe '#destroy' do
+    describe '#destroy' do
+      before :each do
+        allow(eapi).to receive(:create).with(name)
+        allow(eapi).to receive(:set_shutdown).and_return(true)
+        allow(eapi).to receive(:set_description).and_return(true)
+        allow(eapi).to receive(:set_flowcontrol).and_return(true)
+        allow(eapi).to receive(:delete).with(name).and_return(true)
+      end
 
-    #   let(:id) { provider.resource[:vlanid] }
+      it 'calls Interface#delete(name)' do
+        expect(eapi).to receive(:delete).with(name)
+        provider.destroy
+      end
 
-    #   before :each do
-    #     allow(provider.eapi.Vlan).to receive(:add).with(id)
-    #     allow(provider.eapi.Vlan).to receive(:delete).with(id)
-    #     allow(provider.eapi.Vlan).to receive(:set_state)
-    #     allow(provider.eapi.Vlan).to receive(:set_name)
-    #     allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-    #   end
+      context 'when the resource has been created' do
+        subject do
+          provider.create
+          provider.destroy
+        end
 
-    #   it 'calls Eapi#delete(id)' do
-    #     expect(provider.eapi.Vlan).to receive(:delete)
-    #       .with(id)
-    #     provider.destroy
-    #   end
+        it 'clears the property hash' do
+          subject
+          expect(provider.instance_variable_get(:@property_hash))
+            .to eq(name: name, ensure: :absent)
+        end
+      end
+    end
 
-    #   context 'when the resource has been created' do
-    #     subject do
-    #       provider.create
-    #       provider.destroy
-    #     end
+    describe '#description=(value)' do
+      before :each do
+        allow(eapi).to receive(:set_description)
+          .with(name, value: 'foo')
+      end
 
-    #     it 'sets ensure to :absent' do
-    #       subject
-    #       expect(provider.ensure).to eq(:absent)
-    #     end
+      it "calls Interface#set_description(#{name}, 'foo')" do
+        expect(eapi).to receive(:set_description)
+          .with(name, value: 'foo')
+        provider.description = 'foo'
+      end
 
-    #     it 'clears the property hash' do
-    #       subject
-    #       expect(provider.instance_variable_get(:@property_hash))
-    #         .to eq(vlanid: id, ensure: :absent)
-    #     end
-    #   end
-    # end
+      it 'updates description in the provider' do
+        expect(provider.description).not_to eq('foo')
+        provider.description = 'foo'
+        expect(provider.description).to eq('foo')
+      end
+    end
 
-    # describe '#description=(value)' do
-    #   before :each do
-    #     allow(provider.eapi.Vlan).to receive(:set_name)
-    #       .with(id: provider.resource[:vlanid], value: 'foo')
-    #   end
+    describe '#enable=(value)' do
+      before :each do
+        allow(eapi).to receive(:set_shutdown)
+          .with(name, value: value)
+      end
 
-    #   it 'calls Eapi#set_vlan_name("100", "foo")' do
-    #     expect(provider.eapi.Vlan).to receive(:set_name)
-    #       .with(id: provider.resource[:vlanid], value: 'foo')
-    #     provider.vlan_name = 'foo'
-    #   end
+      %w(true, false).each do |val|
+        let(:value) { !val }
+        it "calls Interface#set_shutdown(#{name}, #{val})" do
+          expect(eapi).to receive(:set_shutdown)
+            .with(name, value: !val)
+          provider.enable = val
+        end
+      end
+    end
 
-    #   it 'updates vlan_name in the provider' do
-    #     expect(provider.vlan_name).not_to eq('foo')
-    #     provider.vlan_name = 'foo'
-    #     expect(provider.vlan_name).to eq('foo')
-    #   end
-    # end
+    %w(:on :off :desired).each do |val|
+      describe '#flowcontrol_send=(value)' do
+        before :each do
+          allow(eapi).to receive(:set_flowcontrol)
+            .with(name, 'send', value: val)
+        end
 
-    # describe '#enable=(value)' do
-    # end
+        it "calls Interface#set_flowcontrol(#{name}, 'send', #{val})" do
+          expect(eapi).to receive(:set_flowcontrol)
+            .with(name, 'send', value: val)
+          provider.flowcontrol_send = val
+        end
 
-    # describe '#flowcontrol_send=(value)' do
-    #   before :each do
-    #     allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-    #       .with(id: provider.resource[:vlanid], value: ['foo'])
-    #   end
+        it 'updates flowcontrol_send in the provider' do
+          expect(provider.flowcontrol_send).not_to eq(val)
+          provider.flowcontrol_send = val
+          expect(provider.flowcontrol_send).to eq(val)
+        end
+      end
 
-    #   it 'calls Eapi#set_trunk_group("100", ["foo"])' do
-    #     expect(provider.eapi.Vlan).to receive(:set_trunk_group)
-    #       .with(id: provider.resource[:vlanid], value: ['foo'])
-    #     provider.trunk_groups = ['foo']
-    #   end
+      # describe '#flowcontrol_receive=(value)' do
+      #   context 'when value is :true' do
+      #     before :each do
+      #       allow(provider.eapi.Vlan).to receive(:set_state)
+      #         .with(id: provider.resource[:vlanid], value: 'active')
+      #     end
 
-    #   it 'updates trunk_groups in the provider' do
-    #     expect(provider.trunk_groups).not_to eq(['foo'])
-    #     provider.trunk_groups = ['foo']
-    #     expect(provider.trunk_groups).to eq(['foo'])
-    #   end
-    # end
+      #     it 'calls Eapi#set_enable("100", "active")' do
+      #       expect(provider.eapi.Vlan).to receive(:set_state)
+      #         .with(id: provider.resource[:vlanid], value: 'active')
+      #       provider.enable = true
+      #     end
+      #   end
 
-    # describe '#flowcontrol_receive=(value)' do
-    #   context 'when value is :true' do
-    #     before :each do
-    #       allow(provider.eapi.Vlan).to receive(:set_state)
-    #         .with(id: provider.resource[:vlanid], value: 'active')
-    #     end
+      #   context 'when value is :false' do
+      #     before :each do
+      #       allow(provider.eapi.Vlan).to receive(:set_state)
+      #         .with(id: provider.resource[:vlanid], value: 'suspend')
+      #     end
 
-    #     it 'calls Eapi#set_enable("100", "active")' do
-    #       expect(provider.eapi.Vlan).to receive(:set_state)
-    #         .with(id: provider.resource[:vlanid], value: 'active')
-    #       provider.enable = true
-    #     end
-    #   end
-
-    #   context 'when value is :false' do
-    #     before :each do
-    #       allow(provider.eapi.Vlan).to receive(:set_state)
-    #         .with(id: provider.resource[:vlanid], value: 'suspend')
-    #     end
-
-    #     it 'updates enable in the provider' do
-    #       expect(provider.enable).not_to be_falsey
-    #       provider.enable = false
-    #       expect(provider.enable).to be_falsey
-    #     end
-    #   end
-    # end
+      #     it 'updates enable in the provider' do
+      #       expect(provider.enable).not_to be_falsey
+      #       provider.enable = false
+      #       expect(provider.enable).to be_falsey
+      #     end
+      #   end
+      # end
+    end
   end
 end
