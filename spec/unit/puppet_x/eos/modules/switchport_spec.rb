@@ -42,11 +42,6 @@ describe PuppetX::Eos::Switchport do
   end
 
   context 'with Eapi#enable' do
-    before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands, format: 'text')
-        .and_return(api_response)
-    end
 
     context '#get' do
       subject { instance.get(name) }
@@ -60,8 +55,46 @@ describe PuppetX::Eos::Switchport do
         JSON.load(File.read(file))
       end
 
-      describe 'a switchport from the running-config' do
-        it { is_expected.to be_a_kind_of Hash }
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with(commands, format: 'text')
+          .and_return(api_response)
+      end
+
+      it { is_expected.to be_a_kind_of Hash }
+    end
+
+    context '#getall' do
+      subject { instance.getall }
+
+      let :interfaces do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/switchport_getall_interfaces.json')
+        JSON.load(File.read(file))
+      end
+
+      let :switchport_et1 do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/switchport_get_et1.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable)
+          .and_return(interfaces)
+
+        allow(instance).to receive(:get).with('Ethernet1')
+          .and_return(switchport_et1)
+      end
+
+      it { is_expected.to be_a_kind_of Array }
+
+      it 'has only one entry' do
+        expect(subject.size).to eq 1
+      end
+
+      it 'contains Ethernet1' do
+        expect(subject[0]['name']).to eq 'Ethernet1'
       end
     end
   end

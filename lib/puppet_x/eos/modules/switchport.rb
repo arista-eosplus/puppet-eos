@@ -41,7 +41,6 @@ module PuppetX
     # logical layer-2 interfaces.
     #
     class Switchport
-
       ##
       # Initialize instance of Switchport
       #
@@ -79,6 +78,19 @@ module PuppetX
         attr_hash[:trunk_native_vlan] = trunk_native_to_value output
         attr_hash[:access_vlan] = access_vlan_to_value output
         attr_hash
+      end
+
+      ##
+      # Retrieves all switchport interfaces from the running-config
+      #
+      # @return [Array] an array of switchport hashes
+      def getall
+        result = @api.enable('show interfaces')
+        switchports = []
+        result.first['interfaces'].map do |name, attrs|
+          switchports << get(name) if attrs['forwardingModel'] == 'bridged'
+        end
+        switchports
       end
 
       ##
@@ -225,7 +237,7 @@ module PuppetX
 
       def trunk_vlans_to_value(config)
         m = /(?<=Trunking VLANs Enabled:\s)(?<vlans>[[[:alnum:]]+|ALL])/
-          .match(config)
+            .match(config)
         return m['vlans'] unless m.nil?
       end
 
