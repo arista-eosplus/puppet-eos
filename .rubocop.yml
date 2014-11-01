@@ -13,3 +13,9 @@ Style/AccessorMethodName:
 
 Metrics/PerceivedComplexity:
   Max: 20 
+
+Metrics/AbcSize:
+  Max: 28
+
+Metrics/ClassLength:
+  Max: 120

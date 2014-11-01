@@ -343,7 +343,7 @@ describe PuppetX::Eos::Portchannel do
 
       it 'should call #remove_member' do
         expect(instance).to receive(:add_member)
-          .with('Port-Channel1','Ethernet3')
+          .with('Port-Channel1', 'Ethernet3')
         subject
       end
 

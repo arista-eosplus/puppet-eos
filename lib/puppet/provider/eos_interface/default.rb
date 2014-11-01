@@ -75,8 +75,10 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_hash = { name: resource[:name], ensure: :present }
     self.enable = resource[:enable]
     self.description = resource[:description] if resource[:description]
-    self.flowcontrol_send = resource[:flowcontrol_send] if resource[:flowcontrol_send]
-    self.flowcontrol_receive = resource[:flowcontrol_receive] if resource[:flowcontrol_receive]
+    self.flowcontrol_send = resource[:flowcontrol_send] \
+                            if resource[:flowcontrol_send]
+    self.flowcontrol_receive = resource[:flowcontrol_receive] \
+                               if resource[:flowcontrol_receive]
   end
 
   def destroy
