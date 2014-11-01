@@ -202,9 +202,7 @@ describe PuppetX::Eos::Portchannel do
       let(:commands) { ['interface Ethernet2', 'no channel-group'] }
       let(:api_response) { [{}, {}] }
 
-      describe 'from portchannel interface' do
-        it { is_expected.to be_truthy }
-      end
+      it { is_expected.to be_truthy }
     end
 
     context '#set_lacp_mode' do
@@ -324,6 +322,35 @@ describe PuppetX::Eos::Portchannel do
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
+      end
+    end
+  end
+
+  context 'with instance' do
+
+    describe '#set_members' do
+      subject { instance.set_members(intf, members) }
+
+      let(:intf) { 'Port-Channel1' }
+      let(:members) { %w(Ethernet1 Ethernet3) }
+
+      before :each do
+        allow(instance).to receive(:get_members)
+          .and_return(%w(Ethernet1 Ethernet2))
+        allow(instance).to receive(:add_member)
+        allow(instance).to receive(:remove_member)
+      end
+
+      it 'should call #remove_member' do
+        expect(instance).to receive(:add_member)
+          .with('Port-Channel1','Ethernet3')
+        subject
+      end
+
+      it 'should call #add_member' do
+        expect(instance).to receive(:add_member)
+          .with('Port-Channel1', 'Ethernet3')
+        subject
       end
     end
   end

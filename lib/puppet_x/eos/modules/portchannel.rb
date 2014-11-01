@@ -150,7 +150,8 @@ module PuppetX
                      "channel-group #{id} mode on"]) == [{}, {}]
       end
 
-      ## Removes a member interface from the channel group
+      ##
+      # Removes a member interface from the channel group
       #
       # @param [String] name The name of the port-channel to add the interface
       # @param [String] member The name of the interface to remove
@@ -158,6 +159,22 @@ module PuppetX
       # @return [Boolean] True if the create succeeds otherwise False
       def remove_member(_name, member)
         @api.config(["interface #{member}", 'no channel-group']) == [{}, {}]
+      end
+
+      ##
+      # Configures the member interfaces for the port-channel interface
+      #
+      # @param [String] name The name of the port-channel to assign the
+      #   the members to
+      # @param [Array] members The array of members to add to the port-channel
+      def set_members(name, members)
+        current = get_members(name)
+        (current - members).each do |member|
+          remove_member(name, member)
+        end
+        (members - current).each do |member|
+          add_member(name, member)
+        end
       end
 
       ##

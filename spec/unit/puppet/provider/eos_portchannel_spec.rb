@@ -37,11 +37,11 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
   let(:resource) do
     resource_hash = {
       ensure: :present,
-      name: 'Ethernet1',
-      mode: :trunk,
-      trunk_allowed_vlans: %w(1 10 100 1000),
-      trunk_native_vlan: '1',
-      access_vlan: '1',
+      name: 'Port-Channel1',
+      lacp_mode: :active,
+      members: %w(Ethernet1 Ethernet2),
+      lacp_fallback: :static,
+      lacp_timeout: 100,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_portchannel).new(resource_hash)
@@ -49,20 +49,19 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  def switchports
-    switchports = Fixtures[:switchports]
-    return switchports if switchports
-    file = File.join(File.dirname(__FILE__), 'fixtures/switchports.json')
-    Fixtures[:switchports] = JSON.load(File.read(file))
+  def portchannels
+    portchannels = Fixtures[:portchannels]
+    return portchannels if portchannels
+    file = File.join(File.dirname(__FILE__), 'fixtures/portchannels.json')
+    Fixtures[:portchannels] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Switchport)
-    allow(described_class.eapi.Switchport).to receive(:getall)
-      .and_return(switchports)
+    allow(described_class.eapi).to receive(:Portchannel)
+    allow(described_class.eapi.Portchannel).to receive(:getall)
+      .and_return(portchannels)
   end
 
   context 'class methods' do
@@ -71,64 +70,57 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has three entries' do
-        expect(subject.size).to eq 3
+      it 'has two entries' do
+        expect(subject.size).to eq 2
       end
 
-      %w(Ethernet1 Ethernet2 Ethernet3).each do |name|
+      %w(Port-Channel1 Port-Channel2).each do |name|
         it "has an instance for interface #{name}" do
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
         end
       end
 
-      context "eos_switchport { 'Ethernet1': }" do
-        subject { described_class.instances.find { |p| p.name == 'Ethernet1' } }
+      context "eos_portchannel { 'Port-Channel1': }" do
+        subject do
+          described_class.instances.find do |p|
+            p.name == 'Port-Channel1'
+          end
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
-                         name: 'Ethernet1',
-                         mode: :trunk,
-                         trunk_allowed_vlans: %w(1 10 100 1000),
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
-
+                         name: 'Port-Channel1',
+                         lacp_mode: :active,
+                         members: %w(Ethernet1 Ethernet2),
+                         lacp_fallback: :static,
+                         lacp_timeout: 100
       end
 
-      context "eos_switchport { 'Ethernet2': }" do
-        subject { described_class.instances.find { |p| p.name == 'Ethernet2' } }
+      context "eos_portchannel { 'Port-Channel2': }" do
+        subject do
+          described_class.instances.find do |p|
+            p.name == 'Port-Channel2'
+          end
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
-                         name: 'Ethernet2',
-                         mode: :access,
-                         trunk_allowed_vlans: [],
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
-
-      end
-
-      context "eos_switchport { 'Ethernet3': }" do
-        subject { described_class.instances.find { |p| p.name == 'Ethernet3' } }
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Ethernet3',
-                         mode: :trunk,
-                         trunk_allowed_vlans: %w(1 10 100 1000),
-                         trunk_native_vlan: '1',
-                         access_vlan: '1'
-
+                         name: 'Port-Channel2',
+                         lacp_mode: :passive,
+                         members: %w(Ethernet3 Ethernet4),
+                         lacp_fallback: :individual,
+                         lacp_timeout: 100
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet1'),
-          'Ethernet4' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet4')
+          'Port-Channel1' => Puppet::Type.type(:eos_portchannel)
+            .new(name: 'Port-Channel1'),
+          'Port-Channel5' => Puppet::Type.type(:eos_portchannel)
+            .new(name: 'Port-Channel5')
         }
       end
 
@@ -136,20 +128,20 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
-          expect(rsrc.provider.mode).to eq(:absent)
+          expect(rsrc.provider.lacp_mode).to eq(:absent)
         end
       end
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
-        expect(resources['Ethernet1'].provider.exists?).to be_truthy
+        expect(resources['Port-Channel1'].provider.name).to eq 'Port-Channel1'
+        expect(resources['Port-Channel1'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['Ethernet4'].provider.name).to eq('Ethernet4')
-        expect(resources['Ethernet4'].provider.exists?).to be_falsey
+        expect(resources['Port-Channel5'].provider.name).to eq('Port-Channel5')
+        expect(resources['Port-Channel5'].provider.exists?).to be_falsey
       end
     end
   end
@@ -160,7 +152,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
     before do
       allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Switchport).and_return(eapi)
+      allow(provider.eapi).to receive(:Portchannel).and_return(eapi)
     end
 
     describe '#exists?' do
@@ -179,15 +171,15 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     describe '#create' do
 
       before :each do
-        allow(eapi).to receive(:create).with('Ethernet1')
-        allow(eapi).to receive(:set_mode)
-        allow(eapi).to receive(:set_trunk_allowed_vlans)
-        allow(eapi).to receive(:set_trunk_native_vlan)
-        allow(eapi).to receive(:set_access_vlan)
+        allow(eapi).to receive(:create)
+        allow(eapi).to receive(:set_lacp_mode)
+        allow(eapi).to receive(:set_lacp_fallback)
+        allow(eapi).to receive(:set_lacp_timeout)
+        allow(eapi).to receive(:set_members)
       end
 
-      it "calls Switchport#create('Ethernet1')" do
-        expect(eapi).to receive(:create).with('Ethernet1')
+      it "calls Portchannel#create('Port-Channel1')" do
+        expect(eapi).to receive(:create).with('Port-Channel1')
         provider.create
       end
 
@@ -196,43 +188,42 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         expect(provider.ensure).to eq(:present)
       end
 
-      it 'sets mode to the resource value' do
+      it 'sets lacp_mode to the resource value' do
         provider.create
-        expect(provider.mode).to eq provider.resource[:mode]
+        expect(provider.lacp_mode).to eq provider.resource[:lacp_mode]
       end
 
-      it 'sets trunk_allowed_vlans to the resource value' do
+      it 'sets members to the resource value' do
         provider.create
-        value = provider.resource[:trunk_allowed_vlans]
-        expect(provider.trunk_allowed_vlans).to eq value
+        value = provider.resource[:members]
+        expect(provider.members).to eq value
       end
 
-      it 'sets trunk_native_vlan to the resource value' do
+      it 'sets lacp_fallback to the resource value' do
         provider.create
-        value = provider.resource[:trunk_native_vlan]
-        expect(provider.trunk_native_vlan).to eq value
+        value = provider.resource[:lacp_fallback]
+        expect(provider.lacp_fallback).to eq value
       end
 
-      it 'sets access_vlan to the resource value' do
+      it 'sets lacp_timeout to the resource value' do
         provider.create
-        value = provider.resource[:access_vlan]
-        expect(provider.access_vlan).to eq value
+        value = provider.resource[:lacp_timeout]
+        expect(provider.lacp_timeout).to eq value
       end
     end
 
     describe '#destroy' do
       before :each do
-        allow(eapi).to receive(:delete).with('Ethernet1')
-        allow(eapi).to receive(:create).with('Ethernet1')
-        allow(eapi).to receive(:set_mode)
-        allow(eapi).to receive(:set_trunk_allowed_vlans)
-        allow(eapi).to receive(:set_trunk_native_vlan)
-        allow(eapi).to receive(:set_access_vlan)
-
+        allow(eapi).to receive(:delete)
+        allow(eapi).to receive(:create)
+        allow(eapi).to receive(:set_lacp_mode)
+        allow(eapi).to receive(:set_lacp_fallback)
+        allow(eapi).to receive(:set_lacp_timeout)
+        allow(eapi).to receive(:set_members)
       end
 
-      it "calls Switchport#delete('Ethernet1')" do
-        expect(eapi).to receive(:delete).with('Ethernet1')
+      it "calls Portchannel#delete('Port-Channel1')" do
+        expect(eapi).to receive(:delete).with('Port-Channel1')
         provider.destroy
       end
 
@@ -250,92 +241,80 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         it 'clears the property hash' do
           subject
           expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Ethernet1', ensure: :absent)
+            .to eq(name: 'Port-Channel1', ensure: :absent)
         end
       end
     end
 
-    describe 'set_mode=(val)' do
+    describe '#lacp_mode=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_mode)
+        allow(provider.eapi.Portchannel).to receive(:set_lacp_mode)
       end
 
-      %w(access trunk).each do |value|
+      %w(active passive on).each do |value|
         let(:value) { value }
-        it "class Switchport#set_mode(#{value})" do
-          expect(eapi).to receive(:set_mode)
-            .with('Ethernet1', value: value)
-          provider.mode = value
+        it "class Portchannel#set_lacp_mode(#{value})" do
+          expect(eapi).to receive(:set_lacp_mode)
+            .with('Port-Channel1', value: value)
+          provider.lacp_mode = value
         end
 
-        it 'updates the mode property in the provider' do
-          expect(provider.mode).not_to eq value
-          provider.mode = value
-          expect(provider.mode).to eq value
+        it 'updates the lacp_mode property in the provider' do
+          expect(provider.lacp_mode).not_to eq value
+          provider.lacp_mode = value
+          expect(provider.lacp_mode).to eq value
         end
       end
     end
 
-    describe 'set_trunk_native_vlan=(val)' do
+    describe '#members=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_trunk_native_vlan)
-          .with('Ethernet1', value: vlanid)
+        allow(provider.eapi.Portchannel).to receive(:set_members)
       end
 
-      let(:vlanid) { '1' }
-
-      it 'calls Switchport#set_trunk_native_vlan' do
-        expect(eapi).to receive(:set_trunk_native_vlan)
-          .with('Ethernet1', value: vlanid)
-        provider.trunk_native_vlan = vlanid
-      end
-
-      it 'updates the address property in the provider' do
-        expect(provider.trunk_native_vlan).not_to eq vlanid
-        provider.trunk_native_vlan = vlanid
-        expect(provider.trunk_native_vlan).to eq vlanid
+      it 'handles both add and remove member operations' do
+        expect(eapi).to receive(:set_members)
+          .with('Port-Channel1', %w(Ethernet1 Ethernet3))
+        provider.members = %w(Ethernet1 Ethernet3)
       end
     end
 
-    describe 'set_trunk_allowed_vlans=(val)' do
+    describe '#lacp_fallback=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_trunk_allowed_vlans)
-          .with('Ethernet1', value: vlan_array)
+        allow(provider.eapi.Portchannel).to receive(:set_lacp_fallback)
       end
 
-      let(:vlan_array) { %w(1 10 100 1000) }
+      %w(static individual).each do |value|
+        let(:value) { value }
+        it "calls Portchannel#set_lacp_fallback=#{value}" do
+          expect(eapi).to receive(:set_lacp_fallback)
+            .with('Port-Channel1', value: value)
+          provider.lacp_fallback = value
+        end
 
-      it 'calls Switchport#set_trunk_allowed_vlans' do
-        expect(eapi).to receive(:set_trunk_allowed_vlans)
-          .with('Ethernet1', value: vlan_array)
-        provider.trunk_allowed_vlans = vlan_array
-      end
-
-      it 'updates the address property in the provider' do
-        expect(provider.trunk_allowed_vlans).not_to eq vlan_array
-        provider.trunk_allowed_vlans = vlan_array
-        expect(provider.trunk_allowed_vlans).to eq vlan_array
+        it 'updates the lacp_fallback property in the provider' do
+          expect(provider.lacp_fallback).not_to eq value
+          provider.lacp_fallback = value
+          expect(provider.lacp_fallback).to eq value
+        end
       end
     end
 
-    describe 'set_access_vlan=(val)' do
+    describe '#lacp_timeout=(val)' do
       before :each do
-        allow(provider.eapi.Switchport).to receive(:set_access_vlan)
-          .with('Ethernet1', value: vlanid)
+        allow(provider.eapi.Portchannel).to receive(:set_lacp_timeout)
       end
 
-      let(:vlanid) { '1' }
-
-      it 'calls Switchport#set_access_vlan' do
-        expect(eapi).to receive(:set_access_vlan)
-          .with('Ethernet1', value: vlanid)
-        provider.access_vlan = vlanid
+      it 'class Portchannel#set_lacp_timeout=100' do
+        expect(eapi).to receive(:set_lacp_timeout)
+          .with('Port-Channel1', value: 900)
+        provider.lacp_timeout = 900
       end
 
-      it 'updates the address property in the provider' do
-        expect(provider.access_vlan).not_to eq vlanid
-        provider.access_vlan = vlanid
-        expect(provider.access_vlan).to eq vlanid
+      it 'updates the lacp_timeout property in the provider' do
+        expect(provider.lacp_timeout).not_to eq 900
+        provider.lacp_timeout = 900
+        expect(provider.lacp_timeout).to eq 900
       end
     end
   end

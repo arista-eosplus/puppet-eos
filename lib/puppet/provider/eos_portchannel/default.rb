@@ -39,71 +39,39 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show interfaces')
-    result = resp.first['interfaces']
-    result = result.each_with_object([]) do |(k, v), array|
-      array << v if /^Port/.match(v['name'])
-    end
-
-    result.map do |attr_hash|
-      name = attr_hash['name']
-      provider_hash = { name: name, ensure: :present }
-
-      members = portchannel_members_to_value(name)
-      provider_hash[:members] = members
-
-      provider_hash[:lacp_mode] = portchannel_lacp_mode_to_value(members[0]) unless members.empty
-
-      if attr_hash['fallbackEnabled']
-        case attr_hash['fallbackEnabledType']
-        when 'fallbackStatic'
-          fallback = 'static'
-        when 'fallbackIndividual'
-          fallback = 'individual'
-        end
-      end
-
-      provider_hash[:lacp_fallback] = fallback || ''
-      provider_hash[:lacp_timeout] = attr_hash['fallbackTimeout']
-
+    eapi.Portchannel.getall.map do |attrs|
+      provider_hash = { name: attrs['name'], ensure: :present }
+      provider_hash[:lacp_mode] = attrs['lacp_mode'].to_sym
+      provider_hash[:members] = attrs['members']
+      provider_hash[:lacp_fallback] = attrs['lacp_fallback'].to_sym
+      provider_hash[:lacp_timeout] = attrs['lacp_timeout']
       new(provider_hash)
     end
-
-  end
-
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
-    end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
   end
 
   def lacp_mode=(val)
-    @property_flush[:lacp_mode] = val
+    eapi.Portchannel.set_lacp_mode(resource[:name], value: val)
+    @property_hash[:lacp_mode] = val
   end
 
   def members=(val)
-    @property_flush[:members] = val
+    eapi.Portchannel.set_members(resource[:name], val)
+    @property_hash[:members] = val
   end
 
   def lacp_fallback=(val)
-    @property_flush[:lacp_fallback] = val
+    eapi.Portchannel.set_lacp_fallback(resource[:name], value: val)
+    @property_hash[:lacp_fallback] = val
   end
 
   def lacp_timeout=(val)
-    @property_flush[:lacp_timeout] = val
+    eapi.Portchannel.set_lacp_timeout(resource[:name], value: val)
+    @property_hash[:lacp_timeout] = val
   end
 
   def exists?
@@ -111,9 +79,8 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def create
-    id = resource[:name]
-    eapi.config(["interface #{id}"])
-    @property_hash = { name: id, ensure: :present }
+    eapi.Portchannel.create(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
@@ -121,59 +88,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def destroy
-    id = resource[:name]
-    eapi.config("no interface #{id}")
-    @property_hash = { name: id, ensure: :absent }
-  end
-
-  def flush
-    flush_lacp_mode
-    flush_members
-    flush_lacp_fallback
-    flush_lacp_timeout
-    @property_hash = resource.to_hash
-  end
-
-  def flush_lacp_mode
-    value = @property_flush[:lacp_mode]
-    return nil unless value
-    name = resource[:name]
-    grp = /\d+(\/\d+)*/.match(name)[0]
-    members = resource[:members]
-    resource[:members].each do |member|
-      eapi.config(["interface #{member}",
-                   'no channel-group',
-                   "channel-group #{grp} mode #{value}"])
-    end
-  end
-
-  def flush_members
-    proposed = @property_flush[:members]
-    return nil unless proposed
-    name = resource[:name]
-    current = resource[:members]
-    lacp = resource[:lacp_mode]
-    grp = /\d+(\/\d+)*/.match(name)[0]
-    (current - proposed).each do |member|
-      eapi.config(["interface #{member}", 'no channel-group'])
-    end
-    (proposed - current).each do |member|
-      eapi.config(["interface #{member}", "channel-group #{grp} mode #{lacp}"])
-    end
-  end
-
-  def flush_lacp_fallback
-    value = @property_flush[:lacp_fallback]
-    return nil unless value
-    name = resource[:name]
-    eapi.config(["interface #{name}", "port-channel lacp fallback #{value}"])
-  end
-
-  def flush_lacp_timeout
-    value = @property_flush[:lacp_timeout]
-    return nil unless value
-    name = resource[:name]
-    eapi.config(["interface #{name}",
-                 "port-channel lacp fallback timeout #{value}"])
+    eapi.Portchannel.delete(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
