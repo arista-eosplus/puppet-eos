@@ -112,9 +112,12 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_interface).new(name: 'Ethernet1'),
-          'Ethernet2' => Puppet::Type.type(:eos_interface).new(name: 'Ethernet2'),
-          'Management1' => Puppet::Type.type(:eos_interface).new(name: 'Management1')
+          'Ethernet1' => Puppet::Type.type(:eos_interface)
+            .new(name: 'Ethernet1'),
+          'Ethernet2' => Puppet::Type.type(:eos_interface)
+            .new(name: 'Ethernet2'),
+          'Management1' => Puppet::Type.type(:eos_interface)
+            .new(name: 'Management1')
         }
       end
       subject { described_class.prefetch(resources) }

@@ -80,6 +80,40 @@ describe PuppetX::Eos::Portchannel do
       it { is_expected.to be_a_kind_of Hash }
     end
 
+    context '#getall' do
+      subject { instance.getall }
+
+      let :interfaces do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/portchannel_get.json')
+        JSON.load(File.read(file))
+      end
+
+      let :portchannel_po1 do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/portchannel_po1.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable).and_return(interfaces)
+
+        allow(instance).to receive(:get)
+          .with('Port-Channel1')
+          .and_return(portchannel_po1)
+      end
+
+      it { is_expected.to be_a_kind_of Array }
+
+      it 'has only one entry' do
+        expect(subject.size).to eq 1
+      end
+
+      it 'contains Port-Channel1' do
+        expect(subject[0]['name']).to eq 'Port-Channel1'
+      end
+    end
+
     context '#get_members' do
       subject { instance.get_members(name) }
 

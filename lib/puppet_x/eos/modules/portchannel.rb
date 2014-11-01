@@ -80,6 +80,20 @@ module PuppetX
       end
 
       ##
+      # Retrieves all logical port-channel interfaces from the running config
+      #
+      # @return [Array] an array of port-channel attribute hashes
+      def getall
+        result = @api.enable('show interfaces')
+        interfaces = result.first['interfaces']
+        resp = []
+        interfaces.each do |key, value|
+          resp << get(key) if value['hardware'] == 'portChannel'
+        end
+        resp
+      end
+
+      ##
       # Retreives the member interfaces for the specified channel group
       #
       # @param [String] name The name of the port-channel interface to return
