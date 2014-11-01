@@ -39,38 +39,23 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show mlag interfaces')
-    result = resp.first['interfaces']
-
-    result.map do |name, attr_hash|
-      provider_hash = { name: attr_hash['localInterface'], ensure: :present }
-      provider_hash[:mlag_id] = name
+    result = eapi.Mlag.get_interfaces
+    result.first['interfaces'].map do |name, attrs|
+      provider_hash = { name: attrs['localInterface'],
+                        mlag_id: name,
+                        ensure: :present }
       new(provider_hash)
     end
-
-  end
-
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
-    end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
   end
 
   def mlag_id=(val)
-    @property_flush[:mlag_id] = val
+    eapi.Mlag.set_mlag_id(resource[:name], value: val)
+    @property_hash[:mlag_id] = val
   end
 
   def exists?
@@ -78,27 +63,13 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   end
 
   def create
-    intf = resource[:name]
-    id = resource[:mlag_id]
-    eapi.config(["interface #{intf}", "mlag #{id}"])
-    @property_hash = { name: id, ensure: :present }
+    eapi.Mlag.add_interface(resource[:name], resource['mlag_id'])
+    @property_hash = { name: resource['name'], ensure: :present }
+    self.mlag_id = resource[:mlag_id] if resource[:mlag_id]
   end
 
   def destroy
-    id = resource[:name]
-    eapi.config(["interface #{id}", "no mlag"])
-    @property_hash = { name: id, ensure: :absent }
-  end
-
-  def flush
-    flush_mlag_id
-    @property_hash = resource.to_hash
-  end
-
-  def flush_mlag_id
-    value = @property_flush[:mlag_id]
-    return nil unless value
-    name = @resource[:name]
-    eapi.config(["interface #{name}", "mlag #{value}"])
+    eapi.Mlag.remove_interface(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

@@ -279,6 +279,38 @@ describe PuppetX::Eos::Mlag do
       end
     end
 
+    context '#set_mlag_id' do
+      subject { instance.set_mlag_id(name, opts) }
+
+      let(:name) { 'Port-Channel1' }
+      let(:opts) { { value: value, default: default } }
+      let(:default) { false }
+      let(:value) { nil }
+
+      describe 'to value 100' do
+        let(:value) { '100' }
+        let(:commands) { ["interface #{name}", "mlag #{value}"] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'to negate mlag peer-link' do
+        let(:commands) { ["interface #{name}", "no mlag"] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'default mlag peer-link' do
+        let(:default) { true }
+        let(:commands) { ["interface #{name}", "default mlag"] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
     context '#set_shutdown' do
       subject { instance.set_shutdown(opts) }
 

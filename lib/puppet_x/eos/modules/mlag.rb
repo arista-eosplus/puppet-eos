@@ -132,6 +132,29 @@ module PuppetX
       end
 
       ##
+      # Configures the mlag id for an interface
+      #
+      # @param [String] name The interface to configure
+      # @param [Hash] opts The configuration parameters for mlag
+      # @option opts [string] :value The value to set the interface mlag id
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_mlag_id(name, opts = {})
+        value = opts[:value] || false
+        default = opts[:default] || false
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default mlag'
+        when false
+          cmds << (value ? "mlag #{value}" : 'no mlag')
+        end
+        @api.config(cmds) == [{}, {}]
+      end
+
+      ##
       # Configures the mlag domain_id
       #
       # @param [Hash] opts The configuration parameters for mlag
