@@ -92,7 +92,7 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
   end
 
   def exists?
-    return @property_hash[:ensure] == 'present'
+    @property_hash[:ensure] == 'present'
   end
 
   def flush
@@ -142,4 +142,3 @@ Puppet::Type.type(:eos_eapi).provide(:eos) do
     cli('-p', '15', '-A', '-c', commands)
   end
 end
-

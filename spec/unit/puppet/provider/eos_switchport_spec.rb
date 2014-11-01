@@ -284,10 +284,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
       let(:vlanid) { '1' }
 
-      it "calls Switchport#set_trunk_native_vlan" do
+      it 'calls Switchport#set_trunk_native_vlan' do
         expect(eapi).to receive(:set_trunk_native_vlan)
           .with('Ethernet1', value: vlanid)
-         provider.trunk_native_vlan = vlanid
+        provider.trunk_native_vlan = vlanid
       end
 
       it 'updates the address property in the provider' do
@@ -305,10 +305,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
       let(:vlan_array) { %w(1 10 100 1000) }
 
-      it "calls Switchport#set_trunk_allowed_vlans" do
+      it 'calls Switchport#set_trunk_allowed_vlans' do
         expect(eapi).to receive(:set_trunk_allowed_vlans)
           .with('Ethernet1', value: vlan_array)
-         provider.trunk_allowed_vlans = vlan_array
+        provider.trunk_allowed_vlans = vlan_array
       end
 
       it 'updates the address property in the provider' do
@@ -326,10 +326,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
       let(:vlanid) { '1' }
 
-      it "calls Switchport#set_access_vlan" do
+      it 'calls Switchport#set_access_vlan' do
         expect(eapi).to receive(:set_access_vlan)
           .with('Ethernet1', value: vlanid)
-         provider.access_vlan = vlanid
+        provider.access_vlan = vlanid
       end
 
       it 'updates the address property in the provider' do

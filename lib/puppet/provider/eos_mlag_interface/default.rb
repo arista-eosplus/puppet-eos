@@ -101,6 +101,4 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
     name = @resource[:name]
     eapi.config(["interface #{name}", "mlag #{value}"])
   end
-
 end
-

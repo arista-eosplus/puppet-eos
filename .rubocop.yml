@@ -12,4 +12,4 @@ Style/AccessorMethodName:
   Enabled: False
 
 Metrics/PerceivedComplexity:
-  Max: 15
+  Max: 20 

@@ -123,7 +123,7 @@ module PuppetX
         when true
           cmds << 'default shutdown'
         when false
-          cmds << (value ? 'shutdown' : "no shutdown")
+          cmds << (value ? 'shutdown' : 'no shutdown')
         end
         @api.config(cmds) == [{}, {}]
       end

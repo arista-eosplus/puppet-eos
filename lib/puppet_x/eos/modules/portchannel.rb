@@ -142,7 +142,7 @@ module PuppetX
       # @param [String] member The name of the interface to remove
       #
       # @return [Boolean] True if the create succeeds otherwise False
-      def remove_member(name, member)
+      def remove_member(_name, member)
         @api.config(["interface #{member}", 'no channel-group']) == [{}, {}]
       end
 
@@ -225,7 +225,8 @@ module PuppetX
         name = members.first
         result = @api.enable("show running-config interfaces #{name}",
                              format: 'text')
-        m = /channel-group\s\d+\smode\s(?<lacp>.*)/.match(result.first['output'])
+        m = /channel-group\s\d+\smode\s(?<lacp>.*)/
+            .match(result.first['output'])
         m['lacp']
       end
 
