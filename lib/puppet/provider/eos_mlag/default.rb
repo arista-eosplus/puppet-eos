@@ -39,57 +39,38 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show mlag')
-    result = resp.first
-
-    return [] if !result.key?('domainId')
-
-    provider_hash = { name: result['domainId'],  ensure: :present }
-    provider_hash[:domain_id] = result['domainId']
-    provider_hash[:local_interface] = result['localInterface']
-    provider_hash[:peer_address] = result['peerAddress']
-    provider_hash[:peer_link] = result['peerLink']
-
-    state = result['state'] == 'disabled' ? :false : :true
-    provider_hash[:enable] = state
-
-    provider_hash[:primary_priority] = 0
+    result = eapi.Mlag.get
+    provider_hash = { name: result['domain_id'],  ensure: :present }
+    provider_hash[:local_interface] = result['local_interface']
+    provider_hash[:peer_address] = result['peer_address']
+    provider_hash[:peer_link] = result['peer_link']
+    provider_hash[:enable] = result['enable']
     [new(provider_hash)]
   end
 
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
-    end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
-  end
-
   def local_interface=(val)
-    @property_flush[:local_interface] = val
+    eapi.Mlag.set_local_interface(value: val)
+    @property_hash[:local_interface] = val
   end
 
   def peer_address=(val)
-    @property_flush[:peer_address] = val
+    eapi.Mlag.set_peer_address(value: val)
+    @property_hash[:peer_address] = val
   end
 
   def peer_link=(val)
-    @property_flush[:peer_link] = val
+    eapi.Mlag.set_peer_link(value: val)
+    @property_hash[:peer_link] = val
   end
 
   def enable=(val)
-    @property_flush[:enable] = val
+    eapi.Mlag.set_shutdown(value: !val)
+    @property_hash[:enable] = val
   end
 
   def exists?
@@ -97,52 +78,17 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def create
-    id = resource[:name]
-    eapi.config(['mlag configuration', "domain-id #{id}"])
-    @property_hash = { name: id, ensure: :present }
-    self.local_interface = resource[:local_interface] if resource[:local_interface]
+    eapi.Mlag.set_domain_id(value: resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
+    self.local_interface = resource[:local_interface] \
+                           if resource[:local_interface]
     self.peer_address = resource[:peer_address] if resource[:peer_address]
     self.peer_link = resource[:peer_link] if resource[:peer_link]
     self.enable = resource[:enable] if resource[:enable]
   end
 
   def destroy
-    eapi.config('no mlag configuration')
+    eapi.Mlag.delete
     @property_hash = { name: resource[:name],  ensure: :absent }
   end
-
-  def flush
-    flush_local_interface
-    flush_peer_address
-    flush_peer_link
-    flush_enable
-    @property_hash = resource.to_hash
-  end
-
-  def flush_local_interface
-    value = @property_flush[:local_interface]
-    return nil unless value
-    eapi.config(['mlag configuration', "local-interface #{value}"])
-  end
-
-  def flush_peer_address
-    value = @property_flush[:peer_address]
-    return nil unless value
-    eapi.config(['mlag configuration', "peer-address #{value}"])
-  end
-
-  def flush_peer_link
-    value = @property_flush[:peer_link]
-    return nil unless value
-    eapi.config(['mlag configuration', "peer-link #{value}"])
-  end
-
-  def flush_enable
-    value = @property_flush[:enable]
-    return nil unless value
-    state = value ? 'no shutdown' : 'shutdown'
-    eapi.config(['mlag configuration', state])
-  end
-
 end
-

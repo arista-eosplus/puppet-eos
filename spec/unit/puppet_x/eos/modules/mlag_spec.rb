@@ -94,6 +94,40 @@ describe PuppetX::Eos::Mlag do
         .and_return(api_response)
     end
 
+    context '#create' do
+      subject { instance.create(name) }
+
+      let(:name) { 'mlag-domain' }
+      let(:commands) { ['mlag configuration', "domain-id #{name}"] }
+
+      describe 'create mlag instance with domain-id' do
+        let(:api_response) { [{}, {}] }
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context '#delete' do
+      subject { instance.delete }
+
+      let(:commands) { 'no mlag configuration' }
+
+      describe 'remove mlag configuration' do
+        let(:api_response) { [{}] }
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context '#default' do
+      subject { instance.default }
+
+      let(:commands) { 'default mlag configuration' }
+
+      describe 'default mlag configuration' do
+        let(:api_response) { [{}] }
+        it { is_expected.to be_truthy }
+      end
+    end
+
     context '#add_interface' do
       subject { instance.add_interface(name, mlag_id) }
 

@@ -77,6 +77,32 @@ module PuppetX
       end
 
       ##
+      # Creates a new mlag instance
+      #
+      # @param [String] name The domain id of the mlag instance
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def create(name)
+        @api.config(['mlag configuration', "domain-id #{name}"]) == [{}, {}]
+      end
+
+      ##
+      # Deletes the current mlag configuration from the running-config
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def delete
+        @api.config('no mlag configuration') == [{}]
+      end
+
+      ##
+      # Defaults the current mlag configuration
+      #
+      # @return [Boolean] True if the command succeeds otherwise False
+      def default
+        @api.config('default mlag configuration') == [{}]
+      end
+
+      ##
       # Retrieves the interfaces that are mlag enabled from the running-config
       #
       # @return [Array<Hash>] returns an Array of Hashes keyed by the mlag id
