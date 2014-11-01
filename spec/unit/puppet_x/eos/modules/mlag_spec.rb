@@ -296,7 +296,7 @@ describe PuppetX::Eos::Mlag do
       end
 
       describe 'to negate mlag peer-link' do
-        let(:commands) { ["interface #{name}", "no mlag"] }
+        let(:commands) { ["interface #{name}", 'no mlag'] }
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
@@ -304,7 +304,7 @@ describe PuppetX::Eos::Mlag do
 
       describe 'default mlag peer-link' do
         let(:default) { true }
-        let(:commands) { ["interface #{name}", "default mlag"] }
+        let(:commands) { ["interface #{name}", 'default mlag'] }
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }

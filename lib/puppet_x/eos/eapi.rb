@@ -99,7 +99,7 @@ module PuppetX
       # @return [Object]
       def method_missing(name)
         name = "PuppetX::Eos::#{name}"
-        klass = name.split('::').inject(Object) { |o, c| o.const_get c }
+        klass = name.split('::').inject(Object) { |a, e| a.const_get e }
         klass.new self
       end
 
@@ -187,9 +187,9 @@ module PuppetX
       #
       # @return [Array<Hash>] ordered list of output from commands
       def config(commands)
+        commands = [*commands] unless commands.respond_to?('each')
+        commands.insert(0, 'configure')
         begin
-          commands = [*commands] unless commands.respond_to?('each')
-          commands.insert(0, 'configure')
           result = enable(commands)
           result.shift
           result
