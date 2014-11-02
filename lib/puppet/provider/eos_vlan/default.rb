@@ -44,19 +44,15 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Vlan.getall.map do |name, attr_hash|
+    result = eapi.Vlan.getall
+    result.first['vlans'].map do |name, attrs|
       provider_hash = { name: name, vlanid: name, ensure: :present }
-      provider_hash[:vlan_name] = attr_hash['name']
-      enable = attr_hash['status'] == 'active' ? :true : :false
+      provider_hash[:vlan_name] = attrs['name']
+      enable = attrs['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
-      provider_hash[:trunk_groups] = attr_hash['trunkGroups']
+      provider_hash[:trunk_groups] = result[1]['trunkGroups'][name]['name']
       new(provider_hash)
     end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
   end
 
   def enable=(val)

@@ -1,27 +1,27 @@
-{
-  "1": {
-    "status": "active",
-    "name": "default",
-    "interfaces": {
+[
+    {
+       "sourceDetail": "",
+       "vlans": {
+          "1": {
+             "status": "active",
+             "name": "default",
+             "interfaces": {
+                "Ethernet2": {
+                   "privatePromoted": false
+                },
+                "Ethernet1": {
+                   "privatePromoted": false
+                }
+             },
+             "dynamic": false
+          }
+       }
     },
-    "trunkGroups": [],
-    "dynamic": false
-  },
-  "2": {
-    "status": "active",
-    "name": "VLAN0002",
-    "interfaces": {
-    },
-    "trunkGroups": [],
-    "dynamic": false
-  },
-  "3": {
-    "status": "active",
-    "name": "VLAN0003",
-    "interfaces": {
-    },
-    "trunkGroups": ["foo"],
-    "dynamic": false
-  }
-}
-
+    {
+       "trunkGroups": {
+          "1": {
+             "names": []
+          }
+       }
+    }
+ ]

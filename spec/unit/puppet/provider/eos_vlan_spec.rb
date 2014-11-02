@@ -71,15 +71,13 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has three instances' do
-        expect(subject.size).to eq(3)
+      it 'has only one entry' do
+        expect(subject.size).to eq 1
       end
 
-      %w(1 2 3).each do |name|
-        it "has an instance for VLAN #{name}" do
-          instance = subject.find { |p| p.name == name }
-          expect(instance).to be_a described_class
-        end
+      it "has an instance for VLAN 1" do
+        instance = subject.find { |p| p.name == '1' }
+        expect(instance).to be_a described_class
       end
 
       context 'eos_vlan { 1: }' do
@@ -91,33 +89,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
                          vlan_name: 'default',
                          enable: :true,
                          exists?: true,
-                         trunk_groups: [],
-                         vni: :absent
-      end
-
-      context 'eos_vlan { 2: }' do
-        subject { described_class.instances.find { |p| p.name == '2' } }
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         vlanid: '2',
-                         vlan_name: 'VLAN0002',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: [],
-                         vni: :absent
-      end
-
-      context 'eos_vlan { 3: }' do
-        subject { described_class.instances.find { |p| p.name == '3' } }
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         vlanid: '3',
-                         vlan_name: 'VLAN0003',
-                         enable: :true,
-                         exists?: true,
-                         trunk_groups: ['foo'],
+                         trunk_groups: :absent,
                          vni: :absent
       end
     end
@@ -142,19 +114,16 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        %w(1 2 3).each do |vid|
-          expect(resources[vid].provider.vlanid).to eq(vid)
-          name = vid == '1' ? 'default' : "VLAN000#{vid}"
-          expect(resources[vid].provider.vlan_name).to eq(name)
-          expect(resources[vid].provider.exists?).to eq(true)
-        end
+        expect(resources['1'].provider.vlanid).to eq '1'
+        expect(resources['1'].provider.vlan_name).to eq 'default'
+        expect(resources['1'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['4'].provider.vlanid).to eq(:absent)
-        expect(resources['4'].provider.vlan_name).to eq(:absent)
-        expect(resources['4'].provider.exists?).to eq(false)
+        expect(resources['4'].provider.vlanid).to eq :absent
+        expect(resources['4'].provider.vlan_name).to eq :absent
+        expect(resources['4'].provider.exists?).to be_falsey
       end
     end
   end
