@@ -22,7 +22,7 @@ end
 
 group :development, :test do
   gem 'yard'
-  gem 'redcarpet'
+  gem 'redcarpet', '~> 3.1.2'
   gem 'rake', '~> 10.1.0',       require: false
   gem 'rspec', '~> 3.0.0'
   gem 'rspec-mocks', '~> 3.0.0'

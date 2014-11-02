@@ -61,7 +61,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Vlan)
-    allow(described_class.eapi.Vlan).to receive(:get).and_return(all_vlans)
+    allow(described_class.eapi.Vlan).to receive(:getall).and_return(all_vlans)
   end
 
   context 'class methods' do
@@ -179,12 +179,12 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
     end
 
-    describe '#add' do
+    describe '#create' do
 
       let(:id) { provider.resource[:vlanid] }
 
       before :each do
-        allow(provider.eapi.Vlan).to receive(:add).with(id)
+        allow(provider.eapi.Vlan).to receive(:create).with(id)
 
         allow(provider.eapi.Vlan).to receive(:set_name)
           .with(id: id, value: provider.resource[:vlan_name])
@@ -196,8 +196,8 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
           .with(id: id, value: 'active')
       end
 
-      it 'calls Eapi#add(id) with the resource id' do
-        expect(provider.eapi.Vlan).to receive(:add)
+      it 'calls Vlan#create(id) with the resource id' do
+        expect(provider.eapi.Vlan).to receive(:create)
           .with(provider.resource[:vlanid])
         provider.create
       end
@@ -228,7 +228,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       let(:id) { provider.resource[:vlanid] }
 
       before :each do
-        allow(provider.eapi.Vlan).to receive(:add).with(id)
+        allow(provider.eapi.Vlan).to receive(:create).with(id)
         allow(provider.eapi.Vlan).to receive(:delete).with(id)
         allow(provider.eapi.Vlan).to receive(:set_state)
         allow(provider.eapi.Vlan).to receive(:set_name)
