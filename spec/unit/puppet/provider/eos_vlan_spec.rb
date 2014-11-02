@@ -156,13 +156,13 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         allow(provider.eapi.Vlan).to receive(:create).with(id)
 
         allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: id, value: provider.resource[:vlan_name])
+          .with(id, value: provider.resource[:vlan_name])
 
         allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: id, value: provider.resource[:trunk_groups])
+          .with(id, value: provider.resource[:trunk_groups])
 
         allow(provider.eapi.Vlan).to receive(:set_state)
-          .with(id: id, value: 'active')
+          .with(id, value: 'active')
       end
 
       it 'calls Vlan#create(id) with the resource id' do
@@ -232,12 +232,12 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     describe '#vlan_name=(value)' do
       before :each do
         allow(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: provider.resource[:vlanid], value: 'foo')
+          .with(provider.resource[:vlanid], value: 'foo')
       end
 
-      it 'calls Eapi#set_vlan_name("100", "foo")' do
+      it 'calls Vlan#set_vlan_name("100", "foo")' do
         expect(provider.eapi.Vlan).to receive(:set_name)
-          .with(id: provider.resource[:vlanid], value: 'foo')
+          .with(provider.resource[:vlanid], value: 'foo')
         provider.vlan_name = 'foo'
       end
 
@@ -248,18 +248,15 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
     end
 
-    describe '#enable=(value)' do
-    end
-
     describe '#trunk_groups=(value)' do
       before :each do
         allow(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: provider.resource[:vlanid], value: ['foo'])
+          .with(provider.resource[:vlanid], value: ['foo'])
       end
 
-      it 'calls Eapi#set_trunk_group("100", ["foo"])' do
+      it 'calls Vlan#set_trunk_group("100", ["foo"])' do
         expect(provider.eapi.Vlan).to receive(:set_trunk_group)
-          .with(id: provider.resource[:vlanid], value: ['foo'])
+          .with(provider.resource[:vlanid], value: ['foo'])
         provider.trunk_groups = ['foo']
       end
 
@@ -274,12 +271,12 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       context 'when value is :true' do
         before :each do
           allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'active')
+            .with(provider.resource[:vlanid], value: 'active')
         end
 
-        it 'calls Eapi#set_enable("100", "active")' do
+        it 'calls Vlan#set_enable("100", "active")' do
           expect(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'active')
+            .with(provider.resource[:vlanid], value: 'active')
           provider.enable = true
         end
       end
@@ -287,7 +284,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       context 'when value is :false' do
         before :each do
           allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(id: provider.resource[:vlanid], value: 'suspend')
+            .with(provider.resource[:vlanid], value: 'suspend')
         end
 
         it 'updates enable in the provider' do

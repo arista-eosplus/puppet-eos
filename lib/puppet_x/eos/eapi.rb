@@ -31,7 +31,7 @@
 #
 require 'net/http'
 require 'json'
-# require 'SecureRandom'
+require 'syslog'
 
 require 'puppet_x/eos/autoload'
 

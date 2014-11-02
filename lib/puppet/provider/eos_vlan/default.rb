@@ -57,17 +57,17 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def enable=(val)
     arg = val ? 'active' : 'suspend'
-    eapi.Vlan.set_state(id: resource[:vlanid], value: arg)
+    eapi.Vlan.set_state(resource[:vlanid], value: arg)
     @property_hash[:enable] = val
   end
 
   def vlan_name=(val)
-    eapi.Vlan.set_name(id: resource[:vlanid], value: val)
+    eapi.Vlan.set_name(resource[:vlanid], value: val)
     @property_hash[:vlan_name] = val
   end
 
   def trunk_groups=(val)
-    eapi.Vlan.set_trunk_group(id: resource[:vlanid], value: val)
+    eapi.Vlan.set_trunk_group(resource[:vlanid], value: val)
     @property_hash[:trunk_groups] = val
   end
 
