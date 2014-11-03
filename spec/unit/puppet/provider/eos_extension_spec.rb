@@ -37,34 +37,31 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
   let(:resource) do
     resource_hash = {
       ensure: :present,
-      name: 'dummy.rpm',
+      name: 'puppet.rpm',
       provider: described_class.name
     }
     Puppet::Type.type(:eos_extension).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
-  let(:extension) { double }
+  let(:eapi) { double }
 
-  def all_extensions
+  def extensions
     extensions = Fixtures[:all_extensions]
     return extensions if extensions
     file = File.join(File.dirname(__FILE__), 'fixtures/extensions.json')
-    Fixtures[:all_extensions] = JSON.load(File.read(file))
+    Fixtures[:extensions] = JSON.load(File.read(file))
   end
 
   # Stub the Api method class to obtain all vlans.
   before :each do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
-
-    allow(described_class.eapi).to receive(:Extension)
-      .and_return(extension)
-
-    allow(extension).to receive(:get)
-      .and_return(all_extensions)
-
-    allow(extension).to receive(:autoload?).and_return(true)
+    allow(described_class.eapi).to receive(:Extension).and_return(eapi)
+    allow(eapi).to receive(:getall)
+      .and_return(extensions)
+    allow(eapi).to receive(:autoload?)
+      .and_return(true)
   end
 
   context 'class methods' do
@@ -74,35 +71,35 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has three instances' do
-        expect(subject.size).to eq(3)
+      it 'has two entries' do
+        expect(subject.size).to eq(2)
       end
 
-      ['foo.swix', 'bar.rpm', 'baz.rpm'].each do |name|
+      %w(ruby-1.9.3-1.swix puppet-3.7.1-2-ruby1.swix).each do |name|
         it "has an instance for extension #{name}" do
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
         end
       end
 
-      context 'eos_extension { foo.swix: }' do
-        subject { described_class.instances.find { |p| p.name == 'foo.swix' } }
+      context 'eos_extension { ruby-1.9.3-1.swix: }' do
+        subject do
+          described_class.instances.find do |p|
+            p.name == 'ruby-1.9.3-1.swix'
+          end
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
                          autoload: :true
       end
 
-      context 'eos_extension { bar.rpm: }' do
-        subject { described_class.instances.find { |p| p.name == 'bar.rpm' } }
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         autoload: :true
-      end
-
-      context 'eos_extension { baz.rpm: }' do
-        subject { described_class.instances.find { |p| p.name == 'baz.rpm' } }
+      context 'eos_extension { puppet-3.7.1-2-ruby1.swix: }' do
+        subject do
+          described_class.instances.find do |p|
+            p.name == 'puppet-3.7.1-2-ruby1.swix'
+          end
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
@@ -113,18 +110,19 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'foo.swix' => Puppet::Type.type(:eos_extension).new(name: 'foo.swix'),
-          'bar.rpm' => Puppet::Type.type(:eos_extension).new(name: 'bar.rpm'),
-          'baz.rpm' => Puppet::Type.type(:eos_extension).new(name: 'baz.rpm'),
-          'dummy.rpm' =>
-            Puppet::Type.type(:eos_extension).new(name: 'dummy.rpm')
+          'ruby-1.9.3-1.swix' => Puppet::Type.type(:eos_extension)
+            .new(name: 'ruby-1.9.3-1.swix'),
+          'puppet-3.7.1-2-ruby1.swix' => Puppet::Type.type(:eos_extension)
+            .new(name: 'puppet-3.7.1-2-ruby1.swix'),
+          'dummy.rpm' => Puppet::Type.type(:eos_extension)
+            .new(name: 'dummy.rpm')
         }
       end
       subject { described_class.prefetch(resources) }
 
       it 'sets the provider instance of the managed resource' do
         subject
-        ['foo.swix', 'bar.rpm', 'baz.rpm'].each do |ext|
+        %w(ruby-1.9.3-1.swix puppet-3.7.1-2-ruby1.swix).each do |ext|
           expect(resources[ext].provider.name).to eq(ext)
           expect(resources[ext].provider.autoload).to eq(:true)
           expect(resources[ext].provider.exists?).to eq(true)
@@ -141,12 +139,12 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-    let(:extension) { double }
+    let(:eapi) { double }
 
     before do
       allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Extension).and_return(extension)
-      allow(extension).to receive(:autoload?).and_return(true)
+      allow(provider.eapi).to receive(:Extension).and_return(eapi)
+      allow(eapi).to receive(:autoload?).and_return(true)
     end
 
     describe '#exists?' do
@@ -166,12 +164,10 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
       let(:name) { provider.resource[:name] }
 
       before :each do
-        allow(provider.eapi.Extension).to receive(:install)
-          .with(name, nil)
-          .and_return(true)
+        allow(eapi).to receive(:install)
       end
 
-      it 'calls Eapi#install(name) with the extensions name' do
+      it 'calls Extension#install(name) with the extensions name' do
         expect(provider.eapi.Extension).to receive(:install)
           .with(name, nil)
         provider.create
@@ -189,17 +185,14 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
     end
 
     describe '#destroy' do
-      let(:name) { 'dummy.rpm' }
+      let(:name) { 'puppet.rpm' }
 
       before :each do
-        allow(provider.eapi.Extension).to receive(:delete)
-          .with(name)
-          .and_return(true)
-
-        allow(provider.eapi.Extension).to receive(:install)
+        allow(eapi).to receive(:delete)
+        allow(eapi).to receive(:install)
       end
 
-      it 'calls Eapi#delete(name)' do
+      it 'calls Extension#delete(name)' do
         expect(provider.eapi.Extension).to receive(:delete)
           .with(name)
         provider.destroy
@@ -223,6 +216,5 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
         end
       end
     end
-
   end
 end

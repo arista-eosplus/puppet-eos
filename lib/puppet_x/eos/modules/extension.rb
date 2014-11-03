@@ -52,22 +52,32 @@ module PuppetX
       # Retrieves all of the extenions loaded in EOS and returns an array
       # of hashes using the 'show extensions' command over eAPI.
       #
-      # Example:
-      #   [{
-      #     "ruby-1.9.3-1.swix": {
-      #       "status": "installed",   # installed, forceInstalled
-      #       "version": "1.9.3.484",
-      #       "presence": "present",
-      #       "release": "32.eos4",
-      #       "numRpms": 10,
-      #       "error": false
-      #     }
-      #   }]
+      #   Example:
+      #      [
+      #          {
+      #             "extensions": {
+      #                "ruby-1.9.3-1.swix": {
+      #                   "status": "installed",
+      #                   "version": "1.9.3.484",
+      #                   "presence": "present",
+      #                   "release": "32.eos4",
+      #                   "numRpms": 10,
+      #                   "error": false
+      #                },
+      #                "puppet-3.7.1-2-ruby1.swix": {
+      #                   "status": "installed",
+      #                   "version": "3.7.1",
+      #                   "presence": "present",
+      #                   "release": "1.eos4",
+      #                   "numRpms": 14,
+      #                   "error": false
+      #                },
+      #             }
+      #          }
+      #       ]
       #
-      # @return [Hash<Hash<String, String>>] Nested hash describing
-      #   the extension details.  If there are no extensions then an
-      #   empty Hash is returned
-      def get
+      # @return [Array<Hash>] an array with a single hash element
+      def getall
         @api.enable('show extensions')
       end
 

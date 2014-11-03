@@ -42,13 +42,13 @@ describe PuppetX::Eos::Extension do
   end
 
   context '#getall' do
-    subject { instance.get }
+    subject { instance.getall }
 
     let(:commands) { 'show extensions' }
 
     let :api_response do
       dir = File.dirname(__FILE__)
-      file = File.join(dir, 'fixtures/extension_getall.json')
+      file = File.join(dir, 'fixtures/extensions.json')
       JSON.load(File.read(file))
     end
 
