@@ -70,19 +70,19 @@ module PuppetX
                                'show snmp source-interface'],
                               format: 'text')
 
-        attr_hash = {}
+        attr_hash = { 'name' => 'configuration' }
 
         (0..3).each do |i|
           m = /(?<=:\s)(.*)$/.match(result[i]['output'])
           case i
           when 0
-            attr_hash[:contact] = !m.nil? ? m[0] : ''
+            attr_hash['contact'] = !m.nil? ? m[0] : ''
           when 1
-            attr_hash[:location] = !m.nil? ? m[0] : ''
+            attr_hash['location'] = !m.nil? ? m[0] : ''
           when 2
-            attr_hash[:chassis_id] = !m.nil? ? m[0] : ''
+            attr_hash['chassis_id'] = !m.nil? ? m[0] : ''
           when 3
-            attr_hash[:source_interface] = !m.nil? ? m[0] : ''
+            attr_hash['source_interface'] = !m.nil? ? m[0] : ''
           end
         end
         attr_hash

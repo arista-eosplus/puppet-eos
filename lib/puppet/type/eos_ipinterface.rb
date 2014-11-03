@@ -79,7 +79,7 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
     validate do |value|
       unless value.to_i.between?(68, 9214)
-        fail "value #{value.inspect} is not between 68 and 9214"
+        fail "value #{value.inspect} must be in the range of 68 and 9214"
       end
     end
   end
