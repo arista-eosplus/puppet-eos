@@ -70,4 +70,17 @@ Puppet::Type.newtype(:eos_ipinterface) do
     end
   end
 
+  newproperty(:mtu) do
+    desc 'Specifies the IP interface MTU value'
+
+    munge do |value|
+      Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(68, 9214)
+        fail "value #{value.inspect} is not between 68 and 9214"
+      end
+    end
+  end
 end

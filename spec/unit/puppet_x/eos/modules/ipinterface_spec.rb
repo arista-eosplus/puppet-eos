@@ -139,5 +139,39 @@ describe PuppetX::Eos::Ipinterface do
         it { is_expected.to be_truthy }
       end
     end
+
+    context '#set_mtu' do
+      subject { instance.set_mtu(name, opts) }
+
+      let(:opts) { { value: value, default: default } }
+      let(:default) { false }
+      let(:value) { nil }
+
+      describe 'with valid mtu valie' do
+        let(:name) { 'Ethernet1' }
+        let(:value) { '9000' }
+        let(:commands) { ["interface #{name}", "mtu #{value}"] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'negate mtu for interface' do
+        let(:name) { 'Ethernet1' }
+        let(:commands) { ["interface #{name}", 'no mtu'] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'default mtu for interface' do
+        let(:name) { 'Ethernet1' }
+        let(:default) { true }
+        let(:commands) { ["interface #{name}", 'default mtu'] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+    end
   end
 end

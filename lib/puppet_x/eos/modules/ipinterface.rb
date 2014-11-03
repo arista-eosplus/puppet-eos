@@ -128,6 +128,29 @@ module PuppetX
         end
         @api.config(cmds) == [{}, {}]
       end
+
+      ##
+      ## Configures the MTU value for the interface
+      #
+      # @param [String] name The name of the interface to configure
+      # @param [Hash] opts The configuration parameters for the interface
+      # @option opts [string] :value The value to set the MTU to
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_mtu(name, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default mtu'
+        when false
+          cmds << (value.nil? ? 'no mtu' : "mtu #{value}")
+        end
+        @api.config(cmds) == [{}, {}]
+      end
     end
   end
 end

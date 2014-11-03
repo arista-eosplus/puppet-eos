@@ -39,6 +39,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       ensure: :present,
       name: 'Ethernet1',
       address: '1.2.3.4/24',
+      mtu: '9000',
       provider: described_class.name
     }
     Puppet::Type.type(:eos_ipinterface).new(resource_hash)
@@ -86,7 +87,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Ethernet1',
-                         address: '172.16.10.1/24'
+                         address: '172.16.10.1/24',
+                         mtu: 1500
       end
 
       context "eos_ipinterface { 'Management1': )" do
@@ -99,7 +101,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Management1',
-                         address: '192.168.1.16/24'
+                         address: '192.168.1.16/24',
+                         mtu: 1500
       end
     end
 
@@ -161,7 +164,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
       before :each do
         allow(eapi).to receive(:create).with('Ethernet1')
-        allow(eapi).to receive(:set_address).and_return(true)
+        allow(eapi).to receive(:set_address)
+        allow(eapi).to receive(:set_mtu)
       end
 
       it "calls Ipinterface#create('Ethernet1')" do
@@ -179,6 +183,10 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(provider.address).to eq(provider.resource[:address])
       end
 
+      it 'sets mtu to the resource value' do
+        provider.create
+        expect(provider.mtu).to eq(provider.resource[:mtu])
+      end
     end
 
     describe '#destroy' do
@@ -186,6 +194,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         allow(eapi).to receive(:delete).with('Ethernet1')
         allow(eapi).to receive(:create)
         allow(eapi).to receive(:set_address)
+        allow(eapi).to receive(:set_mtu)
       end
 
       it "calls Ipinterface#delete('Ethernet1')" do
@@ -228,6 +237,25 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(provider.address).not_to eq '1.2.3.4/5'
         provider.address = '1.2.3.4/5'
         expect(provider.address).to eq '1.2.3.4/5'
+      end
+    end
+
+    describe '#mtu=(val)' do
+      before :each do
+        allow(provider.eapi.Ipinterface).to receive(:set_mtu)
+          .with('Ethernet1', value: '9000')
+      end
+
+      it 'calls Ipinterface#set_mtu=9000' do
+        expect(eapi).to receive(:set_mtu)
+          .with('Ethernet1', value: '9000')
+        provider.mtu = '9000'
+      end
+
+      it 'updates the mtu property in the provider' do
+        expect(provider.mtu).not_to eq '9000'
+        provider.mtu = '9000'
+        expect(provider.mtu).to eq '9000'
       end
     end
   end

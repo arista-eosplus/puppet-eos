@@ -65,4 +65,19 @@ describe Puppet::Type.type(:eos_ipinterface) do
     # XXX Validate IP address
   end
 
+  describe 'mtu' do
+    let(:attribute) { :mtu }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+
+    [100, '100'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'"  do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
+  end
+
 end

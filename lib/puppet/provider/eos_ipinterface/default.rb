@@ -50,6 +50,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
       addr = attr_hash['interfaceAddress']['primaryIp']['address']
       mask = attr_hash['interfaceAddress']['primaryIp']['maskLen']
       provider_hash[:address] = "#{addr}/#{mask}" if !addr.nil? || !mask.nil?
+      provider_hash[:mtu] = attr_hash['mtu']
       new(provider_hash)
     end
   end
@@ -57,6 +58,11 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   def address=(val)
     eapi.Ipinterface.set_address(resource['name'], value: val)
     @property_hash[:address] = val
+  end
+
+  def mtu=(val)
+    eapi.Ipinterface.set_mtu(resource['name'], value: val)
+    @property_hash[:mtu] = val
   end
 
   def exists?
@@ -67,6 +73,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     eapi.Ipinterface.create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.address = resource[:address] if resource[:address]
+    self.mtu = resource[:mtu] if resource[:mtu]
   end
 
   def destroy
