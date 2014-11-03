@@ -75,7 +75,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         expect(subject.size).to eq 1
       end
 
-      it "has an instance for VLAN 1" do
+      it 'has an instance for VLAN 1' do
         instance = subject.find { |p| p.name == '1' }
         expect(instance).to be_a described_class
       end

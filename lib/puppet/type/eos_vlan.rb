@@ -83,17 +83,6 @@ Puppet::Type.newtype(:eos_vlan) do
   end
 
   newproperty(:trunk_groups, array_matching: :all) do
-    desc 'An array of VLAN IDs strings in the trunk group'
-
-    # Make sure we have a string for the ID
-    munge do |value|
-      Integer(value).to_s
-    end
-
-    validate do |value|
-      unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
-      end
-    end
+    desc 'An array of ASCII strings in the trunk group'
   end
 end

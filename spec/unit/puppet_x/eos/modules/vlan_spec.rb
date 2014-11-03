@@ -215,15 +215,18 @@ describe PuppetX::Eos::Vlan do
         value = (0...10).map { ('a'..'z').to_a[rand(26)] }.join
         describe "configure trunk_group=#{value} for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
-          let(:value) { value }
-          let(:commands) { ["vlan #{vlanid}", "trunk group #{value}"] }
-          let(:api_response) { [{}, {}] }
+          let(:value) { [value] }
+          let(:commands) do
+            ["vlan #{vlanid}", 'no trunk group', "trunk group #{value}"]
+          end
+          let(:api_response) { [{}, {}, {}] }
 
           it { is_expected.to be_truthy }
         end
 
         describe "negate trunk group for vlan #{vlanid}" do
           let(:vlanid) { vlanid }
+          let(:value) { [] }
           let(:commands) { ["vlan #{vlanid}", 'no trunk group'] }
           let(:api_response) { [{}, {}] }
 

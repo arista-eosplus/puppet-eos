@@ -159,8 +159,6 @@ module PuppetX
       # @option opts [String] :id The VLAN ID to change
       # @option opts [string] :value The value to set the trunk group to
       # @option opts [Boolean] :default The value should be set to default
-      #
-      # @return [Boolean] returns true if the command completed successfully
       def set_trunk_group(id, opts = {})
         value = opts[:value]
         default = opts[:default] || false
@@ -170,9 +168,10 @@ module PuppetX
         when true
           cmds << 'default trunk group'
         when false
-          cmds << (value.nil? ? 'no trunk group' : "trunk group #{value}")
+          cmds << 'no trunk group'
+          value.each { |tg| cmds << "trunk group #{tg}" }
         end
-        @api.config(cmds) == [{}, {}]
+        @api.config(cmds)
       end
     end
   end

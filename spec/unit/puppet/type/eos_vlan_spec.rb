@@ -92,7 +92,6 @@ describe Puppet::Type.type(:eos_vlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'vlan range string value'
   end
 
 end
