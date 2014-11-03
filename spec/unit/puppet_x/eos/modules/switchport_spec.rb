@@ -193,9 +193,10 @@ describe PuppetX::Eos::Switchport do
 
       describe 'configure trunk allowed vlans' do
         let(:name) { 'Ethernet1' }
-        let(:value) { '1,10-20,30' }
+        let(:value) { %w(1 10 100 1000) }
+        let(:config_value) { '1,10,100,1000' }
         let(:commands) do
-          ["interface #{name}", "switchport trunk allowed vlan #{value}"]
+          ["interface #{name}", "switchport trunk allowed vlan #{config_value}"]
         end
         let(:api_response) { [{}, {}] }
 

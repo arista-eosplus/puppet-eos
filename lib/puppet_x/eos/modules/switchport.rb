@@ -53,9 +53,9 @@ module PuppetX
 
       ##
       # Retrieves the properies for a logical switchport from the
-      # running-config using eAPI
+      # running-config using eAPI.
       #
-      # Example
+      #   Example
       #   {
       #     "name": <String>,
       #     "mode": [access, trunk],
@@ -72,11 +72,13 @@ module PuppetX
         result = @api.enable("show interfaces #{name} switchport",
                              format: 'text')
         output = result.first['output']
-        attr_hash = { name: name }
-        attr_hash[:mode] = mode_to_value output
-        attr_hash[:trunk_allowed_vlans] = trunk_vlans_to_value output
-        attr_hash[:trunk_native_vlan] = trunk_native_to_value output
-        attr_hash[:access_vlan] = access_vlan_to_value output
+        attr_hash = {
+          'name' => name,
+          'mode' => mode_to_value(output),
+          'trunk_allowed_vlans' => trunk_vlans_to_value(output),
+          'trunk_native_vlan' => trunk_native_to_value(output),
+          'access_vlan' => access_vlan_to_value(output)
+        }
         attr_hash
       end
 
@@ -164,6 +166,8 @@ module PuppetX
       def set_trunk_allowed_vlans(name, opts = {})
         value = opts[:value]
         default = opts[:default] || false
+
+        value = value.join(',') unless value.nil?
 
         cmds = ["interface #{name}"]
         case default
