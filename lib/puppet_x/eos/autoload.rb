@@ -47,5 +47,6 @@ module PuppetX
     autoload :Mlag, 'puppet_x/eos/modules/mlag'
     autoload :Ntp, 'puppet_x/eos/modules/ntp'
     autoload :Ospf, 'puppet_x/eos/modules/ospf'
+    autoload :Portchannel, 'puppet_x/eos/modules/portchannel'
   end
 end

@@ -69,7 +69,7 @@ describe PuppetX::Eos::Portchannel do
           .and_return(response_portchannel_get)
 
         allow(eapi).to receive(:enable)
-          .with("show #{name} all-ports", format: 'text')
+          .with('show port-channel 1 all-ports', format: 'text')
           .and_return(response_portchannel_getmembers)
 
         allow(eapi).to receive(:enable)
@@ -127,7 +127,7 @@ describe PuppetX::Eos::Portchannel do
 
       before :each do
         allow(eapi).to receive(:enable)
-          .with("show #{name} all-ports", format: 'text')
+          .with('show port-channel 1 all-ports', format: 'text')
           .and_return(api_response)
       end
 
@@ -218,7 +218,7 @@ describe PuppetX::Eos::Portchannel do
 
       before :each do
         allow(eapi).to receive(:enable)
-          .with("show #{name} all-ports", format: 'text')
+          .with('show port-channel 1 all-ports', format: 'text')
           .and_return(enable_response)
 
         allow(eapi).to receive(:config)

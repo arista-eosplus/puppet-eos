@@ -71,12 +71,14 @@ module PuppetX
         result = @api.enable("show interfaces #{name}")
         interface = result.first['interfaces']
 
-        attr_hash = { name: name }
-        attr_hash[:members] = members
-        attr_hash[:lacp_mode] = get_lacp_mode members
-        attr_hash[:lacp_fallback] = get_lacp_fallback interface
-        attr_hash[:lacp_timeout] = interface['fallbackTimeout']
-        attr_hash
+        attrs = {
+          'name' => name,
+          'members' => members,
+          'lacp_mode' => get_lacp_mode(members),
+          'lacp_fallback' => get_lacp_fallback(interface),
+          'lacp_timeout' => interface['fallbackTimeout']
+        }
+        attrs
       end
 
       ##
@@ -102,7 +104,8 @@ module PuppetX
       # @return [Array] An array of interface names that are members of the
       #   specified channel group id
       def get_members(name)
-        result = @api.enable("show #{name} all-ports",
+        id = name.match(/\d+/)
+        result = @api.enable("show port-channel #{id} all-ports",
                              format: 'text')
         result.first['output'].scan(/Ethernet\d+/)
       end

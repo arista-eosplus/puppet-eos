@@ -55,7 +55,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def lacp_mode=(val)
-    eapi.Portchannel.set_lacp_mode(resource[:name], value: val)
+    eapi.Portchannel.set_lacp_mode(resource[:name], val)
     @property_hash[:lacp_mode] = val
   end
 

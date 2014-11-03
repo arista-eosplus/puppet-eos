@@ -255,7 +255,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         let(:value) { value }
         it "class Portchannel#set_lacp_mode(#{value})" do
           expect(eapi).to receive(:set_lacp_mode)
-            .with('Port-Channel1', value: value)
+            .with('Port-Channel1', value)
           provider.lacp_mode = value
         end
 
