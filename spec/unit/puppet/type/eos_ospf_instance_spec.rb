@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_instance) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '100', catalog: catalog) }
+  let(:type) { described_class.new(name: '1', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: '100'
+  it_behaves_like 'an ensurable type', name: '1'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -45,8 +45,14 @@ describe Puppet::Type.type(:eos_ospf_instance) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 65535)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', [{ two: :three }, 'abc']
+
+    [1, '1'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'"  do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
   end
 
   describe 'router_id' do
