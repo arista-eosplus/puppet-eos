@@ -45,6 +45,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   def self.instances
     result = eapi.Mlag.get
+    return [] if result.empty?
     provider_hash = { name: result['domain_id'],  ensure: :present }
     provider_hash[:local_interface] = result['local_interface']
     provider_hash[:peer_address] = result['peer_address']

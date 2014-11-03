@@ -38,16 +38,17 @@ Puppet::Type.newtype(:eos_ospf_instance) do
 
   # Parameters
 
-  newparam(:name) do
+  newparam(:name, namevar: true) do
     desc 'The resource name for the OSPF instance'
 
     # min: 1 max: 65535
+    munge do |value|
+      Integer(value).to_s
+    end
+
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value.to_i.between?(1, 65_535)
+        fail "value #{value.inspect} is not between 1 and 65535"
       end
     end
   end
@@ -68,5 +69,4 @@ Puppet::Type.newtype(:eos_ospf_instance) do
       end
     end
   end
-
 end

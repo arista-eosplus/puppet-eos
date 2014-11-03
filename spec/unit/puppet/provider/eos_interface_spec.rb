@@ -51,7 +51,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   def all_interfaces
     all_interfaces = Fixtures[:all_interfaces]
     return all_interfaces if all_interfaces
-    file = File.join(File.dirname(__FILE__), 'fixtures/interface_get.json')
+    file = File.join(File.dirname(__FILE__), 'fixtures/interfaces.json')
     Fixtures[:all_interfaces] = JSON.load(File.read(file))
   end
 
@@ -60,7 +60,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Interface)
-    allow(described_class.eapi.Interface).to receive(:get)
+    allow(described_class.eapi.Interface).to receive(:getall)
       .and_return(all_interfaces)
   end
 

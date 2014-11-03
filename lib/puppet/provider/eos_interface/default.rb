@@ -44,10 +44,10 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.get
-    flowcontrols = result['interfaceFlowControls']
+    result = eapi.Interface.getall
+    flowcontrols = result[1]['interfaceFlowControls']
 
-    result['interfaces'].map do |name, attrs|
+    result.first['interfaces'].map do |name, attrs|
       provider_hash = { name: name }
       state = attrs['interfaceStatus'] == 'disabled' ? :false : :true
       provider_hash[:enable] = state
@@ -58,16 +58,11 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
         rx = flowcontrols[name]['rxAdminState']
       end
 
-      provider_hash[:flowcontrol_send] = tx.to_sym || :absent
-      provider_hash[:flowcontrol_receive] = rx.to_sym || :absent
+      provider_hash[:flowcontrol_send] = !tx.nil? ? tx.to_sym : :absent
+      provider_hash[:flowcontrol_receive] = !rx.nil? ? rx.to_sym : :absent
 
       new(provider_hash)
     end
-  end
-
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
   end
 
   def create

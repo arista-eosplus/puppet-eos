@@ -67,13 +67,13 @@ module PuppetX
       def get
         result = @api.enable('show mlag')
         attr_hash = {
-          domain_id: result[0]['domainId'],
-          peer_link: result[0]['peerLink'],
-          local_interface: result[0]['localInterface'],
-          peer_address: result[0]['peerAddress'],
-          enable: result[0]['state'] == 'disabled' ? :false : :true
-        }
-        attr_hash
+          'domain_id' => result[0]['domainId'],
+          'peer_link' => result[0]['peerLink'],
+          'local_interface' => result[0]['localInterface'],
+          'peer_address' => result[0]['peerAddress'],
+          'enable' => result[0]['state'] == 'disabled' ? :false : :true
+        } if result[0].key?('domainId')
+        attr_hash ||= {}
       end
 
       ##

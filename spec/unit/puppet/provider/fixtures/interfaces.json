@@ -1,5 +1,6 @@
-{
-   "interfaces": {
+[
+   {
+      "interfaces": {
       "Management1": {
          "lastStatusChangeTimestamp": 1413835446.51,
          "name": "Management1",
@@ -120,8 +121,10 @@
          "physicalAddress": "00:50:56:3f:0c:0b",
          "description": ""
       }
+      }
    },
-   "interfaceFlowControls": {
+   {
+      "interfaceFlowControls": {
       "Management1": {
          "txAdminState": "desired",
          "rxAdminState": "desired",
@@ -138,5 +141,6 @@
          "txPause": 0,
          "rxOperState": "unknown"
       }
+      }
    }
-}
+]
