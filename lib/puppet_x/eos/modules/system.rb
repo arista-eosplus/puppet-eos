@@ -31,23 +31,48 @@
 #
 
 ##
-# PuppetX namespace
+# PuppetX is the toplevel namespace for working with Arista EOS nodes
 module PuppetX
   ##
-  # Eos namespace
+  # Eos is module namesapce for working with the EOS command API
   module Eos
-    autoload :Vlan, 'puppet_x/eos/modules/vlan'
-    autoload :Extension, 'puppet_x/eos/modules/extension'
-    autoload :Daemon, 'puppet_x/eos/modules/daemon'
-    autoload :Interface, 'puppet_x/eos/modules/interface'
-    autoload :Switchport, 'puppet_x/eos/modules/switchport'
-    autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
-    autoload :Snmp, 'puppet_x/eos/modules/snmp'
-    autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
-    autoload :Mlag, 'puppet_x/eos/modules/mlag'
-    autoload :Ntp, 'puppet_x/eos/modules/ntp'
-    autoload :Ospf, 'puppet_x/eos/modules/ospf'
-    autoload :Portchannel, 'puppet_x/eos/modules/portchannel'
-    autoload :System, 'puppet_x/eos/modules/system'
+    ##
+    # The System class provides management of system level functions
+    #
+    class System
+      ##
+      # Initializes a new instance of System.
+      #
+      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
+      #
+      # @return [PuppetX::Eos::System] instance
+      def initialize(api)
+        @api = api
+      end
+
+      ##
+      # Returns a hash of configured daemons from the running config
+      #
+      #   Example
+      #   {
+      #     "hostname": "veos01"
+      #   }
+      #
+      # @return [Hash] Hash of system properties
+      def get
+        result = @api.enable('show hostname')
+        return { 'hostname' => result.first['hostname'] }
+      end
+
+      ##
+      # Configures the system hostname
+      #
+      # @param [String] name The name to configure the hostname to
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_hostname(name)
+        @api.config("hostname #{name}") == [{}]
+      end
+    end
   end
 end

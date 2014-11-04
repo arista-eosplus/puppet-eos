@@ -29,25 +29,50 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'spec_helper'
+require 'puppet_x/eos/modules/system'
 
-##
-# PuppetX namespace
-module PuppetX
-  ##
-  # Eos namespace
-  module Eos
-    autoload :Vlan, 'puppet_x/eos/modules/vlan'
-    autoload :Extension, 'puppet_x/eos/modules/extension'
-    autoload :Daemon, 'puppet_x/eos/modules/daemon'
-    autoload :Interface, 'puppet_x/eos/modules/interface'
-    autoload :Switchport, 'puppet_x/eos/modules/switchport'
-    autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
-    autoload :Snmp, 'puppet_x/eos/modules/snmp'
-    autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
-    autoload :Mlag, 'puppet_x/eos/modules/mlag'
-    autoload :Ntp, 'puppet_x/eos/modules/ntp'
-    autoload :Ospf, 'puppet_x/eos/modules/ospf'
-    autoload :Portchannel, 'puppet_x/eos/modules/portchannel'
-    autoload :System, 'puppet_x/eos/modules/system'
+describe PuppetX::Eos::System do
+  let(:eapi) { double }
+  let(:instance) { PuppetX::Eos::System.new eapi }
+
+  context 'when initializing a new System instance' do
+    subject { instance }
+    it { is_expected.to be_a_kind_of PuppetX::Eos::System }
+  end
+
+  context 'with Eapi#enable' do
+    context '#get' do
+      subject { instance.get }
+
+      let :response do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/hostname.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable).with('show hostname')
+          .and_return(response)
+      end
+
+      it { is_expected.to be_a_kind_of Hash }
+      it { is_expected.to have_key 'hostname' }
+    end
+  end
+
+  context 'with Eapi#config' do
+    context '#set_hostname' do
+      subject { instance.set_hostname(name) }
+
+      let(:name) { (0...50).map { ('a'..'z').to_a[rand(26)] }.join }
+
+      before :each do
+        allow(eapi).to receive(:config).with("hostname #{name}")
+          .and_return([{}])
+      end
+
+      it { is_expected.to be_truthy }
+    end
   end
 end
