@@ -84,14 +84,14 @@ describe PuppetX::Eos::Snmp do
 
       describe 'configure snmp contact' do
         let(:value) { 'foo' }
-        let(:commands) { "snmp contact #{value}" }
+        let(:commands) { "snmp-server contact #{value}" }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate snmp contact' do
-        let(:commands) { 'no snmp contact' }
+        let(:commands) { 'no snmp-server contact' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -99,7 +99,7 @@ describe PuppetX::Eos::Snmp do
 
       describe 'default snmp contact' do
         let(:default) { true }
-        let(:commands) { 'default snmp contact' }
+        let(:commands) { 'default snmp-server contact' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -115,14 +115,14 @@ describe PuppetX::Eos::Snmp do
 
       describe 'configure snmp location' do
         let(:value) { 'foo' }
-        let(:commands) { "snmp location #{value}" }
+        let(:commands) { "snmp-server location #{value}" }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate snmp location' do
-        let(:commands) { 'no snmp location' }
+        let(:commands) { 'no snmp-server location' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -130,7 +130,7 @@ describe PuppetX::Eos::Snmp do
 
       describe 'default snmp location' do
         let(:default) { true }
-        let(:commands) { 'default snmp location' }
+        let(:commands) { 'default snmp-server location' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -146,14 +146,14 @@ describe PuppetX::Eos::Snmp do
 
       describe 'configure snmp chassis id' do
         let(:value) { 'foo' }
-        let(:commands) { "snmp chassis #{value}" }
+        let(:commands) { "snmp-server chassis #{value}" }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate snmp chassis id' do
-        let(:commands) { 'no snmp chassis' }
+        let(:commands) { 'no snmp-server chassis' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -161,7 +161,7 @@ describe PuppetX::Eos::Snmp do
 
       describe 'default snmp chassis id' do
         let(:default) { true }
-        let(:commands) { 'default snmp chassis' }
+        let(:commands) { 'default snmp-server chassis' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -177,14 +177,14 @@ describe PuppetX::Eos::Snmp do
 
       describe 'configure snmp source-interface' do
         let(:value) { 'Loopback0' }
-        let(:commands) { "snmp source-interface #{value}" }
+        let(:commands) { "snmp-server source-interface #{value}" }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate snmp source-interface' do
-        let(:commands) { 'no snmp source-interface' }
+        let(:commands) { 'no snmp-server source-interface' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -192,7 +192,7 @@ describe PuppetX::Eos::Snmp do
 
       describe 'default snmp source-interface' do
         let(:default) { true }
-        let(:commands) { 'default snmp source-interface' }
+        let(:commands) { 'default snmp-server source-interface' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
