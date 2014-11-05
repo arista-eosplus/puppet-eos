@@ -31,31 +31,22 @@
 #
 # encoding: utf-8
 
-require 'spec_helper'
+Puppet::Type.newtype(:eos_ospf_interface) do
+  @doc = 'Manage OSPF interfaces'
 
-describe Puppet::Type.type(:eos_ospf_instance) do
-  let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '1', catalog: catalog) }
+  ensurable
 
-  it_behaves_like 'an ensurable type', name: '1'
+  # Parameters
 
-  describe 'name' do
-    let(:attribute) { :name }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'parameter'
-    include_examples '#doc Documentation'
+  newparam(:name) do
+    desc 'The resource name for the OSPF interface instance'
   end
 
-  describe 'router_id' do
-    let(:attribute) { :router_id }
-    subject { described_class.attrclass(attribute) }
+  # Properties (state management)
 
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     %w(0.0.0.0 255.255.255.255)
-    include_examples 'rejects values', [[1], { two: :three }]
+  newproperty(:network_type) do
+    desc 'Specifies the OSPF interface type attribute'
+    newvalues(:broadcast, :point_to_point)
   end
 
 end

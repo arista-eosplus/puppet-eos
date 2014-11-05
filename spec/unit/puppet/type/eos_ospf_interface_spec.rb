@@ -33,11 +33,11 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_ospf_instance) do
+describe Puppet::Type.type(:eos_ospf_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '1', catalog: catalog) }
+  let(:type) { described_class.new(name: 'Ethernet1', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: '1'
+  it_behaves_like 'an ensurable type', name: 'Ethernet1'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -47,15 +47,13 @@ describe Puppet::Type.type(:eos_ospf_instance) do
     include_examples '#doc Documentation'
   end
 
-  describe 'router_id' do
-    let(:attribute) { :router_id }
+  describe 'network_type' do
+    let(:attribute) { :network_type }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     %w(0.0.0.0 255.255.255.255)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'accepts values', [:broadcast, :point_to_point]
+    include_examples 'rejected parameter values'
   end
-
 end
