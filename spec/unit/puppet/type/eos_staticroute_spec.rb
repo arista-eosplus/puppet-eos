@@ -31,49 +31,44 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_static_route) do
-  @doc = 'Configure static route settings'
+require 'spec_helper'
 
-  ensurable
+describe Puppet::Type.type(:eos_staticroute) do
+  let(:catalog) { Puppet::Resource::Catalog.new }
+  let(:type) { described_class.new(name: '1.2.3.0', catalog: catalog) }
 
-  # Parameters
+  it_behaves_like 'an ensurable type', name: '1.2.3.0'
 
-  newparam(:name) do
-    desc 'The destination network prefix'
+  describe 'name' do
+    let(:attribute) { :name }
+    subject { described_class.attrclass(attribute) }
 
-    validate do |value|
-      if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
-      end
-    end
+    include_examples 'parameter'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging',\
+                     %w(1.2.3.4/24, 3012:D678::/64)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  # Properties (state management)
+  describe 'next_hop' do
+    let(:attribute) { :next_hop }
+    subject { described_class.attrclass(attribute) }
 
-  newproperty(:next_hop) do
-    desc 'Is either an IP address or a routable interface port'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging',\
+                     %w(1.2.3.4, d28e::234:812f:61ed:4419, Ethernet 42/1)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  newproperty(:route_name) do
-    desc 'The name assigned to the static route'
+  describe 'route_name' do
+    let(:attribute) { :route_name }
+    subject { described_class.attrclass(attribute) }
 
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(Server Room)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
 end
