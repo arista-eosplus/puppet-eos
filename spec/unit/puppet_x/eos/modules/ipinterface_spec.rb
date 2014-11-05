@@ -213,9 +213,9 @@ describe PuppetX::Eos::Ipinterface do
         let(:name) { 'Ethernet1' }
         let(:value) { %w(1.2.3.4 5.6.7.8) }
         let(:commands) do
-          [ "interface #{name}", "ip helper-address #{value}",
-            "ip helper-address #{value}" ]
-         end
+          ["interface #{name}", "ip helper-address #{value}",
+           "ip helper-address #{value}"]
+        end
         let(:api_response) { [{}, {}, {}] }
 
         it { is_expected.to be_truthy }

@@ -53,8 +53,8 @@ describe Puppet::Type.type(:eos_ipinterface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                 %w(0.0.0.0 255.255.255.255)
+    include_examples 'accepts values without munging',
+                     %w(0.0.0.0 255.255.255.255)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
