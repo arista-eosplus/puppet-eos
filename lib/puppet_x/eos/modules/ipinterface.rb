@@ -49,41 +49,52 @@ module PuppetX
       # and returns all instances
       #
       # Example:
-      #   {
-      #     "interfaces": {
-      #       "Ethernet1": {
-      #           "interfaceAddress": {
-      #              "secondaryIpsOrderedList": [],
-      #              "broadcastAddress": "255.255.255.255",
-      #              "secondaryIps": {},
-      #              "primaryIp": {
-      #                 "maskLen": 32,
-      #                 "address": "1.1.1.1"
-      #              },
-      #              "virtualIp": {
-      #                 "maskLen": 0,
-      #                 "address": "0.0.0.0"
-      #              }
-      #           },
-      #           "name": "Loopback0",
-      #           "urpf": "disable",
-      #           "interfaceStatus": "connected",
-      #           "enabled": true,
-      #           "mtu": 65535,
-      #           "vrf": "default",
-      #           "localProxyArp": false,
-      #           "proxyArp": false,
-      #           "lineProtocolStatus": "up",
-      #           "description": "managed by PE"
-      #       },
-      #       "Ethernet2": { ... },
-      #       "Ethernet3": { ... }
+      #   [
+      #     {
+      #       "interfaces": {
+      #         "Ethernet1": {
+      #             "interfaceAddress": {
+      #               "secondaryIpsOrderedList": [],
+      #               "broadcastAddress": "255.255.255.255",
+      #               "secondaryIps": {},
+      #               "primaryIp": {
+      #                   "maskLen": 32,
+      #                   "address": "1.1.1.1"
+      #               },
+      #               "virtualIp": {
+      #                   "maskLen": 0,
+      #                   "address": "0.0.0.0"
+      #               }
+      #             },
+      #             "name": "Loopback0",
+      #             "urpf": "disable",
+      #             "interfaceStatus": "connected",
+      #             "enabled": true,
+      #             "mtu": 65535,
+      #             "vrf": "default",
+      #             "localProxyArp": false,
+      #             "proxyArp": false,
+      #             "lineProtocolStatus": "up",
+      #             "description": "managed by PE"
+      #         },
+      #         "Ethernet2": { ... },
+      #         "Ethernet3": { ... }
+      #       }
+      #     },
+      #     {
+      #       "ipHelperAddresses": {
+      #           "Ethernet1": ["1.2.3.4", "5.6.7.8"]
+      #           "Management1": []
+      #         }
       #     }
-      #   }
+      #   ]
       #
       # @return [Hash]
       def getall
-        @api.enable('show ip interface')
+        result = @api.enable('show ip interface')
+        helperaddresses = get_helper_addresses(result[0]['interfaces'].keys)
+        result << { 'ipHelperAddresses' => helperaddresses }
+        result
       end
 
       ##
@@ -150,6 +161,47 @@ module PuppetX
           cmds << (value.nil? ? 'no mtu' : "mtu #{value}")
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      ##
+      ## Configures ip helper addresses for the interface
+      #
+      # @param [String] name The name of the interface to configure
+      # @param [Hash] opts The configuration parameters for the interface
+      # @param [opts] [Array] :value list of addresses to configure as
+      #   helper address on the specified interface
+      # @option opts [Boolean] :default The value should be set to default
+      def set_helper_addresses(name, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default ip helper-address'
+        when false
+          if value.nil?
+            cmds << 'no helper-address'
+          else
+            value.each { |addr| cmds << "ip helper-address #{addr}" }
+          end
+        end
+      end
+
+      private
+
+      def get_helper_addresses(interfaces)
+        addresses = {}
+        interfaces.each do |name|
+          config = @api.enable("show running-config interfaces #{name}", 'text')
+          output = config.first['output']
+          addresses[name] = output.scan(/%r{(?<=\-address\s)
+                                            \d{1,3}\.
+                                            \d{1,3}\.
+                                            \d{1,3}\.
+                                            \d{1,3}}/)
+        end
+        addresses
       end
     end
   end

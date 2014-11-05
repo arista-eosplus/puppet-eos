@@ -42,10 +42,9 @@ describe PuppetX::Eos::Ipinterface do
   end
 
   context 'with Eapi#enable' do
+
     before :each do
       allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
     end
 
     context '#getall' do
@@ -53,21 +52,50 @@ describe PuppetX::Eos::Ipinterface do
 
       let(:commands) { 'show ip interface' }
 
-      let :api_response do
+      let :ipinterfaces do
         dir = File.dirname(__FILE__)
         file = File.join(dir, 'fixtures/ipinterface_getall.json')
         JSON.load(File.read(file))
       end
 
+      let :ipinterface_et1 do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/ipinterface_et1.json')
+        JSON.load(File.read(file))
+      end
+
+      let :ipinterface_ma1 do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/ipinterface_ma1.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable).with('show ip interface')
+          .and_return(ipinterfaces)
+
+        allow(eapi).to receive(:enable)
+          .with('show running-config interfaces Ethernet1', 'text')
+          .and_return(ipinterface_et1)
+
+        allow(eapi).to receive(:enable)
+          .with('show running-config interfaces Management1', 'text')
+          .and_return(ipinterface_ma1)
+      end
+
       describe 'retrieve ip interfaces' do
         it { is_expected.to be_a_kind_of Array }
 
-        it 'has one entry' do
-          expect(subject.size).to eq 1
+        it 'has two entries' do
+          expect(subject.size).to eq 2
         end
 
         it 'includes interfaces' do
           expect(subject[0]).to have_key 'interfaces'
+        end
+
+        it 'includes ipHelperAddresses' do
+          expect(subject[1]).to have_key 'ipHelperAddresses'
         end
       end
     end
@@ -147,7 +175,7 @@ describe PuppetX::Eos::Ipinterface do
       let(:default) { false }
       let(:value) { nil }
 
-      describe 'with valid mtu valie' do
+      describe 'with valid mtu value' do
         let(:name) { 'Ethernet1' }
         let(:value) { '9000' }
         let(:commands) { ["interface #{name}", "mtu #{value}"] }
@@ -168,6 +196,43 @@ describe PuppetX::Eos::Ipinterface do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
         let(:commands) { ["interface #{name}", 'default mtu'] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context '#set_helper_addresses' do
+      subject { instance.set_helper_addresses(name, opts) }
+
+      let(:opts) { { value: value, default: default } }
+      let(:default) { false }
+      let(:value) { nil }
+
+      describe 'with list of helper addresses' do
+        let(:name) { 'Ethernet1' }
+        let(:value) { %w(1.2.3.4 5.6.7.8) }
+        let(:commands) do
+          [ "interface #{name}", "ip helper-address #{value}",
+            "ip helper-address #{value}" ]
+         end
+        let(:api_response) { [{}, {}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'negate helper addresses for interface' do
+        let(:name) { 'Ethernet1' }
+        let(:commands) { ["interface #{name}", 'no ip helper-address'] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'default helper addresses for interface' do
+        let(:name) { 'Ethernet1' }
+        let(:default) { true }
+        let(:commands) { ["interface #{name}", 'default ip helper-address'] }
         let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
