@@ -60,11 +60,11 @@ describe PuppetX::Eos::Ntp do
       end
 
       it { is_expected.to be_a_kind_of Hash }
-      it { is_expected.to have_key :source_interface }
-      it { is_expected.to have_key :servers }
+      it { is_expected.to have_key 'source_interface' }
+      it { is_expected.to have_key 'servers' }
 
-      it 'should return servers as Array' do
-        expect(subject[:servers]).to be_a_kind_of Array
+      it 'should return servers as a hash' do
+        expect(subject['servers']).to be_a_kind_of Hash
       end
     end
   end

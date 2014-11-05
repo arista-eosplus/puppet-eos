@@ -52,25 +52,34 @@ module PuppetX
       end
 
       ##
-      # Returns the Ntp hash representing global snmp configuration
+      # Returns the Ntp hash representing current running ntp configuration
+      # from eAPI.  Currently the servers element returns a hash of server
+      # keys with an empty hash value.  Additional server attributes will
+      # be added in subsequent versions
       #
       # Example
       #   {
       #     "source_interface": <String>,
-      #     "servers": [Array]
+      #     "servers": {
+      #       "A.B.C.D": {...}
+      #     }
       #   }
       #
-      # @return [Array<Hash>] returns a Hash of attributes derived from eAPI
+      # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
         result = @api.enable('show running-config section ntp', format: 'text')
         output = result.first['output']
 
         m_source = /(?<=source\s)(\w|\d)+$/.match(output)
-        m_servers = output.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
+
+        servers = {}
+        output.scan(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).each do |srv|
+          servers[srv] = {}
+        end
 
         attr_hash = {
-          source_interface: m_source[0] || '',
-          servers: m_servers || []
+          'source_interface' => m_source.nil? ? '' : m_source[0],
+          'servers' => servers
         }
         attr_hash
       end
