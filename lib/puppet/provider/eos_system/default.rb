@@ -29,50 +29,33 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'puppet/type'
+require 'puppet_x/eos/provider'
 
-##
-# PuppetX is the toplevel namespace for working with Arista EOS nodes
-module PuppetX
-  ##
-  # Eos is module namesapce for working with the EOS command API
-  module Eos
-    ##
-    # The System class provides management of system level functions
-    #
-    class System
-      ##
-      # Initializes a new instance of System.
-      #
-      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
-      #
-      # @return [PuppetX::Eos::System] instance
-      def initialize(api)
-        @api = api
-      end
+Puppet::Type.type(:eos_system).provide(:eos) do
 
-      ##
-      # Returns a hash of configured daemons from the running config
-      #
-      #   Example
-      #   {
-      #     "hostname": "veos01"
-      #   }
-      #
-      # @return [Hash] Hash of system properties
-      def get
-        result = @api.enable('show hostname')
-        { 'hostname' => result.first['hostname'] }
-      end
+  # Create methods that set the @property_hash for the #flush method
+  mk_resource_methods
 
-      ##
-      # Configures the system hostname
-      #
-      # @param [String] name The name to configure the hostname to
-      #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def set_hostname(name)
-        @api.config("hostname #{name}") == [{}]
-      end
-    end
+  # Mix in the api as instance methods
+  include PuppetX::Eos::EapiProviderMixin
+
+  # Mix in the api as class methods
+  extend PuppetX::Eos::EapiProviderMixin
+
+  def self.instances
+    result = eapi.System.get
+    return [] if result.empty?
+    [new({ name: result['hostname'], ensure: :present })]
   end
+
+  def exists?
+    @property_hash[:ensure] == :present
+  end
+
+  def create
+    eapi.System.set_hostname(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
+  end
+
 end
