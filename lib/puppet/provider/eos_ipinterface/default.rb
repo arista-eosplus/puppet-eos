@@ -45,12 +45,14 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
 
   def self.instances
     result = eapi.Ipinterface.getall
+    helper_addresses = result[1]['ipHelperAddresses']
     result.first['interfaces'].map do |name, attr_hash|
       provider_hash = { name: name, ensure: :present }
       addr = attr_hash['interfaceAddress']['primaryIp']['address']
       mask = attr_hash['interfaceAddress']['primaryIp']['maskLen']
       provider_hash[:address] = "#{addr}/#{mask}" if !addr.nil? || !mask.nil?
       provider_hash[:mtu] = attr_hash['mtu']
+      provider_hash[:helper_address] = helper_addresses[name]
       new(provider_hash)
     end
   end
@@ -58,6 +60,11 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   def address=(val)
     eapi.Ipinterface.set_address(resource['name'], value: val)
     @property_hash[:address] = val
+  end
+
+  def helper_address=(val)
+    eapi.Ipinterface.set_helper_address(resource['name'], value: val)
+    @property_hash[:helper_address] = val
   end
 
   def mtu=(val)
@@ -74,6 +81,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     @property_hash = { name: resource[:name], ensure: :present }
     self.address = resource[:address] if resource[:address]
     self.mtu = resource[:mtu] if resource[:mtu]
+    self.helper_address = resource[:helper_address] if resource[:helper_address]
   end
 
   def destroy
