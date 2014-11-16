@@ -146,10 +146,10 @@ module PuppetX
 
         case default
         when true
-          cmds = 'default snmp-server chassis'
+          cmds = 'default snmp-server chassis-id'
         when false
-          cmds = (value ? "snmp-server chassis #{value}" : \
-                          'no snmp-server chassis')
+          cmds = (value ? "snmp-server chassis-id #{value}" : \
+                          'no snmp-server chassis-id')
         end
         @api.config(cmds) == [{}]
       end

@@ -34,8 +34,6 @@
 Puppet::Type.newtype(:eos_snmp) do
   @doc = 'Configure SNMP settings'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do

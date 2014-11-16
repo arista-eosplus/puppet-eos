@@ -46,10 +46,12 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
   def self.instances
     result = eapi.Snmp.get
     return [] if result.empty?
-    provider_hash = { name: result['name'],
+    provider_hash = { name: 'settings',
                       ensure: :present,
                       contact: result['contact'],
-                      location: result['location'] }
+                      location: result['location'],
+                      chassis_id: result['chassis_id'],
+                      source_interface: result['source_interface'] }
     [new(provider_hash)]
   end
 
@@ -63,18 +65,17 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
     @property_hash[:location] = val
   end
 
+  def chassis_id=(val)
+    eapi.Snmp.set_chassis_id(value: val)
+    @property_hash[:chassis_id] = val
+  end
+
+  def source_interface=(val)
+    eapi.Snmp.set_source_interface(value: val)
+    @property_hash[:source_interface] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
-  end
-
-  def create
-    @property_hash = { name: resource[:name], ensure: :present }
-    self.contact = resource[:contact] if resource[:contact]
-    self.location = resource[:location] if resource[:location]
-  end
-
-  def destroy
-    eapi.Snmp.delete
-    @property_hash = { name: resource[:name],  ensure: :absent }
   end
 end
