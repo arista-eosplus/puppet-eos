@@ -37,7 +37,7 @@ Puppet::Type.newtype(:eos_snmp) do
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the SNMP instance'
+    desc 'Resource name, not used to configure the device'
   end
 
   # Properties (state management)

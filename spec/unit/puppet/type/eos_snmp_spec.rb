@@ -35,9 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_snmp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'AristaSnmp', catalog: catalog) }
-
-  it_behaves_like 'an ensurable type', name: 'AristaSnmp'
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }

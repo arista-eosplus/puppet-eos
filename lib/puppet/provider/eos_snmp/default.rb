@@ -45,7 +45,6 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
 
   def self.instances
     result = eapi.Snmp.get
-    return [] if result.empty?
     provider_hash = { name: 'settings',
                       ensure: :present,
                       contact: result['contact'],
