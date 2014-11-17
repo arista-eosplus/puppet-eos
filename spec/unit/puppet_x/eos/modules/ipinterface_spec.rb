@@ -75,27 +75,19 @@ describe PuppetX::Eos::Ipinterface do
           .and_return(ipinterfaces)
 
         allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Ethernet1', 'text')
+          .with('show running-config interfaces Ethernet1', format: 'text')
           .and_return(ipinterface_et1)
 
         allow(eapi).to receive(:enable)
-          .with('show running-config interfaces Management1', 'text')
+          .with('show running-config interfaces Management1', format: 'text')
           .and_return(ipinterface_ma1)
       end
 
       describe 'retrieve ip interfaces' do
-        it { is_expected.to be_a_kind_of Array }
+        it { is_expected.to be_a_kind_of Hash }
 
         it 'has two entries' do
           expect(subject.size).to eq 2
-        end
-
-        it 'includes interfaces' do
-          expect(subject[0]).to have_key 'interfaces'
-        end
-
-        it 'includes ipHelperAddresses' do
-          expect(subject[1]).to have_key 'ipHelperAddresses'
         end
       end
     end
@@ -124,11 +116,11 @@ describe PuppetX::Eos::Ipinterface do
     context '#delete' do
       subject { instance.delete(name) }
 
-      let(:commands) { ["interface #{name}", 'no ip address'] }
+      let(:commands) { ["interface #{name}", 'no ip address', 'switchport'] }
 
       describe 'logical ip address' do
         let(:name) { 'Ethernet1' }
-        let(:api_response) { [{}, {}] }
+        let(:api_response) { [{}, {}, {}] }
 
         it { is_expected.to be_truthy }
       end
@@ -202,14 +194,14 @@ describe PuppetX::Eos::Ipinterface do
       end
     end
 
-    context '#set_helper_addresses' do
-      subject { instance.set_helper_addresses(name, opts) }
+    context '#set_helper_address' do
+      subject { instance.set_helper_address(name, opts) }
 
       let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
-      describe 'with list of helper addresses' do
+      describe 'with list of helper address' do
         let(:name) { 'Ethernet1' }
         let(:value) { %w(1.2.3.4 5.6.7.8) }
         let(:commands) do
@@ -221,7 +213,7 @@ describe PuppetX::Eos::Ipinterface do
         it { is_expected.to be_truthy }
       end
 
-      describe 'negate helper addresses for interface' do
+      describe 'negate helper address for interface' do
         let(:name) { 'Ethernet1' }
         let(:commands) { ["interface #{name}", 'no ip helper-address'] }
         let(:api_response) { [{}, {}] }
@@ -229,7 +221,7 @@ describe PuppetX::Eos::Ipinterface do
         it { is_expected.to be_truthy }
       end
 
-      describe 'default helper addresses for interface' do
+      describe 'default helper address for interface' do
         let(:name) { 'Ethernet1' }
         let(:default) { true }
         let(:commands) { ["interface #{name}", 'default ip helper-address'] }

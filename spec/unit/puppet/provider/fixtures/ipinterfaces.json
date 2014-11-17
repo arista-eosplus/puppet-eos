@@ -1,65 +1,12 @@
-[
-   {
-      "interfaces": {
-         "Management1": {
-            "interfaceAddress": {
-               "secondaryIpsOrderedList": [],
-               "broadcastAddress": "255.255.255.255",
-               "secondaryIps": {},
-               "primaryIp": {
-                  "maskLen": 24,
-                  "address": "192.168.1.16"
-               },
-               "virtualIp": {
-                  "maskLen": 0,
-                  "address": "0.0.0.0"
-               }
-            },
-            "name": "Management1",
-            "urpf": "disable",
-            "interfaceStatus": "connected",
-            "enabled": true,
-            "mtu": 1500,
-            "vrf": "default",
-            "localProxyArp": false,
-            "proxyArp": false,
-            "lineProtocolStatus": "up",
-            "description": ""
-         },
-         "Ethernet1": {
-            "interfaceAddress": {
-               "secondaryIpsOrderedList": [],
-               "broadcastAddress": "255.255.255.255",
-               "secondaryIps": {},
-               "primaryIp": {
-                  "maskLen": 24,
-                  "address": "172.16.10.1"
-               },
-               "virtualIp": {
-                  "maskLen": 0,
-                  "address": "0.0.0.0"
-               }
-            },
-            "name": "Ethernet1",
-            "urpf": "disable",
-            "interfaceStatus": "connected",
-            "enabled": true,
-            "mtu": 1500,
-            "vrf": "default",
-            "localProxyArp": false,
-            "proxyArp": false,
-            "lineProtocolStatus": "up",
-            "description": ""
-         }
-      }
+{
+   "Ethernet1": {
+      "address": "172.16.10.1/24",
+      "mtu": 1500,
+      "helper_address": ["5.6.7.8", "9.10.11.12"]
    },
-   {
-      "ipHelperAddresses": {
-         "Ethernet1": [
-            "5.6.7.8",
-            "9.10.11.12"
-         ],
-         "Management1": []
-      }
+   "Management1": {
+      "address": "192.168.1.16/24",
+      "mtu": 1500,
+      "helper_address": []
    }
-]
+}

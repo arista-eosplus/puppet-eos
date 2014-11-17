@@ -49,52 +49,29 @@ module PuppetX
       # and returns all instances
       #
       # Example:
-      #   [
-      #     {
-      #       "interfaces": {
-      #         "Ethernet1": {
-      #             "interfaceAddress": {
-      #               "secondaryIpsOrderedList": [],
-      #               "broadcastAddress": "255.255.255.255",
-      #               "secondaryIps": {},
-      #               "primaryIp": {
-      #                   "maskLen": 32,
-      #                   "address": "1.1.1.1"
-      #               },
-      #               "virtualIp": {
-      #                   "maskLen": 0,
-      #                   "address": "0.0.0.0"
-      #               }
-      #             },
-      #             "name": "Loopback0",
-      #             "urpf": "disable",
-      #             "interfaceStatus": "connected",
-      #             "enabled": true,
-      #             "mtu": 65535,
-      #             "vrf": "default",
-      #             "localProxyArp": false,
-      #             "proxyArp": false,
-      #             "lineProtocolStatus": "up",
-      #             "description": "managed by PE"
-      #         },
-      #         "Ethernet2": { ... },
-      #         "Ethernet3": { ... }
-      #       }
+      #   {
+      #     "Ethernet1": {
+      #       "address" => "1.2.3.4/5",
+      #       "mtu" => "1500",
+      #       "helper_addresses" => ["5.6.7.8", "9.10.11.12"]
       #     },
-      #     {
-      #       "ipHelperAddresses": {
-      #           "Ethernet1": ["1.2.3.4", "5.6.7.8"]
-      #           "Management1": []
-      #         }
-      #     }
-      #   ]
+      #     "Ethernet2": {...}
+      #   }
       #
-      # @return [Hash]
+      # @return [Hash] all IP interfaces found in the running-config
       def getall
         result = @api.enable('show ip interface')
-        helperaddresses = get_helper_addresses(result[0]['interfaces'].keys)
-        result << { 'ipHelperAddresses' => helperaddresses }
-        result
+        response = {}
+        result.first['interfaces'].each do |name, attrs|
+          interface = {}
+          addr = attrs['interfaceAddress']['primaryIp']['address']
+          mask = attrs['interfaceAddress']['primaryIp']['maskLen']
+          interface['address'] = "#{addr}/#{mask}"
+          interface['mtu'] = attrs['mtu']
+          interface['helper_addresses'] = get_helper_address(name)
+          response[name] = interface
+        end
+        response
       end
 
       ##
@@ -172,7 +149,7 @@ module PuppetX
       # @param [opts] [Array] :value list of addresses to configure as
       #   helper address on the specified interface
       # @option opts [Boolean] :default The value should be set to default
-      def set_helper_addresses(name, opts = {})
+      def set_helper_address(name, opts = {})
         value = opts[:value]
         default = opts[:default] || false
 
@@ -191,19 +168,11 @@ module PuppetX
 
       private
 
-      def get_helper_addresses(interfaces)
-        addresses = {}
-        interfaces.each do |name|
-          config = @api.enable("show running-config interfaces #{name}",
-                               format: 'text')
-          output = config.first['output']
-          addresses[name] = output.scan(/%r{(?<=\-address\s)
-                                            \d{1,3}\.
-                                            \d{1,3}\.
-                                            \d{1,3}\.
-                                            \d{1,3}}/)
-        end
-        addresses
+      def get_helper_address(name)
+        config = @api.enable("show running-config interfaces #{name}",
+                             format: 'text')
+        output = config.first['output']
+        output.scan(/%r{(?<=\-address\s)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}/)
       end
     end
   end
