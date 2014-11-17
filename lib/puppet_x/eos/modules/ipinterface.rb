@@ -114,7 +114,8 @@ module PuppetX
       #
       # @return [Boolean] True if the create succeeds otherwise False
       def delete(name)
-        @api.config(["interface #{name}", 'no ip address']) == [{}, {}]
+        @api.config(["interface #{name}", 'no ip address',
+                     'switchport']) == [{}, {}, {}]
       end
 
       ##
@@ -193,7 +194,8 @@ module PuppetX
       def get_helper_addresses(interfaces)
         addresses = {}
         interfaces.each do |name|
-          config = @api.enable("show running-config interfaces #{name}", 'text')
+          config = @api.enable("show running-config interfaces #{name}",
+                               format: 'text')
           output = config.first['output']
           addresses[name] = output.scan(/%r{(?<=\-address\s)
                                             \d{1,3}\.
