@@ -146,14 +146,14 @@ describe PuppetX::Eos::Snmp do
 
       describe 'configure snmp chassis id' do
         let(:value) { 'foo' }
-        let(:commands) { "snmp-server chassis #{value}" }
+        let(:commands) { "snmp-server chassis-id #{value}" }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
       describe 'negate snmp chassis id' do
-        let(:commands) { 'no snmp-server chassis' }
+        let(:commands) { 'no snmp-server chassis-id' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
@@ -161,7 +161,7 @@ describe PuppetX::Eos::Snmp do
 
       describe 'default snmp chassis id' do
         let(:default) { true }
-        let(:commands) { 'default snmp-server chassis' }
+        let(:commands) { 'default snmp-server chassis-id' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
