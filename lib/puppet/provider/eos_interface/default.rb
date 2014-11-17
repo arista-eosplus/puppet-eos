@@ -68,7 +68,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   def create
     eapi.Interface.create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
-    self.enable = resource[:enable]
+    self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
     self.flowcontrol_send = resource[:flowcontrol_send] \
                             if resource[:flowcontrol_send]
@@ -82,7 +82,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def enable=(val)
-    eapi.Interface.set_shutdown(resource[:name], value: !val)
+    eapi.Interface.set_shutdown(resource[:name], value: val == :true)
     @property_hash[:enable] = val
   end
 
