@@ -68,7 +68,7 @@ module PuppetX
           mask = attrs['interfaceAddress']['primaryIp']['maskLen']
           interface['address'] = "#{addr}/#{mask}"
           interface['mtu'] = attrs['mtu']
-          interface['helper_addresses'] = get_helper_address(name)
+          interface['helper_address'] = get_helper_address(name)
           response[name] = interface
         end
         response
@@ -159,11 +159,13 @@ module PuppetX
           cmds << 'default ip helper-address'
         when false
           if value.nil?
-            cmds << 'no helper-address'
+            cmds << 'no ip helper-address'
           else
+            cmds << 'default ip helper-address'
             value.each { |addr| cmds << "ip helper-address #{addr}" }
           end
         end
+        @api.config(cmds)
       end
 
       private
@@ -172,7 +174,7 @@ module PuppetX
         config = @api.enable("show running-config interfaces #{name}",
                              format: 'text')
         output = config.first['output']
-        output.scan(/%r{(?<=\-address\s)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}/)
+        output.scan(/(?<=\-address\s)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
       end
     end
   end

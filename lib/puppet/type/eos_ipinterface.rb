@@ -57,7 +57,7 @@ Puppet::Type.newtype(:eos_ipinterface) do
     end
   end
 
-  newproperty(:helper_address) do
+  newproperty(:helper_address, array_matching: :all) do
     desc 'Specifies forwarding address for DHCP relay agent'
 
     validate do |value|

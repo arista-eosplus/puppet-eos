@@ -205,8 +205,8 @@ describe PuppetX::Eos::Ipinterface do
         let(:name) { 'Ethernet1' }
         let(:value) { %w(1.2.3.4 5.6.7.8) }
         let(:commands) do
-          ["interface #{name}", "ip helper-address #{value}",
-           "ip helper-address #{value}"]
+          ["interface #{name}", 'default ip helper-address',
+           "ip helper-address 1.2.3.4", "ip helper-address 5.6.7.8"]
         end
         let(:api_response) { [{}, {}, {}] }
 
