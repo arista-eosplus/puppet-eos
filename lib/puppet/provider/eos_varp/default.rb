@@ -29,26 +29,34 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+require 'puppet/type'
+require 'puppet_x/eos/provider'
 
-##
-# PuppetX namespace
-module PuppetX
-  ##
-  # Eos namespace
-  module Eos
-    autoload :Vlan, 'puppet_x/eos/modules/vlan'
-    autoload :Extension, 'puppet_x/eos/modules/extension'
-    autoload :Daemon, 'puppet_x/eos/modules/daemon'
-    autoload :Interface, 'puppet_x/eos/modules/interface'
-    autoload :Switchport, 'puppet_x/eos/modules/switchport'
-    autoload :Ipinterface, 'puppet_x/eos/modules/ipinterface'
-    autoload :Snmp, 'puppet_x/eos/modules/snmp'
-    autoload :Vxlan, 'puppet_x/eos/modules/vxlan'
-    autoload :Mlag, 'puppet_x/eos/modules/mlag'
-    autoload :Ntp, 'puppet_x/eos/modules/ntp'
-    autoload :Ospf, 'puppet_x/eos/modules/ospf'
-    autoload :Portchannel, 'puppet_x/eos/modules/portchannel'
-    autoload :System, 'puppet_x/eos/modules/system'
-    autoload :Varp, 'puppet_x/eos/modules/varp'
+Puppet::Type.type(:eos_varp).provide(:eos) do
+
+  # Create methods that set the @property_hash for the #flush method
+  mk_resource_methods
+
+  # Mix in the api as instance methods
+  include PuppetX::Eos::EapiProviderMixin
+
+  # Mix in the api as class methods
+  extend PuppetX::Eos::EapiProviderMixin
+
+  def self.instances
+    result = eapi.Varp.get
+    provider_hash = { name: 'settings',
+                      ensure: :present,
+                      address: result['address'] }
+    [new(provider_hash)]
+  end
+
+  def address=(val)
+    eapi.Varp.set_address(value: val)
+    @property_hash[:address] = val
+  end
+
+  def exists?
+    @property_hash[:ensure] == :present
   end
 end

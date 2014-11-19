@@ -1,0 +1,7 @@
+[
+    {
+        "virtualMac": "00:00:00:00:00:00",
+        "advertiseInterval": 30,
+        "virtualRouters": []
+    }
+]

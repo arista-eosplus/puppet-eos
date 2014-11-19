@@ -32,20 +32,18 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_varp) do
-  @doc = 'Configures global VARP settings'
-
-  ensurable
+  @doc = 'Configure VARP settings'
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the VARP instance'
+    desc 'Resource name, not used to configure the device'
   end
 
   # Properties (state management)
 
   newproperty(:address) do
-    desc 'Configures the virtual mac-address for the VARP instance'
+    desc 'Assigns a virtual MAC address to the switch'
 
     validate do |value|
       case value
