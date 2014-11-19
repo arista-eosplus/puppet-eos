@@ -57,9 +57,8 @@ module PuppetX
       #
       # Example
       #   {
-      #     "instances": {
-      #       "1": { "router_id": <String> }
-      #     }
+      #       "1": { "router_id": <string> },
+      #       "2": {...}
       #   }
       #
       # @return [Hash] returns an Hash
@@ -69,7 +68,8 @@ module PuppetX
         result[0]['vrfs']['default']['instList'].map do |inst, attrs|
           instances[inst] = { router_id: attrs['routerId'] }
         end
-        { instances: instances }
+        instances['interfaces'] = get_interfaces
+        instances
       end
 
       ##
@@ -123,6 +123,21 @@ module PuppetX
           cmds << (value ? "router-id #{value}" : 'no router-id')
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      private
+
+      ##
+      # Parses the running-configuration to retreive all OSPF interfaces
+      #
+      # @return [Hash] a hash of key/value pairs
+      def get_interface
+        result = @api.enable('show ip interface')
+        response = {}
+        result.first['interfaces'].keys do |name|
+          response[key] = _parse_intf_config name
+        end
+        response
       end
     end
   end
