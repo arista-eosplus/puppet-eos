@@ -73,7 +73,7 @@ module PuppetX
           'peer_address' => result[0]['peerAddress'],
           'enable' => result[0]['state'] == 'disabled' ? :false : :true
         } if result[0].key?('domainId')
-        attr_hash ||= {}
+        attr_hash || {}
       end
 
       ##

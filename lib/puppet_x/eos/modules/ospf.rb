@@ -68,7 +68,9 @@ module PuppetX
         result[0]['vrfs']['default']['instList'].map do |inst, attrs|
           instances[inst] = { router_id: attrs['routerId'] }
         end
-        instances['interfaces'] = get_interfaces
+        # 11-19-14 sprygada remarking this out temporarily until a
+        # decsion is made on the ospf interfaces structures
+        # instances['interfaces'] = get_interfaces
         instances
       end
 
@@ -131,12 +133,29 @@ module PuppetX
       # Parses the running-configuration to retreive all OSPF interfaces
       #
       # @return [Hash] a hash of key/value pairs
-      def get_interface
+      def get_interfaces
         result = @api.enable('show ip interface')
         response = {}
         result.first['interfaces'].keys do |name|
           response[key] = _parse_intf_config name
         end
+        response
+      end
+
+      ##
+      # Returns the ospf interface config from the running-config
+      #
+      # @param [String] name The name of the interface to retreive the
+      #     the running config for
+      #
+      # @return [Hash] key/value pairs that represent the interface
+      #     configuration
+      def _parse_intf_config(name)
+        result = @api.enable("show running-config all interface #{name}")
+        output = result[0]['output']
+        response = {}
+        nettype = output.scan(/(?<=ospf\snetwork\s)(?<nettype>.*)$/)
+        response['network_type'] = nettype
         response
       end
     end

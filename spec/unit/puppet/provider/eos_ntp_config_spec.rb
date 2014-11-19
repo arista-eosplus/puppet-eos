@@ -36,7 +36,7 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
 
   let :resource do
     resource_hash = {
-      name: 'configuration',
+      name: 'settings',
       source_interface: 'Loopback0'
     }
     type.new(resource_hash)
@@ -69,30 +69,31 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it 'contains Eos_ntp_config[configuration]' do
-        instance = subject.find { |p| p.name == 'configuration' }
+      it 'contains Eos_ntp_config[settings]' do
+        instance = subject.find { |p| p.name == 'settings' }
         expect(instance).to be_a described_class
       end
 
-      describe 'Eos_ntp_config[configuration]' do
+      describe 'Eos_ntp_config[settings]' do
         subject do
-          described_class.instances.find { |p| p.name == 'configuration' }
+          described_class.instances.find { |p| p.name == 'settings' }
         end
 
         include_examples 'provider resource methods',
-                         name: 'configuration',
+                         name: 'settings',
                          source_interface: 'Loopback0'
       end
     end
 
     describe '.prefetch' do
-      let(:resources) { { 'configuration' => type.new(name: 'configuration') } }
+      let(:resources) { { 'settings' => type.new(name: 'settings') } }
       subject { described_class.prefetch(resources) }
 
       it 'updates the provider instance of managed resources' do
-        expect(resources['configuration'].provider.source_interface).to eq(:absent)
+        expect(resources['settings'].provider.source_interface).to eq(:absent)
         subject
-        expect(resources['configuration'].provider.source_interface).to eq('Loopback0')
+        expect(resources['settings'].provider.source_interface).to \
+          eq('Loopback0')
       end
     end
   end

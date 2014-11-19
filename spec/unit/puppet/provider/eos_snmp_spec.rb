@@ -36,7 +36,6 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      #ensure: :present,
       name: 'settings',
       contact: 'network operations',
       location: 'data center',
@@ -89,7 +88,6 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         #ensure: :present,
                          name: 'settings',
                          contact: 'network operations',
                          location: 'data center',
