@@ -47,13 +47,13 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
     result = eapi.Varp.get
     provider_hash = { name: 'settings',
                       ensure: :present,
-                      address: result['address'] }
+                      mac_address: result['mac_address'] }
     [new(provider_hash)]
   end
 
-  def address=(val)
-    eapi.Varp.set_address(value: val)
-    @property_hash[:address] = val
+  def mac_address=(val)
+    eapi.Varp.set_mac_address(value: val)
+    @property_hash[:mac_address] = val
   end
 
   def exists?

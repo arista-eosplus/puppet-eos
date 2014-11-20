@@ -35,9 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_vrrp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'VRRP 10', catalog: catalog) }
-
-  it_behaves_like 'an ensurable type', name: 'VRRP 10'
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -55,18 +53,6 @@ describe Puppet::Type.type(:eos_vrrp) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(001c.7300.0099)
     include_examples 'rejects values', [[1], { two: :three }]
-  end
-
-  describe 'interfaces' do
-    let(:attribute) { :interfaces }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     [{ Ethernet1: '1.2.3.4',\
-                        Ethernet20: '2001:db8:ac10:fe01::' }]
-    include_examples 'rejects values', ['string', [1, 2], 10]
   end
 
 end

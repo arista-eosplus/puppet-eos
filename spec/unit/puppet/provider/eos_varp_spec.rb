@@ -37,7 +37,7 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
   let :resource do
     resource_hash = {
       name: 'settings',
-      address: 'aaaa.bbbb.cccc'
+      mac_address: 'aaaa.bbbb.cccc'
     }
     type.new(resource_hash)
   end
@@ -81,7 +81,7 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
 
         include_examples 'provider resource methods',
                          name: 'settings',
-                         address: 'aaaa.bbbb.cccc'
+                         mac_address: 'aaaa.bbbb.cccc'
       end
     end
 
@@ -90,9 +90,10 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
       subject { described_class.prefetch(resources) }
 
       it 'updates the provider instance of managed resources' do
-        expect(resources['settings'].provider.address).to eq(:absent)
+        expect(resources['settings'].provider.mac_address).to eq(:absent)
         subject
-        expect(resources['settings'].provider.address).to eq('aaaa.bbbb.cccc')
+        expect(resources['settings'].provider.mac_address).to \
+          eq('aaaa.bbbb.cccc')
       end
     end
   end
@@ -106,24 +107,24 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
       allow(provider.eapi).to receive(:Varp)
     end
 
-    describe '#address=(val)' do
-      subject { provider.address = 'aaaa.bbbb.cccc' }
+    describe '#mac_address=(val)' do
+      subject { provider.mac_address = 'aaaa.bbbb.cccc' }
 
       before :each do
-        allow(provider.eapi.Varp).to receive(:set_address)
+        allow(provider.eapi.Varp).to receive(:set_mac_address)
           .with(value: 'aaaa.bbbb.cccc')
       end
 
-      it 'calls Varp.set_address = "aaaa.bbbb.cccc"' do
-        expect(provider.eapi.Varp).to receive(:set_address)
+      it 'calls Varp.set_mac_address = "aaaa.bbbb.cccc"' do
+        expect(provider.eapi.Varp).to receive(:set_mac_address)
           .with(value: 'aaaa.bbbb.cccc')
         subject
       end
 
-      it 'sets address to "aaaa.bbbb.cccc" in the provider' do
-        expect(provider.address).not_to eq('aaaa.bbbb.cccc')
+      it 'sets mac_address to "aaaa.bbbb.cccc" in the provider' do
+        expect(provider.mac_address).not_to eq('aaaa.bbbb.cccc')
         subject
-        expect(provider.address).to eq('aaaa.bbbb.cccc')
+        expect(provider.mac_address).to eq('aaaa.bbbb.cccc')
       end
     end
   end

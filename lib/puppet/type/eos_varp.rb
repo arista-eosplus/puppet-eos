@@ -42,7 +42,7 @@ Puppet::Type.newtype(:eos_varp) do
 
   # Properties (state management)
 
-  newproperty(:address) do
+  newproperty(:mac_address) do
     desc 'Assigns a virtual MAC address to the switch'
 
     validate do |value|
@@ -54,5 +54,4 @@ Puppet::Type.newtype(:eos_varp) do
       end
     end
   end
-
 end

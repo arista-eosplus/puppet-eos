@@ -57,7 +57,7 @@ module PuppetX
       #
       # Example
       #   {
-      #     "macaddress": "aaaa.bbbb.cccc",
+      #     "mac_address": "aaaa.bbbb.cccc",
       #     "interfaces": {
       #         "Vlan100": [
       #             "1.1.1.1",
@@ -70,7 +70,7 @@ module PuppetX
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
         result = @api.enable('show ip virtual-router')
-        response = { 'macadddress' => result[0]['virtualMac'] }
+        response = { 'mac_address' => result[0]['virtualMac'] }
         result = result[0]['virtualRouters']
         response['interfaces'] = result.each_with_object({}) do |intf, hsh|
           hsh[intf['interface']] = intf['virtualIps']
@@ -86,7 +86,7 @@ module PuppetX
       # @option opts [Boolean] :default The value should be set to default
       #
       # @return [Boolean] True if the commands succeed otherwise False
-      def set_macaddress(opts = {})
+      def set_mac_address(opts = {})
         value = opts[:value]
         default = opts[:default] || false
 

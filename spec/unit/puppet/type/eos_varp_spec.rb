@@ -33,7 +33,7 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_vrrp) do
+describe Puppet::Type.type(:eos_varp) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
@@ -45,8 +45,8 @@ describe Puppet::Type.type(:eos_vrrp) do
     include_examples '#doc Documentation'
   end
 
-  describe 'address' do
-    let(:attribute) { :address }
+  describe 'mac_address' do
+    let(:attribute) { :mac_address }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'

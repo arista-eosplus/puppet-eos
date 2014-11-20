@@ -34,12 +34,10 @@
 Puppet::Type.newtype(:eos_vrrp) do
   @doc = 'Configure VRRP settings'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the VRRP instance'
+    desc 'Resource name, not used to configure the device'
   end
 
   # Properties (state management)
@@ -56,17 +54,4 @@ Puppet::Type.newtype(:eos_vrrp) do
       end
     end
   end
-
-  newproperty(:interfaces) do
-    desc 'Hash of the interfaces'
-
-    # interfaces => hash {interface: address}
-
-    validate do |value|
-      if value.is_a? Hash then super(value)
-      else fail "value #{value.inspect} is invalid, must be a Hash."
-      end
-    end
-  end
-
 end
