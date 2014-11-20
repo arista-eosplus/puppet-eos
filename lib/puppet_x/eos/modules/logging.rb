@@ -60,10 +60,23 @@ module PuppetX
       #
       # @return [Hash] returns a hash of key/value pairs
       def get
-        result = @api.enable('show running-config section ^logging',
+        result = @api.enable('show running-config section ^logging\shost',
                              format: 'text')
         output = result.first['output']
         { 'hosts' => output.scan(/(?<=host\s)[\d|\.]+/) }
+      end
+
+      ##
+      # Configures the list of host to set as destination targets for
+      # for sending syslog messages to
+      #
+      # @param [Array] values The list of targest to configure as destination
+      #     hosts for receiving syslog messages
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_hosts(values)
+        get['hosts'].each { |host| remove_host(host) }
+        values.each { |host| add_host(host) }
       end
 
       ##

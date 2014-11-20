@@ -51,7 +51,7 @@ describe PuppetX::Eos::Logging do
     context '#get' do
       subject { instance.get }
 
-      let(:commands) { 'show running-config section ^logging' }
+      let(:commands) { 'show running-config section ^logging\shost' }
 
       let :api_response do
         dir = File.dirname(__FILE__)
@@ -64,6 +64,30 @@ describe PuppetX::Eos::Logging do
       end
     end
   end
+
+  context '#set_hosts' do
+    subject { instance.set_hosts(values) }
+
+    let :get_response do
+      dir = File.dirname(__FILE__)
+      file = File.join(dir, 'fixtures/logging_get.json')
+      JSON.load(File.read(file))
+    end
+
+    before :each do
+      allow(eapi).to receive(:enable).and_return(get_response)
+      allow(eapi).to receive(:config).with('no logging host 1.2.3.4')
+      allow(eapi).to receive(:config).with('no logging host hello.sample.org')
+      allow(eapi).to receive(:config).with('logging host 1.2.3.4')
+      allow(eapi).to receive(:config).with('logging host 5.6.7.8')
+    end
+
+    describe 'with array of hosts' do
+      let(:values) { %w(1.2.3.4 5.6.7.8) }
+      it { is_expected.to be_truthy }
+    end
+  end
+
 
   context 'with Eapi#config' do
     before :each do
