@@ -38,15 +38,6 @@ Puppet::Type.newtype(:eos_logging) do
 
   newparam(:name) do
     desc 'The resource name for the logging instance'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
   end
 
   # Properties (state management)
@@ -63,5 +54,4 @@ Puppet::Type.newtype(:eos_logging) do
       end
     end
   end
-
 end

@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_logging) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'log_host', catalog: catalog) }
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -45,7 +45,13 @@ describe Puppet::Type.type(:eos_logging) do
     include_examples '#doc Documentation'
   end
 
-  # FIXME: Test is failing
-  # it_behaves_like 'array of strings property', attribute: :hosts
+  describe 'hosts' do
+    let(:attribute) { :hosts }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'array of strings value'
+  end
 
 end
