@@ -60,7 +60,7 @@ describe PuppetX::Eos::Varp do
       end
 
       it { is_expected.to be_a_kind_of Hash }
-      it { is_expected.to have_key 'address' }
+      it { is_expected.to have_key 'macaddress' }
       it { is_expected.to have_key 'interfaces' }
 
       it 'should return interfaces as a hash' do
@@ -76,8 +76,8 @@ describe PuppetX::Eos::Varp do
         .and_return(api_response)
     end
 
-    context '#set_address' do
-      subject { instance.set_address(opts) }
+    context '#set_macaddress' do
+      subject { instance.set_macaddress(opts) }
 
       let(:opts) { { value: value, default: default } }
       let(:default) { false }

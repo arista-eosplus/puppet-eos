@@ -1,7 +1,33 @@
 [
     {
-        "virtualMac": "00:00:00:00:00:00",
+        "virtualMac": "aa:aa:bb:bb:cc:cc",
         "advertiseInterval": 30,
-        "virtualRouters": []
+        "virtualRouters": [
+        {
+            "interfaceStatus": "down",
+            "protocolStatus": "lowerLayerDown",
+            "interface": "Vlan100",
+            "virtualIps": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ],
+            "ipAddress": {
+                "mask": 0,
+                "ip": "0.0.0.0"
+            }
+        },
+        {
+            "interfaceStatus": "down",
+            "protocolStatus": "lowerLayerDown",
+            "interface": "Vlan200",
+            "virtualIps": [
+                "3.3.3.3"
+            ],
+            "ipAddress": {
+                "mask": 0,
+                "ip": "0.0.0.0"
+            }
+        }
+        ]
     }
 ]
