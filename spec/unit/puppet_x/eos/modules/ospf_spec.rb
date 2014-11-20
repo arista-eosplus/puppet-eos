@@ -61,7 +61,6 @@ describe PuppetX::Eos::Ospf do
         end
 
         it { is_expected.to be_a_kind_of Hash }
-        it { is_expected.to have_key :instances }
       end
     end
   end
