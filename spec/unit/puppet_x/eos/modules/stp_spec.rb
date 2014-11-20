@@ -69,6 +69,10 @@ describe PuppetX::Eos::Stp do
           expect(subject[attr]).to be_a_kind_of Hash
         end
       end
+
+      it 'should return mstp as the mode' do
+        expect(subject['mode']).to eq('mstp')
+      end
     end
   end
 

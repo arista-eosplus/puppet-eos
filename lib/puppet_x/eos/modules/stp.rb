@@ -76,7 +76,7 @@ module PuppetX
       def get
         result = @api.enable('show running-config section spanning-tree mode')
         mode = /(?<=mode\s)(\w+)$/.match(result.first['output'])
-        response = { 'mode' => mode }
+        response = { 'mode' => mode[0] }
         response['instances'] = {}
         response['interfaces'] = {}
         response
