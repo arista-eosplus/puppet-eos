@@ -88,7 +88,6 @@ describe PuppetX::Eos::Logging do
     end
   end
 
-
   context 'with Eapi#config' do
     before :each do
       allow(eapi).to receive(:config)
