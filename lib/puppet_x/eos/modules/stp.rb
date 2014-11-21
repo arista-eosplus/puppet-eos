@@ -92,6 +92,15 @@ module PuppetX
       end
 
       ##
+      # Returns all spanning-tree interfaces
+      #
+      # @return [PuppetX::Eos::StpInterfaces]
+      def interfaces
+        return @interfaces if @interfaces
+        @interfaces = StpInterfaces.new(@api)
+      end
+
+      ##
       # Configures the spanning-tree mode on the switch
       #
       # @param [Hash] opts The configuration parameters for mode
@@ -186,6 +195,78 @@ module PuppetX
                          "no spanning-tree mst #{inst} priority")
         end
         @api.config(cmd) == [{}]
+      end
+    end
+
+    ##
+    # The StpInterfaces class provides a class instance for working with
+    # spanning-tree insterfaces in EOS
+    #
+    class StpInterfaces
+      ##
+      # Initialize instance of StpInterfaces
+      #
+      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
+      #
+      # @return [PuppetX::Eos::StpInterfaces]
+      def initialize(api)
+        @api = api
+      end
+
+      ##
+      # Returns STP interface configuration as key/value pairs
+      #
+      # Example
+      #   {
+      #     "Ethernet1": {
+      #       "portfast": "enable"
+      #     },
+      #     "Ethernet2: {...}
+      #   }
+      #
+      # @return [Hash] interface attributes from the running-config
+      def getall
+        result = @api.enable('show interfaces')
+        result = result.first['interfaces']
+        response = result.each_with_object({}) do |(name, attrs),  hsh|
+          hsh[name] = get_interface_config(name) \
+            if attrs['forwardingModel'] == 'bridged'
+        end
+        response
+      end
+
+      ##
+      # Configures the interface portfast value
+      #
+      # @param [String] name The name of the interface to configure
+      # @param [Hash] opts The configuration parameters for portfast
+      # @option opts [string] :value The value to set portfast
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_portfast(name, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        cmds = ["interface #{name}"]
+        case default
+        when true
+          cmds << 'default spanning-tree portfast'
+        when false
+          cmds << (value == 'enable' ? 'spanning-tree portfast' : \
+                                       'no spanning-tree portfast')
+        end
+        @api.config(cmds) == [{}, {}]
+      end
+
+      private
+
+      def get_interface_config(name)
+        cmd = "show running-config interfaces #{name}"
+        result = @api.enable(cmd, format: 'text')
+        output = result.first['output']
+        portfast = /portfast/.match(output) ? 'enable' : 'disable'
+        { 'portfast' => portfast }
       end
     end
   end

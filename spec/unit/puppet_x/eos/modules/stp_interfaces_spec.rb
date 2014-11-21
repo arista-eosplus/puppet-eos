@@ -32,67 +32,50 @@
 require 'spec_helper'
 require 'puppet_x/eos/modules/stp'
 
-describe PuppetX::Eos::Stp do
+describe PuppetX::Eos::StpInterfaces do
   let(:eapi) { double }
-  let(:instance) { PuppetX::Eos::Stp.new eapi }
+  let(:instance) { PuppetX::Eos::StpInterfaces.new eapi }
 
-  context 'when initializing a new Stp instance' do
+  context 'when initializing a new StpInterfaces instance' do
     subject { instance }
-    it { is_expected.to be_a_kind_of PuppetX::Eos::Stp }
+    it { is_expected.to be_a_kind_of PuppetX::Eos::StpInterfaces }
   end
 
   context 'with Eapi#enable' do
     before :each do
       allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
     end
 
-    context '#get' do
-      subject { instance.get }
+    context '#getall' do
+      subject { instance.getall }
 
-      let(:commands) { 'show running-config section spanning-tree mode' }
+      before :each do
+        allow(eapi).to receive(:enable).with('show interfaces')
+          .and_return(show_interfaces)
+        allow(eapi).to receive(:enable)
+          .with('show running-config interfaces Ethernet1', format: 'text')
+          .and_return(show_interfaces_et1)
+      end
 
-      let :api_response do
+      let :show_interfaces do
         dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_get.json')
+        file = File.join(dir, 'fixtures/stp_interfaces_getall.json')
+        JSON.load(File.read(file))
+      end
+
+      let :show_interfaces_et1 do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/stp_interfaces_et1.json')
         JSON.load(File.read(file))
       end
 
       it { is_expected.to be_a_kind_of Hash }
-      it { is_expected.to have_key 'mode' }
-      it { is_expected.to have_key 'instances' }
-      it { is_expected.to have_key 'interfaces' }
+      it { is_expected.to have_key 'Ethernet1' }
 
-      %w(instances interfaces).each do |attr|
-        it "should return #{attr} as a hash" do
-          expect(subject[attr]).to be_a_kind_of Hash
-        end
-      end
-
-      it 'should return mstp as the mode' do
-        expect(subject['mode']).to eq('mstp')
+      it 'has only one entry' do
+        expect(subject.size).to eq(1)
       end
     end
-
-    context '#instances' do
-      subject { instance.instances }
-
-      let(:commands) { nil }
-      let(:api_response) { nil }
-
-      it { is_expected.to be_a_kind_of PuppetX::Eos::StpInstances }
-    end
-
-    context '#interfaces' do
-      subject { instance.interfaces }
-
-      let(:commands) { nil }
-      let(:api_response) { nil }
-
-      it { is_expected.to be_a_kind_of PuppetX::Eos::StpInterfaces }
-    end
-
   end
 
   context 'with Eapi#config' do
@@ -102,32 +85,42 @@ describe PuppetX::Eos::Stp do
         .and_return(api_response)
     end
 
-    context '#set_mode' do
-      subject { instance.set_mode(opts) }
+    context '#set_portfast' do
+      subject { instance.set_portfast('Ethernet1', opts) }
 
       let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
-      describe 'to mstp' do
-        let(:value) { 'mstp' }
-        let(:commands) { 'spanning-tree mode mstp' }
-        let(:api_response) { [{}] }
+      describe 'for Ethernet1 to "enable"' do
+        let(:value) { 'enable' }
+        let(:commands) { ['interface Ethernet1', 'spanning-tree portfast'] }
+        let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
       end
 
-      describe 'to negate spanning-tree mode' do
-        let(:commands) { 'no spanning-tree mode' }
-        let(:api_response) { [{}] }
+      describe 'for Ethernet1 to "disable"' do
+        let(:value) { 'disable' }
+        let(:commands) { ['interface Ethernet1', 'no spanning-tree portfast'] }
+        let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
       end
 
-      describe 'to default the spanning-tree mode' do
+      describe 'to negate portfast for Ethernet1' do
+        let(:commands) { ['interface Ethernet1', 'no spanning-tree portfast'] }
+        let(:api_response) { [{}, {}] }
+
+        it { is_expected.to be_truthy }
+      end
+
+      describe 'to default portfast for Ethernet1' do
         let(:default) { true }
-        let(:commands) { 'default spanning-tree mode' }
-        let(:api_response) { [{}] }
+        let(:commands) do
+          ['interface Ethernet1', 'default spanning-tree portfast']
+        end
+        let(:api_response) { [{}, {}] }
 
         it { is_expected.to be_truthy }
       end
