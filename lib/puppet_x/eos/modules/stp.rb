@@ -82,14 +82,13 @@ module PuppetX
         response
       end
 
-      def getall
-        result = @api.enable('show spanning-tree')
-        result = result.first['spanningTreeInstances']
-        result.each do |inst, attrs|
-          instance = inst.gsub('MST', '')
-          priority = attrs['bridge']['priority']
-          response[instance] = { 'priority' => priority }
-        end
+      ##
+      # Returns all spanning-tree instances as key/value hash
+      #
+      # @return [PuppetX::Eos::StpInstances]
+      def instances
+        return @instances if @instances
+        @instances = StpInstances.new(@api)
       end
 
       ##
@@ -110,6 +109,81 @@ module PuppetX
         when false
           cmd = (value ? "spanning-tree mode #{value}" : \
                          'no spanning-tree mode')
+        end
+        @api.config(cmd) == [{}]
+      end
+    end
+
+    ##
+    # The StpInstances class provides a class instance for working with
+    # spanning-tree instances in EOS
+    #
+    class StpInstances
+      ##
+      # Initialize instance of StpInstances
+      #
+      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
+      #
+      # @return [PuppetX::Eos::StpInstances
+      def initialize(api)
+        @api = api
+      end
+
+      ##
+      # Returns all of the spanning-tree instances found in the current
+      # nodes running-configuration
+      #
+      # Example
+      #   {
+      #     "1": {
+      #       "priority": 4096
+      #     },
+      #     "2": {...}
+      #   }
+      #
+      # @return [Hash] instance attributes from eAPI
+      def getall
+        result = @api.enable('show spanning-tree')
+        result = result.first['spanningTreeInstances']
+        response = {}
+        result.each do |inst, attrs|
+          instance = inst.gsub('MST', '')
+          priority = attrs['bridge']['priority']
+          response[instance] = { 'priority' => priority }
+        end
+        response
+      end
+
+      ##
+      # Deletes a configured MST instance
+      #
+      # @param [String] inst The MST instance to delete
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def delete(inst)
+        @api.config(['spanning-tree mst configuration', "no instance #{inst}",
+                     'exit']) == [{}, {}, {}]
+      end
+
+      ##
+      # Configures the spanning-tree MST priority
+      #
+      # @param [String] inst The MST instance to configure
+      # @param [Hash] opts The configuration parameters for the priority
+      # @option opts [string] :value The value to set the priority to
+      # @option opts [Boolean] :default The value should be set to default
+      #
+      # @return [Boolean] True if the commands succeed otherwise False
+      def set_priority(inst, opts = {})
+        value = opts[:value]
+        default = opts[:default] || false
+
+        case default
+        when true
+          cmd = "default spanning-tree mst #{inst} priority"
+        when false
+          cmd = (value ? "spanning-tree mst #{inst} priority #{value}" : \
+                         "no spanning-tree mst #{inst} priority")
         end
         @api.config(cmd) == [{}]
       end

@@ -32,13 +32,13 @@
 require 'spec_helper'
 require 'puppet_x/eos/modules/stp'
 
-describe PuppetX::Eos::Stp do
+describe PuppetX::Eos::StpInstances do
   let(:eapi) { double }
-  let(:instance) { PuppetX::Eos::Stp.new eapi }
+  let(:instance) { PuppetX::Eos::StpInstances.new eapi }
 
-  context 'when initializing a new Stp instance' do
+  context 'when initializing a new StpInstances instance' do
     subject { instance }
-    it { is_expected.to be_a_kind_of PuppetX::Eos::Stp }
+    it { is_expected.to be_a_kind_of PuppetX::Eos::StpInstances }
   end
 
   context 'with Eapi#enable' do
@@ -48,35 +48,8 @@ describe PuppetX::Eos::Stp do
         .and_return(api_response)
     end
 
-    context '#get' do
-      subject { instance.get }
-
-      let(:commands) { 'show running-config section spanning-tree mode' }
-
-      let :api_response do
-        dir = File.dirname(__FILE__)
-        file = File.join(dir, 'fixtures/stp_get.json')
-        JSON.load(File.read(file))
-      end
-
-      it { is_expected.to be_a_kind_of Hash }
-      it { is_expected.to have_key 'mode' }
-      it { is_expected.to have_key 'instances' }
-      it { is_expected.to have_key 'interfaces' }
-
-      %w(instances interfaces).each do |attr|
-        it "should return #{attr} as a hash" do
-          expect(subject[attr]).to be_a_kind_of Hash
-        end
-      end
-
-      it 'should return mstp as the mode' do
-        expect(subject['mode']).to eq('mstp')
-      end
-    end
-
-    context '#instances' do
-      subject { instance.instances }
+    context '#getall' do
+      subject { instance.getall }
 
       let(:commands) { 'show spanning-tree' }
 
@@ -86,9 +59,12 @@ describe PuppetX::Eos::Stp do
         JSON.load(File.read(file))
       end
 
-      it { is_expected.to be_a_kind_of PuppetX::Eos::StpInstances }
-    end
+      it { is_expected.to be_a_kind_of Hash }
 
+      %w(0 3 4).each do |inst|
+        it { is_expected.to have_key inst }
+      end
+    end
   end
 
   context 'with Eapi#config' do
@@ -98,31 +74,45 @@ describe PuppetX::Eos::Stp do
         .and_return(api_response)
     end
 
-    context '#set_mode' do
-      subject { instance.set_mode(opts) }
+    context '#delete' do
+      subject { instance.delete('1') }
+
+      let(:commands) do
+        ['spanning-tree mst configuration', 'no instance 1', 'exit']
+      end
+
+      let(:api_response) { [{}, {}, {}] }
+
+      describe 'mst instance 1' do
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context '#set_priority' do
+      subject { instance.set_priority('1', opts) }
 
       let(:opts) { { value: value, default: default } }
       let(:default) { false }
       let(:value) { nil }
 
-      describe 'to mstp' do
-        let(:value) { 'mstp' }
-        let(:commands) { 'spanning-tree mode mstp' }
+      describe 'to 4096' do
+        let(:value) { '4096' }
+        let(:commands) { 'spanning-tree mst 1 priority 4096' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
-      describe 'to negate spanning-tree mode' do
-        let(:commands) { 'no spanning-tree mode' }
+      describe 'to negate mst priority' do
+        let(:commands) { 'no spanning-tree mst 1 priority' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
       end
 
-      describe 'to default the spanning-tree mode' do
+      describe 'to default the mst priority' do
         let(:default) { true }
-        let(:commands) { 'default spanning-tree mode' }
+        let(:commands) { 'default spanning-tree mst 1 priority' }
         let(:api_response) { [{}] }
 
         it { is_expected.to be_truthy }
