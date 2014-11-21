@@ -112,12 +112,12 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
 
       before :each do
         allow(provider.eapi.Ntp).to receive(:set_source_interface)
-          .with('Loopback0')
+          .with(value: 'Loopback0')
       end
 
       it 'calls Ntp.set_source_interface = "Loopback0"' do
         expect(provider.eapi.Ntp).to receive(:set_source_interface)
-          .with('Loopback0')
+          .with(value: 'Loopback0')
         subject
       end
 

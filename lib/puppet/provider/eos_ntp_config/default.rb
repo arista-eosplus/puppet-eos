@@ -57,7 +57,7 @@ Puppet::Type.type(:eos_ntp_config).provide(:eos) do
   end
 
   def source_interface=(val)
-    eapi.Ntp.set_source_interface(val)
+    eapi.Ntp.set_source_interface(value: val)
     @property_hash[:source_interface] = val
   end
 
