@@ -32,21 +32,20 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_stp_interface) do
-  @doc = 'Configure Spanning Tree interface settings'
+  @doc = 'Manage logical STP interfaces'
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the STP interface instance'
+    desc 'The resource name for the STP interface'
   end
 
   # Properties (state management)
 
   newproperty(:portfast) do
-    desc 'Enables port fast on the interface'
-    newvalues(:true, :false)
+    desc 'Specifies the portfast state of the interface'
+    newvalues(:enable, :disable)
   end
-
 end
