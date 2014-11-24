@@ -44,7 +44,7 @@ Puppet::Type.newtype(:eos_stp_config) do
 
   newproperty(:mode) do
     desc 'Specifies STP mode of operation'
-    newvalues(:mstp)
+    newvalues(:mstp, :none)
   end
 
 end

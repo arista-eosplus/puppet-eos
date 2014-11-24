@@ -109,12 +109,14 @@ describe PuppetX::Eos::Stp do
       let(:default) { false }
       let(:value) { nil }
 
-      describe 'to mstp' do
-        let(:value) { 'mstp' }
-        let(:commands) { 'spanning-tree mode mstp' }
-        let(:api_response) { [{}] }
+      %w(mstp none).each do |mode|
+        describe "to #{mode}"  do
+          let(:value) { mode }
+          let(:commands) { "spanning-tree mode #{mode}" }
+          let(:api_response) { [{}] }
 
-        it { is_expected.to be_truthy }
+          it { is_expected.to be_truthy }
+        end
       end
 
       describe 'to negate spanning-tree mode' do

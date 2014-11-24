@@ -51,7 +51,7 @@ describe Puppet::Type.type(:eos_stp_config) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:mstp]
+    include_examples 'accepts values', [:mstp, :none]
     include_examples 'rejected parameter values'
   end
 
