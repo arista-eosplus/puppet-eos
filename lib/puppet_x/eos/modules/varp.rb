@@ -59,10 +59,9 @@ module PuppetX
       #   {
       #     "mac_address": "aaaa.bbbb.cccc",
       #     "interfaces": {
-      #         "Vlan100": [
-      #             "1.1.1.1",
-      #             "2.2.2.2"
-      #         ],
+      #         "Vlan100": {
+      #             "addresses": [ "1.1.1.1", "2.2.2.2"]
+      #         },
       #         "Vlan200": [...]
       #     }
       #   }
