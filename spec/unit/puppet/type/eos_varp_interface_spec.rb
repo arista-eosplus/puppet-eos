@@ -35,9 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet12', catalog: catalog) }
-
-  it_behaves_like 'an ensurable type', name: 'Ethernet12'
+  let(:type) { described_class.new(name: 'Vlan1234', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -47,14 +45,12 @@ describe Puppet::Type.type(:eos_varp_interface) do
     include_examples '#doc Documentation'
   end
 
-  describe 'address' do
-    let(:attribute) { :address }
+  describe 'addresses' do
+    let(:attribute) { :addresses }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',
-                     %w(0.0.0.0 255.255.255.255)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'array of strings value'
   end
 end

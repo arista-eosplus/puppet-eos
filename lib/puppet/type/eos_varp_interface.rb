@@ -34,8 +34,6 @@
 Puppet::Type.newtype(:eos_varp_interface) do
   @doc = 'Manage logical VARP service interfaces'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do
@@ -44,7 +42,7 @@ Puppet::Type.newtype(:eos_varp_interface) do
 
   # Properties (state management)
 
-  newproperty(:address) do
+  newproperty(:addresses, array_matching: :all) do
     desc 'Specifies virtual IP address for the interface'
 
     validate do |value|
