@@ -32,21 +32,27 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_ospf_interface) do
-  @doc = 'Manage OSPF interfaces'
+  @doc = 'Configure OSPF interface settings'
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the OSPF interface instance'
+    desc 'Specifies the interface name'
+
+    validate do |value|
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   # Properties (state management)
 
   newproperty(:network_type) do
-    desc 'Specifies the OSPF interface type attribute'
-    newvalues(:broadcast, :point_to_point)
+    desc 'Specifies the network type'
+    newvalues(:point_to_point, :broadcast)
   end
 
 end

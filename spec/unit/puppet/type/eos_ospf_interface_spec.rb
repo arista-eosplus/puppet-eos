@@ -45,6 +45,8 @@ describe Puppet::Type.type(:eos_ospf_interface) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(eapi_node_tm207)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'network_type' do
@@ -53,7 +55,8 @@ describe Puppet::Type.type(:eos_ospf_interface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:broadcast, :point_to_point]
+    include_examples 'accepts values', [:point_to_point, :broadcast]
     include_examples 'rejected parameter values'
   end
+
 end
