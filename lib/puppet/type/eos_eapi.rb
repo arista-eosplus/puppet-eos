@@ -34,12 +34,10 @@
 Puppet::Type.newtype(:eos_eapi) do
   @doc = 'Configure EAPI settings'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do
-    desc 'Specifies the MLAG domain ID'
+    desc 'Specifies name of EAPI settings'
 
     validate do |value|
       if value.is_a? String then super(value)
