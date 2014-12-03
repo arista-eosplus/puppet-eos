@@ -50,19 +50,6 @@ Puppet::Type.newtype(:eos_staticroute) do
 
   # Properties (state management)
 
-  newproperty(:next_hop) do
-    desc 'Is either an IP address or a routable interface port'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
-
   newproperty(:route_name) do
     desc 'The name assigned to the static route'
 

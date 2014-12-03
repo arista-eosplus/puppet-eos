@@ -50,17 +50,6 @@ describe Puppet::Type.type(:eos_staticroute) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'next_hop' do
-    let(:attribute) { :next_hop }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     %w(1.2.3.4, d28e::234:812f:61ed:4419, Ethernet 42/1)
-    include_examples 'rejects values', [[1], { two: :three }]
-  end
-
   describe 'route_name' do
     let(:attribute) { :route_name }
     subject { described_class.attrclass(attribute) }
