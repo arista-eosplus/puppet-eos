@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_access_list) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'HTTP_access', catalog: catalog) }
+  let(:type) { described_class.new(name: 'eng', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'HTTP_access'
+  it_behaves_like 'an ensurable type', name: 'eng'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -45,6 +45,8 @@ describe Puppet::Type.type(:eos_access_list) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(mkt)
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'acl_type' do
@@ -64,7 +66,6 @@ describe Puppet::Type.type(:eos_access_list) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'array of strings value'
-    include_examples 'rejects values', [0, [1], { two: :three }]
   end
 
 end

@@ -32,25 +32,31 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_access_list) do
-  @doc = 'Manage access lists'
+  @doc = 'Configure access lists'
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the access list instance'
+    desc 'Specifies the name of the access list'
+
+    validate do |value|
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   # Properties (state management)
 
   newproperty(:acl_type) do
-    desc 'Specifies the type of the ACL'
+    desc 'Specifies the ACL type used'
     newvalues(:standard, :extended)
   end
 
   newproperty(:entries, array_matching: :all) do
-    desc 'Array of access list entries'
+    desc 'An array of access list entries.'
 
     validate do |value|
       case value
