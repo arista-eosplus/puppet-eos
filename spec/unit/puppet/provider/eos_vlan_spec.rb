@@ -89,7 +89,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
                          vlan_name: 'default',
                          enable: :true,
                          exists?: true,
-                         trunk_groups: :absent,
+                         trunk_groups: [],
                          vni: :absent
       end
     end
@@ -268,30 +268,32 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-      context 'when value is :true' do
-        before :each do
-          allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(provider.resource[:vlanid], value: 'active')
-        end
-
-        it 'calls Vlan#set_enable("100", "active")' do
-          expect(provider.eapi.Vlan).to receive(:set_state)
-            .with(provider.resource[:vlanid], value: 'active')
-          provider.enable = true
-        end
+      before :each do
+        allow(provider.eapi.Vlan).to receive(:set_state)
       end
 
-      context 'when value is :false' do
-        before :each do
-          allow(provider.eapi.Vlan).to receive(:set_state)
-            .with(provider.resource[:vlanid], value: 'suspend')
-        end
+      it "calls Vlan#set_enable('100', 'active')" do
+        expect(provider.eapi.Vlan).to receive(:set_state)
+          .with(provider.resource[:vlanid], value: 'active')
+        provider.enable = :true
+      end
 
-        it 'updates enable in the provider' do
-          expect(provider.enable).not_to be_falsey
-          provider.enable = false
-          expect(provider.enable).to be_falsey
-        end
+      it 'updates enable in the provider' do
+        expect(provider.enable).not_to eq(:true)
+        provider.enable = :true
+        expect(provider.enable).to eq(:true)
+      end
+
+      it "calls Vlan#set_enable('100', 'suspend')" do
+        expect(provider.eapi.Vlan).to receive(:set_state)
+          .with(provider.resource[:vlanid], value: 'suspend')
+        provider.enable = :false
+      end
+
+      it 'updates enable in the provider' do
+        expect(provider.enable).not_to eq(:false)
+        provider.enable = :false
+        expect(provider.enable).to eq(:false)
       end
     end
   end

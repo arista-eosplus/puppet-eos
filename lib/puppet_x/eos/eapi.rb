@@ -157,7 +157,9 @@ module PuppetX
       #   the key error
       def execute(commands, options = {})
         commands.insert(0, cmd: 'enable', input: @enable_pwd)
+        Puppet.debug("REQ: #{commands}")
         resp = invoke(request(commands, options))
+        Puppet.debug("RESP: #{resp}")
         fail 'Unable to execute commands' if resp.key?('error')
         result = resp['result']
         result.shift

@@ -50,13 +50,13 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
       provider_hash[:vlan_name] = attrs['name']
       enable = attrs['status'] == 'active' ? :true : :false
       provider_hash[:enable] = enable
-      provider_hash[:trunk_groups] = result[1]['trunkGroups'][name]['name']
+      provider_hash[:trunk_groups] = result[1]['trunkGroups'][name]['names']
       new(provider_hash)
     end
   end
 
   def enable=(val)
-    arg = val ? 'active' : 'suspend'
+    arg = val == :true ? 'active' : 'suspend'
     eapi.Vlan.set_state(resource[:vlanid], value: arg)
     @property_hash[:enable] = val
   end

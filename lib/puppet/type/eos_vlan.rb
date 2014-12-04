@@ -32,14 +32,28 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_vlan) do
-  @doc = "Manage Layer-2 VLAN's"
+  @doc = "Manage Vlans.  This type provides management of Layer 2 Vlans on
+    EOS systems.   This type currently supports EOS 4.12.0 or greater
+    using eAPI."
 
   ensurable
+
+  def munge_boolean(value)
+    case value
+    when true, 'true', :true, 'yes', 'on'
+      :true
+    when false, 'false', :false, 'no', 'off'
+      :false
+    else
+      fail('munge_boolean only takes booleans')
+    end
+  end
 
   # Parameters
 
   newparam(:vlanid, namevar: true) do
-    desc 'The VLAN number, e.g. 100'
+    desc "The vlanid parameter configures a virtual LAN in the range
+        of 1 to 4094."
 
     # Make sure we have a string for the ID
     munge do |value|
@@ -50,7 +64,12 @@ Puppet::Type.newtype(:eos_vlan) do
   # Properties (state management)
 
   newproperty(:vlan_name) do
-    desc 'The VLAN name, e.g. VLAN100, Marketing'
+    desc "The vlan_name property configures the VLAN name. The name consists
+      of up to 32 characters. The default name for VLAN 1 is default. The
+      default name for all other VLANs is VLANxxxx, where xxxx is the VLAN
+      number. The default name for VLAN 55 is VLAN0055.
+
+      The name command accepts all characters except the space."
 
     validate do |value|
       case value
@@ -62,9 +81,19 @@ Puppet::Type.newtype(:eos_vlan) do
     end
   end
 
-  newproperty(:enable) do
-    desc 'VLAN enable boolean'
-    newvalues(:true, :false)
+  newproperty(:enable, boolean: true) do
+    desc "The enable property configures the VLAN transmission state of
+        configured VLAN.  When enable is True, ports forward VLAN traffic
+        and when enable is False, ports block VLAN traffic.
+
+        The default configuration for enable is True"
+
+    newvalue(:true)
+    newvalue(:false)
+
+    munge do |value|
+      @resource.munge_boolean(value)
+    end
   end
 
   newproperty(:vni) do
@@ -83,6 +112,12 @@ Puppet::Type.newtype(:eos_vlan) do
   end
 
   newproperty(:trunk_groups, array_matching: :all) do
-    desc 'An array of ASCII strings in the trunk group'
+    desc "The trunk group property assigns the array of trunk groups to
+        the specified VLAN.  A trunk group is the set of physical interfaces
+        that comprise the trunk and th ecollections of VLANs whose traffic
+        is carried only on ports that are members of trunk groups to which
+        the VLAN belongs.
+
+        The default configuration is an empty list"
   end
 end

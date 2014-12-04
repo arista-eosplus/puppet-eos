@@ -51,7 +51,8 @@ module PuppetX
       end
 
       def conf
-        YAML.load_file('/mnt/flash/eapi.conf')
+        filename = ENV['EAPI_CONF'] || '/mnt/flash/eapi.conf'
+        YAML.load_file(filename)
       end
 
       def eapi
