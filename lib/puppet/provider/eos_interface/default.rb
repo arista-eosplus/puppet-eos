@@ -44,22 +44,20 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Interface.getall
-    flowcontrols = result[1]['interfaceFlowControls']
-
-    result.first['interfaces'].map do |name, attrs|
+    eapi.Interface.getall.map do |name, attrs|
       provider_hash = { name: name }
-      state = attrs['interfaceStatus'] == 'disabled' ? :false : :true
-      provider_hash[:enable] = state
+
+      enable = attrs['shutdown'] ? :false : :true
+      provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
 
-      if flowcontrols.key?(name)
-        tx = flowcontrols[name]['txAdminState']
-        rx = flowcontrols[name]['rxAdminState']
-      end
+      Puppet.debug("ATTRS[#{name}] #{attrs}")
 
-      provider_hash[:flowcontrol_send] = !tx.nil? ? tx.to_sym : :absent
-      provider_hash[:flowcontrol_receive] = !rx.nil? ? rx.to_sym : :absent
+      tx = attrs['flowcontrol_send'].to_sym
+      rx = attrs['flowcontrol_receive'].to_sym
+
+      provider_hash[:flowcontrol_send] = tx
+      provider_hash[:flowcontrol_receive] = rx
 
       new(provider_hash)
     end
@@ -82,7 +80,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def enable=(val)
-    eapi.Interface.set_shutdown(resource[:name], value: val == :true)
+    eapi.Interface.set_shutdown(resource[:name], value: val == :false)
     @property_hash[:enable] = val
   end
 

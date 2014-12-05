@@ -56,14 +56,28 @@ module PuppetX
       # interfaces in EOS using eAPI
       #
       # Example
-      #   [{
-      #     "interfaces": {...},
-      #     "interfaceFlowControls": {...}
-      #   }]
+      #   {
+      #     "Ethernet1": {
+      #       "description": <string>,
+      #       "shutdown": [true, false],
+      #       "flowcontrol_send": [on, off, desired, absent],
+      #       "flowcontrol_receive": [on, off, desired, absent]
+      #     }
+      #   }
       #
       # @return [Array<Hash>] returns an Array of Hashes
       def getall
-        @api.enable(['show interfaces', 'show interfaces flowcontrol'])
+        result = @api.enable('show interfaces')
+        response = {}
+        result.first['interfaces'].map do |_, attrs|
+          values = {}
+          shutdown = attrs['interfaceStatus'] == 'disabled' ? true : false
+          values = { 'description' => attrs['description'],
+                                   'shutdown' => shutdown }
+          values = values.merge(get_flowcontrol(attrs['name']))
+          response[attrs['name']] = values
+        end
+        response
       end
 
       ##
@@ -146,7 +160,8 @@ module PuppetX
         when true
           cmds << 'default description'
         when false
-          cmds << (value.nil? ? 'no description' : "description #{value}")
+          cmds << ((value.nil? || value.length == 0) ? 'no description' : \
+                                                       "description #{value}")
         end
         @api.config(cmds) == [{}, {}]
       end
@@ -174,6 +189,28 @@ module PuppetX
                                 "flowcontrol #{direction} #{value}")
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      private
+
+      ##
+      # Returns the current flow control configuration from the running
+      # config for non-converted nodes
+      #
+      # @params [String] name The name of the interface to return the
+      #   configuration values for
+      #
+      # @return [Hash] returns a hash of key/vale paris that represent
+      #   the configuration
+      def get_flowcontrol(name)
+        result = @api.enable("show running-config interfaces #{name}",
+                             format: 'text')
+        output = result.first['output']
+        match = /flowcontrol\ssend(.*)$/.match(output)
+        tx = match.nil? ? 'absent' : match[1].strip
+        match = /flowcontrol\sreceive(.*)$/.match(output)
+        rx = match.nil? ? 'absent' : match[1].strip
+        return { 'flowcontrol_send' => tx, 'flowcontrol_receive' => rx }
       end
     end
   end

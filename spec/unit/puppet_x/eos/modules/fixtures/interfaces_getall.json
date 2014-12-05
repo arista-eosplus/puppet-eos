@@ -1,0 +1,59 @@
+[
+    {
+      "interfaces": {
+        "Ethernet1": {
+            "lastStatusChangeTimestamp": 1417709617.16,
+            "name": "Ethernet1",
+            "duplex": "duplexFull",
+            "autoNegotiate": "off",
+            "burnedInAddress": "00:50:56:3f:0c:0b",
+            "mtu": 9214,
+            "hardware": "ethernet",
+            "interfaceStatus": "disabled",
+            "bandwidth": 10000000000,
+            "forwardingModel": "bridged",
+            "lineProtocolStatus": "down",
+            "interfaceCounters": {
+                "outBroadcastPkts": 0,
+                "outUcastPkts": 0,
+                "totalOutErrors": 0,
+                "inMulticastPkts": 1,
+                "counterRefreshTime": 1417729422.89,
+                "inBroadcastPkts": 0,
+                "outputErrorsDetail": {
+                    "deferredTransmissions": 0,
+                    "txPause": 0,
+                    "collisions": 0,
+                    "lateCollisions": 0
+                },
+                "outOctets": 39535,
+                "outDiscards": 0,
+                "inOctets": 110,
+                "inUcastPkts": 0,
+                "inputErrorsDetail": {
+                    "runtFrames": 0,
+                    "rxPause": 0,
+                    "fcsErrors": 0,
+                    "alignmentErrors": 0,
+                    "giantFrames": 0,
+                    "symbolErrors": 0
+                },
+                "linkStatusChanges": 2,
+                "outMulticastPkts": 310,
+                "totalInErrors": 0,
+                "inDiscards": 0
+            },
+            "interfaceStatistics": {
+                "inBitsRate": 0,
+                "outBitsRate": 0,
+                "inPktsRate": 0,
+                "updateInterval": 300,
+                "outPktsRate": 0
+            },
+            "interfaceAddress": [],
+            "physicalAddress": "00:50:56:3f:0c:0b",
+            "description": "test interface"
+        }
+      }
+    }
+]

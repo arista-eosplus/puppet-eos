@@ -42,43 +42,35 @@ describe PuppetX::Eos::Interface do
   end
 
   context 'with Eapi#enable' do
-    before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
-    end
-
     context '#getall' do
       subject { instance.getall }
 
-      describe 'retrieve all interfaces' do
-        let(:commands) { ['show interfaces', 'show interfaces flowcontrol'] }
 
-        let :api_response do
-          dir = File.dirname(__FILE__)
-          file = File.join(dir, 'fixtures/interface_getall.json')
-          JSON.load(File.read(file))
-        end
+      let :response_getall do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/interfaces_getall.json')
+        JSON.load(File.read(file))
+      end
 
-        it { is_expected.to be_a_kind_of Array }
+      let :response_get_flowcontrol do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/interfaces_get_flowcontrol.json')
+        JSON.load(File.read(file))
+      end
 
-        it 'should contain one entry' do
-          expect(subject.size).to eq 1
-        end
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with('show interfaces')
+          .and_return(response_getall)
+        allow(eapi).to receive(:enable)
+          .with('show running-config interfaces Ethernet1', format: 'text')
+          .and_return(response_get_flowcontrol)
+      end
 
-        it 'should have an entry for interfaces' do
-          expect(subject[0]).to have_key 'interfaces'
-        end
+      it { is_expected.to be_a_kind_of Hash }
 
-        it 'should have an entry for interfaceFlowControls' do
-          expect(subject[0]).to have_key 'interfaceFlowControls'
-        end
-
-        it 'has interfaces with a 1:1 mapping to interfaceFlowControls' do
-          subject[0]['interfaces'].keys do |intf|
-            expect(subject[0]['interfaceFlowControls']).to have_key intf
-          end
-        end
+      it 'should contain one entry' do
+        expect(subject.size).to eq 1
       end
     end
   end
