@@ -46,16 +46,28 @@ module PuppetX
       end
 
       ##
-      # Returns the vlan data for the provided id with the
-      # show vlan <id> command.  If the id doesn't exist then
-      # nil is returned
+      # Returns the Vxlan logical interface from the running-config
       #
+      # Example
+      #   {
+      #     "Vxlan1": {
+      #       "source_interface": <string>,
+      #       "multicast_group": <string>
+      #     }
+      #   }
       #
-      # @return [nil, Hash<String, String|Hash|Array>] Hash describing the
-      #   vlan configuration specified by id.  If the id is not
-      #   found then nil is returned
-      def get
-        @api.enable('show interfaces vxlan 1')
+      # @return [Hash] returns key/value pairs that present the logical
+      #   interface configuration
+      def getall
+        result = @api.enable('show interfaces')
+        response = {}
+        if result.first['interfaces'].key?('Vxlan1')
+          attrs = result.first['interfaces']['Vxlan1']
+          values = { 'source_interface' => attrs['srcIpIntf'],
+                     'multicast_group' => attrs['floodMcastGrp'] }
+          response['Vxlan1'] = values
+        end
+        response
       end
 
       ##
@@ -63,7 +75,7 @@ module PuppetX
       #
       # @return [Boolean] returns true if the command completed successfully
       def create
-        @api.config('interface vxlan 1') == [{}]
+        @api.config('interface Vxlan1') == [{}]
       end
 
       ##
@@ -71,7 +83,7 @@ module PuppetX
       #
       # @return [Boolean] always returns true
       def delete
-        @api.config('no interface vxlan 1') == [{}]
+        @api.config('no interface Vxlan1') == [{}]
       end
 
       ##
@@ -79,7 +91,7 @@ module PuppetX
       #
       # @return [Boolean] returns true if the command completed successfully
       def default
-        @api.config('default interface vxlan 1') == [{}]
+        @api.config('default interface Vxlan1') == [{}]
       end
 
       ##
@@ -94,7 +106,7 @@ module PuppetX
         value = opts[:value]
         default = opts[:default] || false
 
-        cmds = ['interface vxlan 1']
+        cmds = ['interface Vxlan1']
         case default
         when true
           cmds << 'default vxlan source-interface'
@@ -117,7 +129,7 @@ module PuppetX
         value = opts[:value]
         default = opts[:default] || false
 
-        cmds = ['interface vxlan 1']
+        cmds = ['interface Vxlan1']
         case default
         when true
           cmds << 'default vxlan multicast-group'

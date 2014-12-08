@@ -1,24 +1,7 @@
-[
-   {
-      "interfaces": {
-         "Vxlan1": {
-            "vniInDottedNotation": false,
-            "name": "Vxlan1",
-            "interfaceStatus": "connected",
-            "description": "",
-            "vlanToVtepList": {},
-            "mtu": 0,
-            "hardware": "vxlan",
-            "replicationMode": "multicast",
-            "bandwidth": 0,
-            "floodMcastGrp": "239.10.10.10",
-            "vlanToVniMap": {},
-            "srcIpIntf": "Loopback0",
-            "srcIpAddr": "1.1.1.1",
-            "interfaceAddress": [],
-            "lineProtocolStatus": "up",
-            "forwardingModel": "bridged"
-         }
-      }
-   }
-]
+{
+  "Vxlan1": {
+    "source_interface": "Loopback0",
+    "multicast_group": "239.10.10.10"
+  }
+}
+

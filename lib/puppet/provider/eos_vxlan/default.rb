@@ -44,10 +44,10 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Vxlan.get.first['interfaces'].map do |name, attrs|
+    eapi.Vxlan.getall.map do |name, attrs|
       provider_hash = { name: name, ensure: :present }
-      provider_hash[:source_interface] = attrs['srcIpIntf']
-      provider_hash[:multicast_group] = attrs['floodMcastGrp']
+      provider_hash[:source_interface] = attrs['source_interface']
+      provider_hash[:multicast_group] = attrs['multicast_group']
       new(provider_hash)
     end
   end

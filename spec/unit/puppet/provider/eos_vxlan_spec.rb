@@ -59,7 +59,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
     allow_message_expectations_on_nil
     allow(described_class).to receive(:eapi)
     allow(described_class.eapi).to receive(:Vxlan)
-    allow(described_class.eapi.Vxlan).to receive(:get)
+    allow(described_class.eapi.Vxlan).to receive(:getall)
       .and_return(vxlan)
   end
 
