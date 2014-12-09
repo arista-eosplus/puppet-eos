@@ -75,7 +75,7 @@ module PuppetX
         attr_hash = {
           'name' => name,
           'mode' => mode_to_value(output),
-          'trunk_allowed_vlans' => trunk_vlans_to_value(output),
+          'trunk_allowed_vlans' => trunk_vlans_to_value(output).split(','),
           'trunk_native_vlan' => trunk_native_to_value(output),
           'access_vlan' => access_vlan_to_value(output)
         }
@@ -240,9 +240,9 @@ module PuppetX
       end
 
       def trunk_vlans_to_value(config)
-        m = /(?<=Trunking VLANs Enabled:\s)(?<vlans>[[[:alnum:]]+|ALL])/
+        m = /(?<=Trunking VLANs Enabled:\s)(?<vlans>[0-9,\-AL]*)/
             .match(config)
-        return m['vlans'] unless m.nil?
+        m['vlans'] == 'ALL' ? '1-4094' : m['vlans'] unless m['vlans'].nil?
       end
 
       def trunk_native_to_value(config)
