@@ -90,7 +90,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
                          description: '',
                          enable: :true,
                          flowcontrol_receive: :off,
-                         flowcontrol_send: :off
+                         flowcontrol_send: :on
       end
 
       context 'eos_interface { Management1: }' do

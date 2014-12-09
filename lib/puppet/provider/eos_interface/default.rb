@@ -51,8 +51,6 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
       provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
 
-      Puppet.debug("ATTRS[#{name}] #{attrs}")
-
       tx = attrs['flowcontrol_send'].to_sym
       rx = attrs['flowcontrol_receive'].to_sym
 

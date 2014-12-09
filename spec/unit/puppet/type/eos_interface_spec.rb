@@ -71,7 +71,7 @@ describe Puppet::Type.type(:eos_interface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:on, :off, :desired]
+    include_examples 'accepts values', [:on, :off]
     include_examples 'rejected parameter values'
   end
 
@@ -81,7 +81,7 @@ describe Puppet::Type.type(:eos_interface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:on, :off, :desired]
+    include_examples 'accepts values', [:on, :off]
     include_examples 'rejected parameter values'
   end
 

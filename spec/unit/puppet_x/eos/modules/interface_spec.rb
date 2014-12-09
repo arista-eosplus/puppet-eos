@@ -45,7 +45,6 @@ describe PuppetX::Eos::Interface do
     context '#getall' do
       subject { instance.getall }
 
-
       let :response_getall do
         dir = File.dirname(__FILE__)
         file = File.join(dir, 'fixtures/interfaces_getall.json')

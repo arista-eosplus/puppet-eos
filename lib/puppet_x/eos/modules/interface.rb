@@ -65,15 +65,15 @@ module PuppetX
       #     }
       #   }
       #
-      # @return [Array<Hash>] returns an Array of Hashes
+      # @return [Hash] returns a hash of interfaces indexed by interface name
+      #   with key/value pairs representing the running config
       def getall
         result = @api.enable('show interfaces')
         response = {}
         result.first['interfaces'].map do |_, attrs|
-          values = {}
           shutdown = attrs['interfaceStatus'] == 'disabled' ? true : false
           values = { 'description' => attrs['description'],
-                                   'shutdown' => shutdown }
+                     'shutdown' => shutdown }
           values = values.merge(get_flowcontrol(attrs['name']))
           response[attrs['name']] = values
         end
@@ -210,7 +210,7 @@ module PuppetX
         tx = match.nil? ? 'absent' : match[1].strip
         match = /flowcontrol\sreceive(.*)$/.match(output)
         rx = match.nil? ? 'absent' : match[1].strip
-        return { 'flowcontrol_send' => tx, 'flowcontrol_receive' => rx }
+        { 'flowcontrol_send' => tx, 'flowcontrol_receive' => rx }
       end
     end
   end
