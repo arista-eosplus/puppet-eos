@@ -69,14 +69,13 @@ module PuppetX
       def get(name)
         members = get_members name
         result = @api.enable("show interfaces #{name}")
-        interface = result.first['interfaces']
-        timeout = timeout_to_s(interface[name]['fallbackTimeout'])
+        interface = result.first['interfaces'][name]
         attrs = {
           'name' => name,
           'members' => members,
           'lacp_mode' => get_lacp_mode(members),
           'lacp_fallback' => get_lacp_fallback(interface),
-          'lacp_timeout' => timeout }
+          'lacp_timeout' => timeout_to_s(interface['fallbackTimeout']) }
         attrs
       end
 
