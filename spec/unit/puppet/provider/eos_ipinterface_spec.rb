@@ -90,7 +90,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          name: 'Ethernet1',
                          address: '172.16.10.1/24',
                          helper_address: %w(5.6.7.8 9.10.11.12),
-                         mtu: 1500
+                         mtu: '1500'
       end
 
       context "eos_ipinterface { 'Management1': )" do
@@ -105,7 +105,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          name: 'Management1',
                          address: '192.168.1.16/24',
                          helper_address: [],
-                         mtu: 1500
+                         mtu: '1500'
       end
     end
 
