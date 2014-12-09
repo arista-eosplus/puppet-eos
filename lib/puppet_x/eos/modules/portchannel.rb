@@ -70,14 +70,13 @@ module PuppetX
         members = get_members name
         result = @api.enable("show interfaces #{name}")
         interface = result.first['interfaces']
-
+        timeout = timeout_to_s(interface[name]['fallbackTimeout'])
         attrs = {
           'name' => name,
           'members' => members,
           'lacp_mode' => get_lacp_mode(members),
           'lacp_fallback' => get_lacp_fallback(interface),
-          'lacp_timeout' => interface['fallbackTimeout']
-        }
+          'lacp_timeout' => timeout }
         attrs
       end
 
@@ -253,6 +252,11 @@ module PuppetX
       end
 
       private
+
+      def timeout_to_s(timeout)
+        return timeout.round.to_s unless timeout.nil?
+        timeout
+      end
 
       def get_lacp_mode(members)
         return '' if members.empty?

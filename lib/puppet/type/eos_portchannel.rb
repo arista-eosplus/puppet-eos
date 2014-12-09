@@ -70,15 +70,15 @@ Puppet::Type.newtype(:eos_portchannel) do
   newproperty(:lacp_timeout) do
     desc 'LACP fallback timeout'
 
-    # Make sure we have a string for the ID
+    # Make sure we have a string for the value
     munge do |value|
       Integer(value).to_s
     end
 
-    # Validate each value is a valid channel group id
+    # Validate each value is a valid timeout value
     validate do |value|
-      unless value.to_i.between?(0, 900)
-        fail 'value #{value.inspect} is not between 0 and 900'
+      unless value.to_i.between?(1, 100)
+        fail 'value #{value.inspect} is not between 1 and 100'
       end
     end
   end
