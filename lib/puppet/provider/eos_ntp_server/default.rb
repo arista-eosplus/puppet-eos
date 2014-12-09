@@ -66,7 +66,7 @@ Puppet::Type.type(:eos_ntp_server).provide(:eos) do
   end
 
   def destroy
-    eapi.Ntp.delete(resource[:name])
+    eapi.Ntp.remove_server(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

@@ -77,6 +77,10 @@ module PuppetX
           servers[srv] = {}
         end
 
+        output.scan(/\w+\.\w+\.\w{3}/).each do |srv|
+          servers[srv] = {}
+        end
+
         attr_hash = {
           'source_interface' => m_source.nil? ? '' : m_source[0],
           'servers' => servers
