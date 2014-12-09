@@ -74,7 +74,8 @@ module PuppetX
       #
       # @return [Hash] returns a Hash of attributes derived from eAPI
       def get
-        result = @api.enable('show running-config section spanning-tree mode')
+        result = @api.enable('show running-config section spanning-tree mode',
+                             format: 'text')
         mode = /(?<=mode\s)(\w+)$/.match(result.first['output'])
         response = { 'mode' => mode[0] }
         response['instances'] = {}

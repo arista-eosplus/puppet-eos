@@ -44,7 +44,7 @@ describe PuppetX::Eos::Stp do
   context 'with Eapi#enable' do
     before :each do
       allow(eapi).to receive(:enable)
-        .with(commands)
+        .with(commands, format: 'text')
         .and_return(api_response)
     end
 
