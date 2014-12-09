@@ -46,7 +46,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
   newproperty(:lacp_mode) do
     desc 'Specifies the interface LACP mode'
-    newvalues(:active, :passive, :off)
+    newvalues(:active, :passive, :on)
   end
 
   newproperty(:members, array_matching: :all) do

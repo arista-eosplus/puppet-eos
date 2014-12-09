@@ -53,7 +53,7 @@ describe Puppet::Type.type(:eos_portchannel) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:active, :passive, :off]
+    include_examples 'accepts values', [:active, :passive, :on]
     include_examples 'rejected parameter values'
   end
 
