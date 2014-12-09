@@ -71,35 +71,9 @@ module PuppetX
           'peer_link' => result[0]['peerLink'],
           'local_interface' => result[0]['localInterface'],
           'peer_address' => result[0]['peerAddress'],
-          'enable' => result[0]['state'] == 'disabled' ? :false : :true
-        } if result[0].key?('domainId')
+          'shutdown' => get_shutdown
+        }
         attr_hash || {}
-      end
-
-      ##
-      # Creates a new mlag instance
-      #
-      # @param [String] name The domain id of the mlag instance
-      #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def create(name)
-        @api.config(['mlag configuration', "domain-id #{name}"]) == [{}, {}]
-      end
-
-      ##
-      # Deletes the current mlag configuration from the running-config
-      #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def delete
-        @api.config('no mlag configuration') == [{}]
-      end
-
-      ##
-      # Defaults the current mlag configuration
-      #
-      # @return [Boolean] True if the command succeeds otherwise False
-      def default
-        @api.config('default mlag configuration') == [{}]
       end
 
       ##
@@ -262,6 +236,19 @@ module PuppetX
           cmds << (value ? 'shutdown' : 'no shutdown')
         end
         @api.config(cmds) == [{}, {}]
+      end
+
+      private
+
+      ##
+      # Retrieves the configurate state for global MLAG.
+      #
+      # @return [Boolean] True if MLAG is globally shutdown via the
+      #   running configuration otherwise False
+      def get_shutdown
+        result = @api.enable('show running-config section mlag configuration',
+                             format: 'text')
+        !/\s{4}shutdown/.match(result.first['output']).nil?
       end
     end
   end

@@ -37,16 +37,12 @@ describe Puppet::Type.type(:eos_mlag) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(name: 'MLAG_12', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'MLAG_12'
-
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(mlagDomain)
-    include_examples 'rejects values', [[1], { two: :three }]
   end
 
   describe 'domain_id' do

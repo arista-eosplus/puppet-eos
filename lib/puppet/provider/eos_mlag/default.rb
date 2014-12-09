@@ -45,13 +45,22 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   def self.instances
     result = eapi.Mlag.get
+    Puppet.debug("RESULT #{result}")
     return [] if result.empty?
-    provider_hash = { name: result['domain_id'],  ensure: :present }
+    provider_hash = { name: 'settings',  ensure: :present }
+    provider_hash[:domain_id] = result['domain_id']
     provider_hash[:local_interface] = result['local_interface']
     provider_hash[:peer_address] = result['peer_address']
     provider_hash[:peer_link] = result['peer_link']
-    provider_hash[:enable] = result['enable']
+    enable = result['shutdown'] ? :false : :true
+    provider_hash[:enable] = enable
+    Puppet.debug("HASH #{provider_hash}")
     [new(provider_hash)]
+  end
+
+  def domain_id=(val)
+    eapi.Mlag.set_domain_id(value: val)
+    @property_hash[:domain_id] = val
   end
 
   def local_interface=(val)
@@ -70,26 +79,11 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def enable=(val)
-    eapi.Mlag.set_shutdown(value: !val)
+    eapi.Mlag.set_shutdown(value: val == :false)
     @property_hash[:enable] = val
   end
 
   def exists?
     @property_hash[:ensure] == :present
-  end
-
-  def create
-    eapi.Mlag.set_domain_id(value: resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
-    self.local_interface = resource[:local_interface] \
-                           if resource[:local_interface]
-    self.peer_address = resource[:peer_address] if resource[:peer_address]
-    self.peer_link = resource[:peer_link] if resource[:peer_link]
-    self.enable = resource[:enable] if resource[:enable]
-  end
-
-  def destroy
-    eapi.Mlag.delete
-    @property_hash = { name: resource[:name],  ensure: :absent }
   end
 end

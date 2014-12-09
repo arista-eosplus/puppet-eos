@@ -34,18 +34,10 @@
 Puppet::Type.newtype(:eos_mlag) do
   @doc = 'Configure MLAG settings'
 
-  ensurable
-
   # Parameters
 
   newparam(:name) do
-    desc 'Specifies the MLAG domain ID'
-
-    validate do |value|
-      if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
-      end
-    end
+    desc 'Resource name, not used to configure the device'
   end
 
   # Properties (state management)

@@ -36,12 +36,12 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      ensure: :present,
-      name: 'MLAG-Domain',
+      name: 'settings',
+      domain_id: 'MLAG-Domain',
       local_interface: 'Port-Channel1',
       peer_address: '10.1.1.1',
       peer_link: 'Vlan4094',
-      enable: true,
+      enable: :true,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_mlag).new(resource_hash)
@@ -76,35 +76,32 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         expect(subject.size).to eq 1
       end
 
-      it 'has an instance for mlag domain MLAG-Domain' do
-        instance = subject.find { |p| p.name == 'MLAG-Domain' }
+      it 'has an instance for settings' do
+        instance = subject.find { |p| p.name == 'settings' }
         expect(instance).to be_a described_class
       end
 
-      context "eos_mlag { 'MLAG-Domain': }" do
+      context "eos_mlag { 'settings': }" do
         subject do
           described_class.instances.find do |p|
-            p.name == 'MLAG-Domain'
+            p.name == 'settings'
           end
         end
 
         include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'MLAG-Domain',
+                         name: 'settings',
+                         domain_id: 'MLAG-Domain',
                          local_interface: 'Port-Channel1',
                          peer_address: '10.1.1.1',
                          peer_link: 'Vlan4094',
-                         enable: true
+                         enable: :true
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'MLAG-Domain' => Puppet::Type.type(:eos_mlag)
-            .new(name: 'MLAG-Domain'),
-          'MLAG-Domain2' => Puppet::Type.type(:eos_mlag)
-            .new(name: 'MLAG-Domain2')
+          'settings' => Puppet::Type.type(:eos_mlag).new(name: 'settings')
         }
       end
 
@@ -112,6 +109,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
+          expect(rsrc.provider.domain_id).to eq(:absent)
           expect(rsrc.provider.local_interface).to eq(:absent)
           expect(rsrc.provider.peer_address).to eq(:absent)
           expect(rsrc.provider.peer_link).to eq(:absent)
@@ -120,14 +118,8 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['MLAG-Domain'].provider.name).to eq 'MLAG-Domain'
-        expect(resources['MLAG-Domain'].provider.exists?).to be_truthy
-      end
-
-      it 'does not set the provider instance of the unmanaged resource' do
-        subject
-        expect(resources['MLAG-Domain2'].provider.name).to eq('MLAG-Domain2')
-        expect(resources['MLAG-Domain2'].provider.exists?).to be_falsey
+        expect(resources['settings'].provider.name).to eq 'settings'
+        expect(resources['settings'].provider.exists?).to be_truthy
       end
     end
   end
@@ -151,85 +143,6 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       context 'when the resource exists on the system' do
         let(:provider) { described_class.instances.first }
         it { is_expected.to be_truthy }
-      end
-    end
-
-    describe '#create' do
-
-      before :each do
-        allow(eapi).to receive(:set_domain_id)
-        allow(eapi).to receive(:set_local_interface)
-        allow(eapi).to receive(:set_peer_link)
-        allow(eapi).to receive(:set_peer_address)
-        allow(eapi).to receive(:set_shutdown)
-      end
-
-      it 'calls Mlag#create' do
-        expect(eapi).to receive(:set_domain_id).with(value: resource[:name])
-        provider.create
-      end
-
-      it 'sets ensure to :present' do
-        provider.create
-        expect(provider.ensure).to eq(:present)
-      end
-
-      it 'sets local_interface to the resource value' do
-        provider.create
-        value = provider.resource[:local_interface]
-        expect(provider.local_interface).to eq value
-      end
-
-      it 'sets peer_link to the resource value' do
-        provider.create
-        value = provider.resource[:peer_link]
-        expect(provider.peer_link).to eq value
-      end
-
-      it 'sets peer_address to the resource value' do
-        provider.create
-        value = provider.resource[:peer_address]
-        expect(provider.peer_address).to eq value
-      end
-
-      it 'sets enable to the resource value' do
-        provider.create
-        value = provider.resource[:enable]
-        expect(provider.enable).to eq value
-      end
-    end
-
-    describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:delete)
-        allow(eapi).to receive(:set_domain_id)
-        allow(eapi).to receive(:set_local_interface)
-        allow(eapi).to receive(:set_peer_link)
-        allow(eapi).to receive(:set_peer_address)
-        allow(eapi).to receive(:set_shutdown)
-      end
-
-      it 'calls Mlag#delete' do
-        expect(eapi).to receive(:delete).with(no_args)
-        provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'MLAG-Domain', ensure: :absent)
-        end
       end
     end
 

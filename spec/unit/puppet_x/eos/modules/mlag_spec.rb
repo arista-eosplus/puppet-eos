@@ -42,12 +42,6 @@ describe PuppetX::Eos::Mlag do
   end
 
   context 'with Eapi#enable' do
-    before :each do
-      allow(eapi).to receive(:enable)
-        .with(commands)
-        .and_return(api_response)
-    end
-
     context '#get' do
       subject { instance.get }
 
@@ -59,6 +53,22 @@ describe PuppetX::Eos::Mlag do
         JSON.load(File.read(file))
       end
 
+      let :response_get_shutdown do
+        dir = File.dirname(__FILE__)
+        file = File.join(dir, 'fixtures/mlag_get_shutdown.json')
+        JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with('show mlag')
+          .and_return(api_response)
+        allow(eapi).to receive(:enable)
+          .with('show running-config section mlag configuration',
+                format: 'text')
+          .and_return(response_get_shutdown)
+      end
+
       describe 'mlag configuration' do
         it { is_expected.to be_a_kind_of Hash }
       end
@@ -67,12 +77,16 @@ describe PuppetX::Eos::Mlag do
     context '#get_interfaces' do
       subject { instance.get_interfaces }
 
-      let(:commands) { 'show mlag interfaces' }
-
       let :api_response do
         dir = File.dirname(__FILE__)
         file = File.join(dir, 'fixtures/mlag_get_interfaces.json')
         JSON.load(File.read(file))
+      end
+
+      before :each do
+        allow(eapi).to receive(:enable)
+          .with('show mlag interfaces')
+          .and_return(api_response)
       end
 
       it { is_expected.to be_a_kind_of Array }
@@ -92,40 +106,6 @@ describe PuppetX::Eos::Mlag do
       allow(eapi).to receive(:config)
         .with(commands)
         .and_return(api_response)
-    end
-
-    context '#create' do
-      subject { instance.create(name) }
-
-      let(:name) { 'mlag-domain' }
-      let(:commands) { ['mlag configuration', "domain-id #{name}"] }
-
-      describe 'create mlag instance with domain-id' do
-        let(:api_response) { [{}, {}] }
-        it { is_expected.to be_truthy }
-      end
-    end
-
-    context '#delete' do
-      subject { instance.delete }
-
-      let(:commands) { 'no mlag configuration' }
-
-      describe 'remove mlag configuration' do
-        let(:api_response) { [{}] }
-        it { is_expected.to be_truthy }
-      end
-    end
-
-    context '#default' do
-      subject { instance.default }
-
-      let(:commands) { 'default mlag configuration' }
-
-      describe 'default mlag configuration' do
-        let(:api_response) { [{}] }
-        it { is_expected.to be_truthy }
-      end
     end
 
     context '#add_interface' do
