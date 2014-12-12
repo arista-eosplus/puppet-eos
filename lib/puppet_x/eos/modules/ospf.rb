@@ -63,15 +63,14 @@ module PuppetX
       #
       # @return [Hash] returns an Hash
       def getall
-        result = @api.enable('show ip ospf')
-        instances = {}
-        result[0]['vrfs']['default']['instList'].map do |inst, attrs|
-          instances[inst] = { router_id: attrs['routerId'] }
-        end
-        # 11-19-14 sprygada remarking this out temporarily until a
-        # decsion is made on the ospf interfaces structures
-        # instances['interfaces'] = get_interfaces
-        instances
+        result = @api.enable('show ip ospf', format: 'text')
+        output = result.first['output']
+        match = /(?<=ospf\s)(?<instance>\d+)"/.match(output)
+        return {} if match .nil?
+        instance = match['instance']
+        match = /(?<=ID\s)(?<routerid>[\d|\.]*)\s/.match(output)
+        routerid = match['routerid'].nil? ? {} : match['routerid']
+        { instance => { 'router_id' => routerid } }
       end
 
       ##
