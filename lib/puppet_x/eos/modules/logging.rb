@@ -35,8 +35,8 @@ module PuppetX
   # Eos is module namesapce for working with the EOS command API
   module Eos
     ##
-    # The Snmp class provides a base class instance for working with
-    # the global SNMP configuration
+    # The Logging class provides an implementation for working with
+    # the global logging configuration on the specified node
     #
     class Logging
       ##
@@ -51,32 +51,68 @@ module PuppetX
 
       ##
       # Returns a hash of key/value pairs that repesent the logging
-      # configuration in EOS
+      # configuration in EOS.  The hosts key is populated by the
+      # LoggingHosts instance
       #
       # Example
       #   {
-      #     "hosts": [Array]
+      #     "hosts": {...}
       #   }
       #
       # @return [Hash] returns a hash of key/value pairs
       def get
-        result = @api.enable('show running-config section ^logging\shost',
-                             format: 'text')
-        output = result.first['output']
-        { 'hosts' => output.scan(/(?<=host\s)[\d|\.]+/) }
+        { 'hosts' => hosts }
       end
 
       ##
-      # Configures the list of host to set as destination targets for
-      # for sending syslog messages to
+      # Returns an instace of LoggingHosts for configuring the
+      # collection of host destinations in the nodes configuration
       #
-      # @param [Array] values The list of targest to configure as destination
-      #     hosts for receiving syslog messages
+      # @return [PuppetX::Eos::LoggingHosts
+      def hosts
+        return @hosts if @hosts
+        @hosts = LoggingHosts.new(@api)
+      end
+    end
+
+    ##
+    # The LoggingHosts class provides an implementation for configuring
+    # individual host destinations in the current nodes running config
+    #
+    class LoggingHosts
+      ##
+      # Initialize instance of Logging host
       #
-      # @return [Boolean] True if the commands succeed otherwise False
-      def set_hosts(values)
-        get['hosts'].each { |host| remove_host(host) }
-        values.each { |host| add_host(host) }
+      # @param [PuppetX::Eos::Eapi] api An instance of Eapi
+      #
+      # @return [PuppetX::Eos::LoggingHosts]
+      def initialize(api)
+        @api = api
+      end
+
+      ##
+      # Returns a hash of all configured logging hosts.  For the initial
+      # release, the hosts key/value pairs will always return an empty
+      # hash.  This will be used in the future for additional attributes
+      #
+      # Example
+      #   {
+      #     "hosts": {
+      #       "1.2.3.4": {}
+      #       "log.example.net": {}
+      #     }
+      #   }
+      #
+      # @return [Hash] returns a hash with the host name as the index
+      def getall
+        result = @api.enable('show running-config section ^logging\shost',
+                             format: 'text')
+        output = result.first['output']
+        hosts = output.scan(/(?<=host\s)[\d|\.|\w]*/)
+        values = hosts.each_with_object({}) do |host, hsh|
+          hsh[host] = {}
+        end
+        { 'hosts' => values }
       end
 
       ##
@@ -87,7 +123,7 @@ module PuppetX
       #     host to configure
       #
       # @returns [Boolean] True if the commands succeed otherwise False
-      def add_host(host)
+      def create(host)
         @api.config("logging host #{host}") == [{}]
       end
 
@@ -95,11 +131,11 @@ module PuppetX
       # Removes the specified host from the set of destinations for sending
       # logging information to
       #
-      # @paraam [String] host The IP address or hostname of the destination
+      # @param [String] host The IP address or hostname of the destination
       #     host to remove
       #
       # @return [Boolean] True if the command succeeds otherwise False
-      def remove_host(host)
+      def delete(host)
         @api.config("no logging host #{host}") == [{}]
       end
     end
