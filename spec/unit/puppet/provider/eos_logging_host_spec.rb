@@ -31,16 +31,15 @@
 #
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_logging).provider(:eos) do
+describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'settings',
-      hosts: ['1.1.1.1'],
+      name: '1.2.3.4',
       provider: described_class.name
     }
-    Puppet::Type.type(:eos_logging).new(resource_hash)
+    Puppet::Type.type(:eos_logging_host).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
@@ -72,51 +71,51 @@ describe Puppet::Type.type(:eos_logging).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it 'has an instance for settings' do
-        instance = subject.find { |p| p.name == 'settings' }
+      it 'has an instance for 1.2.3.4' do
+        instance = subject.find { |p| p.name == '1.2.3.4' }
         expect(instance).to be_a described_class
       end
 
-      context 'eos_logging { settings: }' do
+      context 'eos_logging_host { 1.2.3.4: }' do
         subject do
           described_class.instances.find do |p|
-            p.name == 'settings'
+            p.name == '1.2.3.4'
           end
         end
 
         include_examples 'provider resource methods',
-                         name: 'settings',
-                         hosts: ['1.1.1.1']
+                         name: '1.2.3.4',
+                         ensure: :present
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'settings' => Puppet::Type.type(:eos_logging)
-            .new(name: 'settings'),
-          'settings2' => Puppet::Type.type(:eos_logging)
-            .new(name: 'settings2')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
+            .new(name: '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
+            .new(name: '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }
 
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
-          expect(rsrc.provider.hosts).to eq(:absent)
+          expect(rsrc.provider.ensure).to eq(:absent)
         end
       end
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['settings'].provider.name).to eq('settings')
-        expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['1.2.3.4'].provider.name).to eq('1.2.3.4')
+        expect(resources['1.2.3.4'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['settings2'].provider.name).to eq('settings2')
-        expect(resources['settings2'].provider.exists?).to be_falsey
+        expect(resources['5.6.7.8'].provider.name).to eq('5.6.7.8')
+        expect(resources['5.6.7.8'].provider.exists?).to be_falsey
       end
     end
   end
@@ -144,23 +143,55 @@ describe Puppet::Type.type(:eos_logging).provider(:eos) do
       end
     end
 
-    describe '#hosts=(value)' do
+    describe '#create' do
       before :each do
-        allow(provider.eapi.Logging).to receive(:set_hosts)
+        allow(eapi).to receive(:hosts)
+        allow(eapi.hosts).to receive(:create)
       end
 
-      it "calls Logging#set_hosts(#{name}, ['1.1.1.1'])" do
-        expect(provider.eapi.Logging).to receive(:set_hosts)
-          .with(value: ['1.1.1.1'])
-        provider.hosts = ['1.1.1.1']
+      it 'calls Logging.hosts#create(name) with the resource id' do
+        expect(provider.eapi.Logging.hosts).to receive(:create)
+          .with(provider.resource[:name])
+        provider.create
       end
 
-      it 'updates hosts in the provider' do
-        expect(provider.hosts).not_to eq(['1.1.1.1'])
-        provider.hosts = ['1.1.1.1']
-        expect(provider.hosts).to eq(['1.1.1.1'])
+      it 'sets ensure to :present' do
+        provider.create
+        expect(provider.ensure).to eq(:present)
       end
     end
 
+    describe '#destroy' do
+
+      before :each do
+        allow(eapi).to receive(:hosts)
+        allow(eapi.hosts).to receive(:create)
+        allow(eapi.hosts).to receive(:delete)
+      end
+
+      it 'calls Logging.hosts#delete(id)' do
+        expect(eapi.hosts).to receive(:delete)
+          .with(provider.resource[:name])
+        provider.destroy
+      end
+
+      context 'when the resource has been created' do
+        subject do
+          provider.create
+          provider.destroy
+        end
+
+        it 'sets ensure to :absent' do
+          subject
+          expect(provider.ensure).to eq(:absent)
+        end
+
+        it 'clears the property hash' do
+          subject
+          expect(provider.instance_variable_get(:@property_hash))
+            .to eq(name: provider.resource[:name], ensure: :absent)
+        end
+      end
+    end
   end
 end

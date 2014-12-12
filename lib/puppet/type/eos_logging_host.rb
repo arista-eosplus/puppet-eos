@@ -31,27 +31,19 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_logging) do
-  @doc = 'Manage logging settings'
+Puppet::Type.newtype(:eos_logging_host) do
+  @doc = 'The eos_logging_host type configures destination hosts to
+    receive syslog messages.  This type is ensurable'
+
+  ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the logging instance'
+    desc 'The resource name for the logging host should be the hostname in
+      either IP format or FQDN format of the destination host.'
   end
 
   # Properties (state management)
 
-  newproperty(:hosts, array_matching: :all) do
-    desc 'Array of logging servers'
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
-      end
-    end
-  end
 end
