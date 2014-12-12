@@ -51,5 +51,6 @@ module PuppetX
     autoload :System, 'puppet_x/eos/modules/system'
     autoload :Varp, 'puppet_x/eos/modules/varp'
     autoload :Stp, 'puppet_x/eos/modules/stp'
+    autoload :Logging, 'puppet_x/eos/modules/logging'
   end
 end

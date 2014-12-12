@@ -61,7 +61,7 @@ module PuppetX
       #
       # @return [Hash] returns a hash of key/value pairs
       def get
-        { 'hosts' => hosts }
+        { 'hosts' => hosts.getall }
       end
 
       ##
@@ -97,10 +97,8 @@ module PuppetX
       #
       # Example
       #   {
-      #     "hosts": {
-      #       "1.2.3.4": {}
-      #       "log.example.net": {}
-      #     }
+      #     "1.2.3.4": {},
+      #     "log.example.net": {}
       #   }
       #
       # @return [Hash] returns a hash with the host name as the index
@@ -109,10 +107,9 @@ module PuppetX
                              format: 'text')
         output = result.first['output']
         hosts = output.scan(/(?<=host\s)[\d|\.|\w]*/)
-        values = hosts.each_with_object({}) do |host, hsh|
+        hosts.each_with_object({}) do |host, hsh|
           hsh[host] = {}
         end
-        { 'hosts' => values }
       end
 
       ##
