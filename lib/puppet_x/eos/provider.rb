@@ -30,6 +30,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet_x/eos/eapi'
+require 'rbeapi/client'
 
 ##
 # PuppetX namespace
@@ -51,12 +52,19 @@ module PuppetX
       end
 
       def conf
-        filename = ENV['EAPI_CONF'] || '/mnt/flash/eapi.conf'
+        filename = ENV['PUPPET_X_EAPI_CONF'] || '/mnt/flash/eapi.conf'
         YAML.load_file(filename)
       end
 
       def eapi
         @eapi ||= PuppetX::Eos::Eapi.new(conf)
+      end
+
+      def node
+        return @node if @node
+        Rbeapi::Client.load_config(ENV['RBEAPI_CONF']) if ENV['RBEAPI_CONF']
+        connection_name = ENV['RBEAPI_CONNECTION'] || 'localhost'
+        @node = Rbeapi::Client.connect_to(connection_name)
       end
     end
   end
