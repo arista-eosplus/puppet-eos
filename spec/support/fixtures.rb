@@ -16,3 +16,9 @@ class Fixtures
 
   clear
 end
+
+
+def get_fixture(name)
+    File.join(File.dirname(__FILE__), "../fixtures/#{name}")
+end
+

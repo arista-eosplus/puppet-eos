@@ -6,11 +6,11 @@ SimpleCov.start do
 end
 
 require 'pry'
-require 'puppet_x/eos/eapi'
 require 'puppetlabs_spec_helper/puppet_spec_helper'
 
 dir = File.expand_path(File.dirname(__FILE__))
 Dir["#{dir}/support/**/*.rb"].sort.each { |f| require f }
+
 
 RSpec.configure do |config|
   # rspec configuration
