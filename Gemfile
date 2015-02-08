@@ -8,10 +8,12 @@ def location_for(place, fake_version = nil)
   end
   mdata2 = %r{^file:\/\/(.*)}.match(place)
   if mdata2
-    return ['>= 0', { path: File.expand_path(mdata[1]), require: false }]
+    return ['>= 0', { path: File.expand_path(mdata2[1]), require: false }]
   end
   [place, { require: false }]
 end
+
+gem 'inifile'
 
 group :development do
   gem 'guard'
@@ -38,5 +40,12 @@ if puppetversion
   gem 'puppet', *location_for(puppetversion)
 else
   gem 'puppet', require: false
+end
+
+rbeapiversion = ENV['GEM_RBEAPI_VERSION']
+if rbeapiversion
+  gem 'rbeapi', *location_for(rbeapiversion)
+else
+  gem 'rbeapi', require: false
 end
 # vim:ft=ruby
