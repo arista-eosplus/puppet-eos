@@ -143,7 +143,6 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
       context 'when the resource exists on the system' do
         let(:provider) { described_class.instances.first }
-
         it { is_expected.to be_truthy }
       end
     end
