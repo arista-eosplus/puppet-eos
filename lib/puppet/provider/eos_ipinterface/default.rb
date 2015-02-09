@@ -44,28 +44,28 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Ipinterface.getall
+    result = node.api('ipinterfaces').getall
     result.map do |name, attrs|
       provider_hash = { name: name, ensure: :present }
       provider_hash[:address] = attrs['address']
       provider_hash[:mtu] = attrs['mtu'].to_s
-      provider_hash[:helper_address] = attrs['helper_address']
+      provider_hash[:helper_address] = attrs['helper_addresses']
       new(provider_hash)
     end
   end
 
   def address=(val)
-    eapi.Ipinterface.set_address(resource['name'], value: val)
+    node.api('ipinterfaces').set_address(resource['name'], value: val)
     @property_hash[:address] = val
   end
 
   def helper_address=(val)
-    eapi.Ipinterface.set_helper_address(resource['name'], value: val)
+    node.api('ipinterfaces').set_helper_address(resource['name'], value: val)
     @property_hash[:helper_address] = val
   end
 
   def mtu=(val)
-    eapi.Ipinterface.set_mtu(resource['name'], value: val)
+    node.api('ipinterfaces').set_mtu(resource['name'], value: val)
     @property_hash[:mtu] = val
   end
 
@@ -74,7 +74,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   end
 
   def create
-    eapi.Ipinterface.create(resource[:name])
+    node.api('ipinterfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.address = resource[:address] if resource[:address]
     self.mtu = resource[:mtu] if resource[:mtu]
@@ -82,7 +82,7 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
   end
 
   def destroy
-    eapi.Ipinterface.delete(resource[:name])
+    node.api('ipinterfaces').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

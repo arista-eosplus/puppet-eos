@@ -38,7 +38,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
     resource_hash = {
       ensure: :present,
       name: 'Ethernet1',
-      address: '1.2.3.4/24',
+      address: '1.2.3.4/5',
       helper_address: %w(5.6.7.8 9.10.11.12),
       mtu: '9000',
       provider: described_class.name
@@ -48,38 +48,36 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('rbeapi').as_null_object }
+
   def ipinterfaces
     ipinterfaces = Fixtures[:ipinterfaces]
     return ipinterfaces if ipinterfaces
-    file = File.join(File.dirname(__FILE__), 'fixtures/ipinterfaces.json')
+    file = get_fixture('ipinterfaces.json')
     Fixtures[:ipinterfaces] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Ipinterface)
-    allow(described_class.eapi.Ipinterface).to receive(:getall)
-      .and_return(ipinterfaces)
+    allow(described_class.node).to receive(:api).with('ipinterfaces').and_return(api)
+    allow(provider.node).to receive(:api).with('ipinterfaces').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:getall).and_return(ipinterfaces) }
 
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has two entries' do
-        expect(subject.size).to eq 2
+      it 'has one entry' do
+        expect(subject.size).to eq 1
       end
 
-      %w(Ethernet1 Management1).each do |name|
-        it "has an instance for interface #{name}" do
-          instance = subject.find { |p| p.name == name }
-          expect(instance).to be_a described_class
-        end
+      it 'has an instance for Ethernet1' do
+        instance = subject.find { |p| p.name == 'Ethernet1' }
+        expect(instance).to be_a described_class
       end
 
       context "eos_ipinterface { 'Ethernet1': }" do
@@ -88,25 +86,12 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Ethernet1',
-                         address: '172.16.10.1/24',
+                         address: '1.2.3.4/5',
                          helper_address: %w(5.6.7.8 9.10.11.12),
-                         mtu: '1500'
+                         mtu: '1500',
+                         exists?: true
       end
 
-      context "eos_ipinterface { 'Management1': )" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'Management1'
-          end
-        end
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Management1',
-                         address: '192.168.1.16/24',
-                         helper_address: [],
-                         mtu: '1500'
-      end
     end
 
     describe '.prefetch' do
@@ -124,31 +109,32 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
           expect(rsrc.provider.address).to eq(:absent)
+          expect(rsrc.provider.mtu).to eq(:absent)
+          expect(rsrc.provider.helper_address).to eq(:absent)
         end
       end
 
       it 'sets the provider instance of the managed resource' do
         subject
         expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
+        expect(resources['Ethernet1'].provider.address).to eq '1.2.3.4/5'
+        expect(resources['Ethernet1'].provider.mtu).to eq '1500'
+        expect(resources['Ethernet1'].provider.helper_address).to eq %w(5.6.7.8 9.10.11.12)
         expect(resources['Ethernet1'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['Ethernet2'].provider.name).to eq('Ethernet2')
+        expect(resources['Ethernet2'].provider.address).to eq(:absent)
+        expect(resources['Ethernet2'].provider.mtu).to eq(:absent)
+        expect(resources['Ethernet2'].provider.helper_address).to eq(:absent)
         expect(resources['Ethernet2'].provider.exists?).to be_falsey
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Ipinterface).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -164,128 +150,66 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
     end
 
     describe '#create' do
-
-      before :each do
-        allow(eapi).to receive(:create).with('Ethernet1')
-        allow(eapi).to receive(:set_address)
-        allow(eapi).to receive(:set_mtu)
-        allow(eapi).to receive(:set_helper_address)
-      end
-
-      it "calls Ipinterface#create('Ethernet1')" do
-        expect(eapi).to receive(:create).with('Ethernet1')
-        provider.create
-      end
+      let(:name) { resource[:name] }
 
       it 'sets ensure to :present' do
+        expect(api).to receive(:create).with(name)
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets address to the resource value' do
+        expect(api).to receive(:set_address)
+          .with(name, value: resource[:address])
         provider.create
         expect(provider.address).to eq(provider.resource[:address])
       end
 
       it 'sets mtu to the resource value' do
+        expect(api).to receive(:set_mtu).with(name, value: resource[:mtu])
         provider.create
         expect(provider.mtu).to eq(provider.resource[:mtu])
       end
 
       it 'sets helper_address to the resource value' do
+        expect(api).to receive(:set_helper_address)
+          .with(name, value: resource[:helper_address])
         provider.create
-        value = provider.resource[:helper_address]
-        expect(provider.helper_address).to eq(value)
+        expect(provider.helper_address).to eq(resource[:helper_address])
       end
     end
 
     describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:delete).with('Ethernet1')
-        allow(eapi).to receive(:create)
-        allow(eapi).to receive(:set_address)
-        allow(eapi).to receive(:set_mtu)
-        allow(eapi).to receive(:set_helper_address)
-      end
-
-      it "calls Ipinterface#delete('Ethernet1')" do
-        expect(eapi).to receive(:delete).with('Ethernet1')
+      it 'sets ensure to :absent' do
+        expect(api).to receive(:delete).with(resource[:name])
         provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Ethernet1', ensure: :absent)
-        end
+        expect(provider.ensure).to eq(:absent)
       end
     end
 
     describe '#address=(val)' do
-      before :each do
-        allow(provider.eapi.Ipinterface).to receive(:set_address)
-          .with('Ethernet1', value: '1.2.3.4/5')
-      end
-
-      it "calls Ipinterface#set_address('Ethernet1', val: '1.2.3.4/5')" do
-        expect(eapi).to receive(:set_address)
-          .with('Ethernet1', value: '1.2.3.4/5')
+      it 'updates address on the provider' do
+        expect(api).to receive(:set_address)
+          .with(resource[:name], value: '1.2.3.4/5')
         provider.address = '1.2.3.4/5'
-      end
-
-      it 'updates the address property in the provider' do
-        expect(provider.address).not_to eq '1.2.3.4/5'
-        provider.address = '1.2.3.4/5'
-        expect(provider.address).to eq '1.2.3.4/5'
+        expect(provider.address).to eq('1.2.3.4/5')
       end
     end
 
     describe '#mtu=(val)' do
-      before :each do
-        allow(provider.eapi.Ipinterface).to receive(:set_mtu)
-          .with('Ethernet1', value: '9000')
-      end
-
-      it 'calls Ipinterface#set_mtu=9000' do
-        expect(eapi).to receive(:set_mtu)
-          .with('Ethernet1', value: '9000')
-        provider.mtu = '9000'
-      end
-
-      it 'updates the mtu property in the provider' do
-        expect(provider.mtu).not_to eq '9000'
-        provider.mtu = '9000'
-        expect(provider.mtu).to eq '9000'
+      it 'updates mtu on the provider' do
+        expect(api).to receive(:set_mtu).with(resource[:name], value: 1600)
+        provider.mtu = 1600
+        expect(provider.mtu).to eq(1600)
       end
     end
 
     describe '#helper_address=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_helper_address)
-          .with('Ethernet1', value: value)
-      end
+      let(:value) { %w(5.6.7.8 9.10.11.12) }
 
-      let(:value) { %w(1.2.3.4 5.6.7.8) }
-
-      it 'calls Ipinterface#set_helper_address' do
-        expect(eapi).to receive(:set_helper_address)
-          .with('Ethernet1', value: value)
-        provider.helper_address = value
-      end
-
-      it 'updates the help_address property in the provider' do
-        expect(provider.helper_address).not_to eq(value)
+      it 'updates helper_address on the provider' do
+        expect(api).to receive(:set_helper_address)
+          .with(resource[:name], value: value)
         provider.helper_address = value
         expect(provider.helper_address).to eq(value)
       end
