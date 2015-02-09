@@ -44,6 +44,24 @@ Puppet::Type.newtype(:eos_vxlan) do
 
   # Properties (state management)
 
+  newproperty(:description) do
+    desc 'The description for the interface'
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
+
+  newproperty(:enable) do
+    desc 'Interface admin state'
+    newvalues(:true, :false)
+  end
+
   newproperty(:source_interface) do
     desc 'Specifies the loopback interface from which the VTEP derives '\
          'the source IP address'

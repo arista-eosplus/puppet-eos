@@ -47,6 +47,26 @@ describe Puppet::Type.type(:eos_vxlan) do
     include_examples '#doc Documentation'
   end
 
+  describe 'description' do
+    let(:attribute) { :description }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(B41.5)
+    include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'enable' do
+    let(:attribute) { :enable }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+  end
+
   describe 'source_interface' do
     let(:attribute) { :source_interface }
     subject { described_class.attrclass(attribute) }

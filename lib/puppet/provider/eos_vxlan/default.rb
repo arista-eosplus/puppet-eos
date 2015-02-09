@@ -44,22 +44,38 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Vxlan.getall.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
-      provider_hash[:source_interface] = attrs['source_interface']
-      provider_hash[:multicast_group] = attrs['multicast_group']
-      new(provider_hash)
+    interfaces = node.api('interfaces').getall
+    interfaces.each_with_object([]) do |(name, attrs), arry|
+      if attrs['type'] == 'vxlan'
+        provider_hash = { name: name, ensure: :present }
+        enable = attrs['shutdown'] ? :false : :true
+        provider_hash[:enable] = enable
+        provider_hash[:description] = attrs['description']
+        provider_hash[:source_interface] = attrs['source_interface']
+        provider_hash[:multicast_group] = attrs['multicast_group']
+        arry << new(provider_hash)
+      end
     end
   end
 
   def source_interface=(val)
-    eapi.Vxlan.set_source_interface(value: val)
+    node.api('interfaces').set_source_interface(resource[:name], value: val)
     @property_hash[:source_interface] = val
   end
 
   def multicast_group=(val)
-    eapi.Vxlan.set_multicast_group(value: val)
+    node.api('interfaces').set_multicast_group(resource[:name], value: val)
     @property_hash[:multicast_group] = val
+  end
+
+  def enable=(val)
+    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
+    @property_hash[:enable] = val
+  end
+
+  def description=(val)
+    node.api('interfaces').set_description(resource[:name], value: val)
+    @property_hash[:description] = val
   end
 
   def exists?
@@ -67,8 +83,10 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   end
 
   def create
-    eapi.Vxlan.create
+    node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
+    self.enable = resource[:enable] if resource[:enable]
+    self.description = resource[:description] if resource[:description]
     self.source_interface = resource[:source_interface] \
                             if resource[:source_interface]
     self.multicast_group = resource[:multicast_group] \
@@ -76,7 +94,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   end
 
   def destroy
-    eapi.Vxlan.delete
+    node.api('interfaces').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
