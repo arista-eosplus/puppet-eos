@@ -32,34 +32,35 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_stp_config).provider(:eos) do
-  let(:type) { Puppet::Type.type(:eos_stp_config) }
 
   let :resource do
     resource_hash = {
       name: 'settings',
       mode: 'mstp'
     }
-    type.new(resource_hash)
+    Puppet::Type.type(:eos_stp_config).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
 
-  def stp_config
-    stp_config = Fixtures[:stp_config]
-    return stp_config if stp_config
-    file = File.join(File.dirname(__FILE__), 'fixtures/stp_config.json')
-    Fixtures[:stp_config] = JSON.load(File.read(file))
+  let(:api) { double('stp') }
+
+  def stp
+    stp = Fixtures[:stp]
+    return stp if stp
+    file = get_fixture('stp.json')
+    Fixtures[:stp] = JSON.load(File.read(file))
   end
 
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Stp)
-    allow(described_class.eapi.Stp).to receive(:get)
-      .and_return(stp_config)
+    allow(described_class.node).to receive(:api).with('stp').and_return(api)
+    allow(provider.node).to receive(:api).with('stp').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(stp) }
+
     describe '.instances' do
       subject { described_class.instances }
 
@@ -69,62 +70,75 @@ describe Puppet::Type.type(:eos_stp_config).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it 'contains eos_stp_config[settings]' do
+      it 'has an instance for "settings"' do
         instance = subject.find { |p| p.name == 'settings' }
         expect(instance).to be_a described_class
       end
 
       describe 'eos_stp_config[settings]' do
-        subject do
-          described_class.instances.find { |p| p.name == 'settings' }
-        end
+        subject { described_class.instances.find { |p| p.name == 'settings' } }
 
         include_examples 'provider resource methods',
                          name: 'settings',
-                         mode: 'mstp'
+                         mode: :mstp
       end
     end
 
     describe '.prefetch' do
-      let(:resources) { { 'settings' => type.new(name: 'settings') } }
+      let(:resources) do
+        { 'settings' => Puppet::Type.type(:eos_stp_config).new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_stp_config).new(name: 'alternative')
+        }
+      end
+
       subject { described_class.prefetch(resources) }
 
-      it 'updates the provider instance of managed resources' do
-        expect(resources['settings'].provider.mode).to eq(:absent)
+      it 'resource providers are absent prior to calling .prefetch' do
+        resources.values.each do |rsrc|
+          expect(rsrc.provider.mode).to eq(:absent)
+        end
+      end
+
+      it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['settings'].provider.mode).to eq('mstp')
+        expect(resources['settings'].provider.name).to eq('settings')
+        expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.mode).to eq(:mstp)
+      end
+
+      it 'does not set the provider instance of the unmanaged resource' do
+        subject
+        expect(resources['alternative'].provider.name).to eq('alternative')
+        expect(resources['alternative'].provider.exists?).to be_falsey
+        expect(resources['alternative'].provider.mode).to eq(:absent)
       end
     end
   end
 
   context 'resource (instance) methods' do
 
-    let(:eapi) { double }
+    describe '#exists?' do
+      subject { provider.exists? }
 
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Stp)
+      context 'when the resource does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(api).to receive(:get).and_return(stp)
+          described_class.instances.first
+        end
+        it { is_expected.to be_truthy }
+      end
     end
 
     describe '#mode=(val)' do
-      subject { provider.mode = value }
-
-      before :each do
-        allow(provider.eapi.Stp).to receive(:set_mode)
-      end
-
       %w(mstp none).each do |mode|
-        let(:value) { mode }
-
-        it "calls Stp.set_mode=#{mode}" do
-          expect(provider.eapi.Stp).to receive(:set_mode).with(value: value)
-          subject
-        end
-
-        it "sets mode to #{mode} in the provider" do
-          expect(provider.mode).not_to eq(value)
-          subject
-          expect(provider.mode).to eq(value)
+        it 'updates mode value in the provider' do
+          expect(api).to receive(:set_mode).with(value: mode.to_s)
+          provider.mode = mode
+          expect(provider.mode).to eq(mode)
         end
       end
     end

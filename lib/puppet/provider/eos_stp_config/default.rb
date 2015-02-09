@@ -44,15 +44,15 @@ Puppet::Type.type(:eos_stp_config).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Stp.get
+    stp = node.api('stp').get
     provider_hash = { name: 'settings',
                       ensure: :present,
-                      mode: result['mode'] }
+                      mode: stp['mode'].to_sym }
     [new(provider_hash)]
   end
 
   def mode=(val)
-    eapi.Stp.set_mode(value: val)
+    node.api('stp').set_mode(value: val)
     @property_hash[:mode] = val
   end
 
