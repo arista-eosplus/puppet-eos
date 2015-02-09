@@ -49,9 +49,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:node) { double }
-
-  let(:api) { double }
+  let(:api) { double('rbeapi').as_null_object }
 
   def vlans
     vlans = Fixtures[:vlans]
@@ -61,9 +59,8 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
   end
 
   before :each do
-    allow(described_class).to receive(:node).and_return(node)
-    allow(provider).to receive(:node).and_return(node)
-    allow(node).to receive(:api).with('vlans').and_return(api)
+    allow(described_class.node).to receive(:api).with('vlans').and_return(api)
+    allow(provider.node).to receive(:api).with('vlans').and_return(api)
   end
 
   context 'class methods' do
@@ -102,8 +99,6 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         {
           '1' => Puppet::Type.type(:eos_vlan).new(vlanid: '1'),
           '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2'),
-          '3' => Puppet::Type.type(:eos_vlan).new(vlanid: '3'),
-          '4' => Puppet::Type.type(:eos_vlan).new(vlanid: '4')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -112,6 +107,8 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         resources.values.each do |rsrc|
           expect(rsrc.provider.vlanid).to eq(:absent)
           expect(rsrc.provider.vlan_name).to eq(:absent)
+          expect(rsrc.provider.trunk_groups).to eq(:absent)
+          expect(rsrc.provider.enable).to eq(:absent)
         end
       end
 
@@ -119,14 +116,18 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         subject
         expect(resources['1'].provider.vlanid).to eq '1'
         expect(resources['1'].provider.vlan_name).to eq 'default'
+        expect(resources['1'].provider.enable).to eq :true
+        expect(resources['1'].provider.trunk_groups).to eq []
         expect(resources['1'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['4'].provider.vlanid).to eq :absent
-        expect(resources['4'].provider.vlan_name).to eq :absent
-        expect(resources['4'].provider.exists?).to be_falsey
+        expect(resources['2'].provider.vlanid).to eq :absent
+        expect(resources['2'].provider.vlan_name).to eq :absent
+        expect(resources['2'].provider.enable).to eq :absent
+        expect(resources['2'].provider.trunk_groups).to eq :absent
+        expect(resources['2'].provider.exists?).to be_falsey
       end
     end
   end
@@ -140,24 +141,15 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         it { is_expected.to be_falsey }
       end
 
-      # FIXME: need to fix the mock objects for this test
-      # context 'when the resource exists on the system' do
-      #   let(:provider) { described_class.instances.first }
-      #   it { is_expected.to be_truthy }
-      # end
+      context 'when the resource exists on the system' do
+        let(:provider) { described_class.instances.first }
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     describe '#create' do
       let(:vid) { resource[:name] }
-
-      before do
-        allow(api).to receive_messages(
-          :create => true,
-          :set_state => true,
-          :set_name => true,
-          :set_trunk_group => true
-        )
-      end
 
       it 'sets ensure to :present' do
         expect(api).to receive(:create).with(resource[:name])
@@ -166,6 +158,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
 
       it 'sets enable to the resource value' do
+        expect(api).to receive(:set_state).with(vid, value: 'active')
         provider.create
         expect(provider.enable).to be_truthy
       end
@@ -185,12 +178,6 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     end
 
     describe '#destroy' do
-      let(:vid) { resource[:name] }
-
-      before do
-        allow(api).to receive_messages(:delete => true)
-      end
-
       it 'sets ensure to :absent' do
         expect(api).to receive(:delete).with(resource[:name])
         provider.destroy
@@ -207,27 +194,29 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     end
 
     describe '#enable=(value)' do
+      let(:vid) { resource[:name] }
+
       it 'updates enable with value :true' do
-        expect(api).to receive(:set_state)
-          .with(resource[:name], value: 'active')
+        expect(api).to receive(:set_state).with(vid, value: 'active')
         provider.enable = :true
         expect(provider.enable).to eq(:true)
       end
 
       it 'updates enable with value :false' do
-        expect(api).to receive(:set_state)
-          .with(resource[:name], value: 'suspend')
+        expect(api).to receive(:set_state).with(vid, value: 'suspend')
         provider.enable = :false
         expect(provider.enable).to eq(:false)
       end
     end
 
     describe '#trunk_groups=(value)' do
-      it 'updates trunk_groups with arry [tg1, tg2]' do
-        expect(api).to receive(:set_trunk_group)
-          .with(resource[:name], value: ['tg1', 'tg2'])
-        provider.trunk_groups = ['tg1', 'tg2']
-        expect(provider.trunk_groups).to eq(['tg1', 'tg2'])
+      let(:vid) { resource[:name] }
+      let(:tgs) { %w(tg1 tg2 tg3) }
+
+      it 'updates trunk_groups with array [tg1, tg2, tg3]' do
+        expect(api).to receive(:set_trunk_group).with(vid, value: tgs)
+        provider.trunk_groups = tgs
+        expect(provider.trunk_groups).to eq(tgs)
       end
     end
   end
