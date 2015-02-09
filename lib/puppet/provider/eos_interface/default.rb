@@ -44,56 +44,35 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Interface.getall.map do |name, attrs|
+    interfaces = node.api('interfaces').getall
+    interfaces.each_with_object([]) do |(name, attrs), arry|
       provider_hash = { name: name }
-
       enable = attrs['shutdown'] ? :false : :true
       provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
-
-      tx = attrs['flowcontrol_send'].to_sym
-      rx = attrs['flowcontrol_receive'].to_sym
-
-      provider_hash[:flowcontrol_send] = tx
-      provider_hash[:flowcontrol_receive] = rx
-
-      new(provider_hash)
+      arry << new(provider_hash)
     end
   end
 
   def create
-    eapi.Interface.create(resource[:name])
+    node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
-    self.flowcontrol_send = resource[:flowcontrol_send] \
-                            if resource[:flowcontrol_send]
-    self.flowcontrol_receive = resource[:flowcontrol_receive] \
-                               if resource[:flowcontrol_receive]
   end
 
   def destroy
-    eapi.Interface.delete(resource[:name])
+    node.api('interfaces').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 
   def enable=(val)
-    eapi.Interface.set_shutdown(resource[:name], value: val == :false)
+    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
     @property_hash[:enable] = val
   end
 
   def description=(val)
-    eapi.Interface.set_description(resource[:name], value: val)
+    node.api('interfaces').set_description(resource[:name], value: val)
     @property_hash[:description] = val
-  end
-
-  def flowcontrol_send=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'send', value: val)
-    @property_hash[:flowcontrol_send] = val
-  end
-
-  def flowcontrol_receive=(val)
-    eapi.Interface.set_flowcontrol(resource[:name], 'receive', value: val)
-    @property_hash[:flowcontrol_receive] = val
   end
 end
