@@ -44,34 +44,35 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Switchport.getall.map do |attrs|
-      provider_hash = { name: attrs['name'],
+    switchports = node.api('switchports').getall
+    switchports.each_with_object([]) do |(name, attrs), arry|
+      provider_hash = { name: name,
                         ensure: :present,
                         mode: attrs['mode'].to_sym,
                         trunk_allowed_vlans: attrs['trunk_allowed_vlans'],
                         trunk_native_vlan: attrs['trunk_native_vlan'],
                         access_vlan: attrs['access_vlan'] }
-      new(provider_hash)
+      arry << new(provider_hash)
     end
   end
 
   def mode=(val)
-    eapi.Switchport.set_mode(resource[:name], value: val)
+    node.api('switchports').set_mode(resource[:name], value: val)
     @property_hash[:mode] = val
   end
 
   def trunk_allowed_vlans=(val)
-    eapi.Switchport.set_trunk_allowed_vlans(resource[:name], value: val)
+    node.api('switchports').set_trunk_allowed_vlans(resource[:name], value: val)
     @property_hash[:trunk_allowed_vlans] = val
   end
 
   def trunk_native_vlan=(val)
-    eapi.Switchport.set_trunk_native_vlan(resource[:name], value: val)
+    node.api('switchports').set_trunk_native_vlan(resource[:name], value: val)
     @property_hash[:trunk_native_vlan] = val
   end
 
   def access_vlan=(val)
-    eapi.Switchport.set_access_vlan(resource[:name], value: val)
+    node.api('switchports').set_access_vlan(resource[:name], value: val)
     @property_hash[:access_vlan] = val
   end
 
@@ -80,7 +81,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   end
 
   def create
-    eapi.Switchport.create(resource[:name])
+    node.api('switchports').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.mode = resource[:mode] if resource[:mode]
     self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] \
@@ -93,7 +94,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   end
 
   def destroy
-    eapi.Switchport.delete(resource[:name])
+    node.api('switchports').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
