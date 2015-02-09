@@ -44,22 +44,24 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('ntp') }
+
   def ntp
     ntp = Fixtures[:ntp]
     return ntp if ntp
-    file = File.join(File.dirname(__FILE__), 'fixtures/ntp.json')
+    file = get_fixture('ntp.json')
     Fixtures[:ntp] = JSON.load(File.read(file))
   end
 
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Ntp)
-    allow(described_class.eapi.Ntp).to receive(:get)
-      .and_return(ntp)
+    allow(described_class.node).to receive(:api).with('ntp').and_return(api)
+    allow(provider.node).to receive(:api).with('ntp').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(ntp) }
+
     describe '.instances' do
       subject { described_class.instances }
 
@@ -86,45 +88,60 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
     end
 
     describe '.prefetch' do
-      let(:resources) { { 'settings' => type.new(name: 'settings') } }
+      let(:resources) do
+        {
+          'settings' => Puppet::Type.type(:eos_ntp_config).new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_ntp_config).new(name: 'alternative')
+        }
+      end
+
       subject { described_class.prefetch(resources) }
 
-      it 'updates the provider instance of managed resources' do
-        expect(resources['settings'].provider.source_interface).to eq(:absent)
+      it 'resource providers are absent prior to calling .prefetch' do
+        resources.values.each do |rsrc|
+          expect(rsrc.provider.source_interface).to eq(:absent)
+        end
+      end
+
+      it 'sets the provider instane of the managed resource' do
         subject
-        expect(resources['settings'].provider.source_interface).to \
-          eq('Loopback0')
+        expect(resources['settings'].provider.name).to eq 'settings'
+        expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.source_interface).to eq 'Loopback0'
+      end
+
+      it 'does not set the provider instance of the unmanaged resource' do
+        subject
+        expect(resources['alternative'].provider.name).to eq 'alternative'
+        expect(resources['alternative'].provider.exists?).to be_falsy
+        expect(resources['alternative'].provider.source_interface).to eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
 
-    let(:eapi) { double }
+    describe '#exists?' do
+      subject { provider.exists? }
 
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Ntp)
+      context 'when the resource does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(api).to receive(:get).and_return(ntp)
+          described_class.instances.first
+        end
+        it { is_expected.to be_truthy }
+      end
     end
 
     describe '#source_interface=(val)' do
-      subject { provider.source_interface = 'Loopback0' }
-
-      before :each do
-        allow(provider.eapi.Ntp).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
-      end
-
-      it 'calls Ntp.set_source_interface = "Loopback0"' do
-        expect(provider.eapi.Ntp).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
-        subject
-      end
-
-      it 'sets source_interface to "Loopback0" in the provider' do
-        expect(provider.source_interface).not_to eq('Loopback0')
-        subject
-        expect(provider.source_interface).to eq('Loopback0')
+      it 'updates source_interace with value "Loopback1"' do
+        expect(api).to receive(:set_source_interface).with(value: 'Loopback1')
+        provider.source_interface = 'Loopback1'
+        expect(provider.source_interface).to eq('Loopback1')
       end
     end
   end

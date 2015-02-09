@@ -49,15 +49,14 @@ Puppet::Type.type(:eos_ntp_config).provide(:eos) do
   end
 
   def self.instances
-    result = eapi.Ntp.get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
+    result = node.api('ntp').get
+    provider_hash = { name: 'settings', ensure: :present,
                       source_interface: result['source_interface'] }
     [new(provider_hash)]
   end
 
   def source_interface=(val)
-    eapi.Ntp.set_source_interface(value: val)
+    node.api('ntp').set_source_interface(value: val)
     @property_hash[:source_interface] = val
   end
 
