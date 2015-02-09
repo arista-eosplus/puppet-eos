@@ -46,23 +46,23 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  def ospf_instance
-    ospf_instance = Fixtures[:ospf_instance]
-    return ospf_instance if ospf_instance
-    file = File.join(File.dirname(__FILE__), 'fixtures/ospf.json')
-    Fixtures[:ospf_instance] = JSON.load(File.read(file))
+  let(:api) { double('ospf') }
+
+  def ospf
+    ospf = Fixtures[:ospf]
+    return ospf if ospf
+    file = get_fixture('ospf.json')
+    Fixtures[:ospf] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Ospf)
-    allow(described_class.eapi.Ospf).to receive(:getall)
-      .and_return(ospf_instance)
+    allow(described_class.node).to receive(:api).with('ospf').and_return(api)
+    allow(provider.node).to receive(:api).with('ospf').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(ospf) }
 
     describe '.instances' do
       subject { described_class.instances }
@@ -109,24 +109,19 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
         subject
         expect(resources['1'].provider.name).to eq '1'
         expect(resources['1'].provider.exists?).to be_truthy
+        expect(resources['1'].provider.router_id).to eq '1.1.1.1'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['2'].provider.name).to eq('2')
         expect(resources['2'].provider.exists?).to be_falsey
+        expect(resources['2'].provider.router_id).to eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Ospf).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -136,7 +131,10 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:get).and_return(ospf)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
@@ -144,13 +142,10 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     describe '#create' do
 
       before :each do
-        allow(eapi).to receive(:create).with('1')
-        allow(eapi).to receive(:set_router_id)
-      end
-
-      it "calls Ospf#create('1')" do
-        expect(eapi).to receive(:create).with('1')
-        provider.create
+        expect(api).to receive(:create).with(resource[:name])
+        allow(api).to receive_messages(
+          :set_router_id => true
+        )
       end
 
       it 'sets ensure to :present' do
@@ -160,60 +155,25 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
 
       it 'sets router_id to the resource value' do
         provider.create
-        expect(provider.router_id).to eq(provider.resource[:router_id])
+        expect(provider.router_id).to eq(resource[:router_id])
       end
-
     end
 
     describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:delete).with('1')
-        allow(eapi).to receive(:create)
-        allow(eapi).to receive(:set_router_id)
-      end
-
-      it "calls Ospf#delete('1')" do
-        expect(eapi).to receive(:delete).with('1')
+      it 'sets ensure to :basent' do
+        expect(api).to receive(:delete).with(resource[:name])
         provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
+        expect(provider.ensure).to eq(:absent)
         end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: '1', ensure: :absent)
-        end
-      end
     end
 
     describe '#router_id=(val)' do
-      before :each do
-        allow(provider.eapi.Ospf).to receive(:set_router_id)
-          .with('1', value: '1.1.1.1')
-      end
-
-      it "calls Ospf#set_router_id('1', val: '1.1.1.1')" do
-        expect(eapi).to receive(:set_router_id)
-          .with('1', value: '1.1.1.1')
-        provider.router_id = '1.1.1.1'
-      end
-
-      it 'updates the router_id property in the provider' do
-        expect(provider.router_id).not_to eq '1.1.1.1'
-        provider.router_id = '1.1.1.1'
-        expect(provider.router_id).to eq '1.1.1.1'
+      it 'updates router_id with value 2.2.2.2' do
+        expect(api).to receive(:set_router_id)
+          .with(resource[:name], value: '2.2.2.2')
+        provider.router_id = '2.2.2.2'
+        expect(provider.router_id).to eq('2.2.2.2')
       end
     end
-
   end
 end

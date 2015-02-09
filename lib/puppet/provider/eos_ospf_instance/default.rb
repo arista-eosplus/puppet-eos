@@ -44,17 +44,18 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Ospf.getall
-    return [] if result.empty?
-    result.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
-      provider_hash[:router_id] = attrs['router_id']
-      new(provider_hash)
+    ospf = node.api('ospf').get
+    ospf.each_with_object([]) do |(name, attrs), arry|
+      if name != 'interfaces'
+        provider_hash = { name: name, ensure: :present }
+        provider_hash[:router_id] = attrs['router_id']
+        arry << new(provider_hash)
+      end
     end
   end
 
   def router_id=(val)
-    eapi.Ospf.set_router_id(resource['name'], value: val)
+    node.api('ospf').set_router_id(resource['name'], value: val)
     @property_hash[:router_id] = val
   end
 
@@ -63,13 +64,13 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
   end
 
   def create
-    eapi.Ospf.create(resource[:name])
+    node.api('ospf').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.router_id = resource[:router_id] if resource[:router_id]
   end
 
   def destroy
-    eapi.Ospf.delete(resource[:name])
+    node.api('ospf').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
