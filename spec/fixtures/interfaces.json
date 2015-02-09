@@ -1,0 +1,6 @@
+{
+    "Ethernet1": {
+        "description": "test interface",
+        "shutdown": false
+    }
+}

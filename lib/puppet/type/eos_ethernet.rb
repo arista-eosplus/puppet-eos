@@ -31,8 +31,8 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_interface) do
-  @doc = 'Manage interfaces in EOS'
+Puppet::Type.newtype(:eos_ethernet) do
+  @doc = 'Manage Ethernet Interfaces'
 
   # Parameters
   newparam(:name) do
@@ -57,6 +57,16 @@ Puppet::Type.newtype(:eos_interface) do
   newproperty(:enable) do
     desc 'Interface admin state'
     newvalues(:true, :false)
+  end
+
+  newproperty(:flowcontrol_send) do
+    desc 'Flow control settings for TX'
+    newvalues(:on, :off)
+  end
+
+  newproperty(:flowcontrol_receive) do
+    desc 'Flow contorl settings for RX'
+    newvalues(:on, :off)
   end
 
 end

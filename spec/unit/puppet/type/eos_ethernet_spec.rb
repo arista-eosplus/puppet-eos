@@ -33,9 +33,9 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_interface) do
+describe Puppet::Type.type(:eos_ethernet) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'Ethernet 42', catalog: catalog) }
+  let(:type) { described_class.new(name: 'Ethernet42', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -62,6 +62,26 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+  end
+
+  describe 'flowcontrol_send' do
+    let(:attribute) { :flowcontrol_send }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values', [:on, :off]
+    include_examples 'rejected parameter values'
+  end
+
+  describe 'flowcontrol_receive' do
+    let(:attribute) { :flowcontrol_receive }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values', [:on, :off]
     include_examples 'rejected parameter values'
   end
 
