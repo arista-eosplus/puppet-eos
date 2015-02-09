@@ -44,7 +44,7 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Snmp.get
+    result = node.api('snmp').get
     provider_hash = { name: 'settings',
                       ensure: :present,
                       contact: result['contact'],
@@ -55,22 +55,22 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
   end
 
   def contact=(val)
-    eapi.Snmp.set_contact(value: val)
+    node.api('snmp').set_contact(value: val)
     @property_hash[:contact] = val
   end
 
   def location=(val)
-    eapi.Snmp.set_location(value: val)
+    node.api('snmp').set_location(value: val)
     @property_hash[:location] = val
   end
 
   def chassis_id=(val)
-    eapi.Snmp.set_chassis_id(value: val)
+    node.api('snmp').set_chassis_id(value: val)
     @property_hash[:chassis_id] = val
   end
 
   def source_interface=(val)
-    eapi.Snmp.set_source_interface(value: val)
+    node.api('snmp').set_source_interface(value: val)
     @property_hash[:source_interface] = val
   end
 

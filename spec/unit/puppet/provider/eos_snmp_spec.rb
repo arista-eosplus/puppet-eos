@@ -48,23 +48,24 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('rbeapi').as_null_object }
+
   def snmp
     snmp = Fixtures[:snmp]
     return snmp if snmp
-    file = File.join(File.dirname(__FILE__), 'fixtures/snmp.json')
+    file = get_fixture('snmp.json')
     Fixtures[:snmp] = JSON.load(File.read(file))
   end
 
   # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Snmp)
-    allow(described_class.eapi.Snmp).to receive(:get)
-      .and_return(snmp)
+    allow(described_class.node).to receive(:api).with('snmp').and_return(api)
+    allow(provider.node).to receive(:api).with('snmp').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(snmp) }
 
     describe '.instances' do
       subject { described_class.instances }
@@ -112,6 +113,8 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
         resources.values.each do |rsrc|
           expect(rsrc.provider.contact).to eq(:absent)
           expect(rsrc.provider.location).to eq(:absent)
+          expect(rsrc.provider.chassis_id).to eq(:absent)
+          expect(rsrc.provider.source_interface).to eq(:absent)
         end
       end
 
@@ -119,24 +122,25 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
         subject
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.contact).to eq 'network operations'
+        expect(resources['settings'].provider.location).to eq 'data center'
+        expect(resources['settings'].provider.chassis_id).to eq '1234567890'
+        expect(resources['settings'].provider.source_interface).to eq 'Loopback0'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['alternative'].provider.name).to eq('alternative')
         expect(resources['alternative'].provider.exists?).to be_falsey
+        expect(resources['alternative'].provider.contact).to eq :absent
+        expect(resources['alternative'].provider.location).to eq :absent
+        expect(resources['alternative'].provider.chassis_id).to eq :absent
+        expect(resources['alternative'].provider.source_interface).to eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Snmp).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -152,75 +156,34 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
     end
 
     describe '#contact=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_contact)
-      end
-
-      it "calls Snmp#set_contact='network operations'" do
-        expect(eapi).to receive(:set_contact)
-          .with(value: 'network operations')
-        provider.contact = 'network operations'
-      end
-
-      it 'updates the contact property in the provider' do
-        expect(provider.contact).not_to eq 'network operations'
-        provider.contact = 'network operations'
-        expect(provider.contact).to eq 'network operations'
+      it 'updates contact in the provider' do
+        expect(api).to receive(:set_contact).with(value: 'foo')
+        provider.contact = 'foo'
+        expect(provider.contact).to eq('foo')
       end
     end
 
     describe '#location=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_location)
-      end
-
-      it "calls Snmp#set_location='data center'" do
-        expect(eapi).to receive(:set_location)
-          .with(value: 'data center')
-        provider.location = 'data center'
-      end
-
-      it 'updates the location property in the provider' do
-        expect(provider.location).not_to eq 'data center'
-        provider.location = 'data center'
-        expect(provider.location).to eq 'data center'
-      end
-    end
-
-    describe '#chassis_id=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_chassis_id)
-      end
-
-      it "calls Snmp#set_chassis_id='1234567890'" do
-        expect(eapi).to receive(:set_chassis_id)
-          .with(value: '1234567890')
-        provider.chassis_id = '1234567890'
-      end
-
-      it 'updates the chassis_id property in the provider' do
-        expect(provider.chassis_id).not_to eq '1234567890'
-        provider.chassis_id = '1234567890'
-        expect(provider.chassis_id).to eq '1234567890'
+      it 'updates location in the provider' do
+        expect(api).to receive(:set_location).with(value: 'foo')
+        provider.location = 'foo'
+        expect(provider.location).to eq('foo')
       end
     end
 
     describe '#source_interface=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
+      it 'updates source_interface in the provider' do
+        expect(api).to receive(:set_source_interface).with(value: 'foo')
+        provider.source_interface = 'foo'
+        expect(provider.source_interface).to eq('foo')
       end
+    end
 
-      it "calls Snmp#set_source_interface='Loopback0'" do
-        expect(eapi).to receive(:set_source_interface)
-          .with(value: 'Loopback0')
-        provider.source_interface = 'Loopback0'
-      end
-
-      it 'updates the source_interface property in the provider' do
-        expect(provider.source_interface).not_to eq 'Loopback0'
-        provider.source_interface = 'Loopback0'
-        expect(provider.source_interface).to eq 'Loopback0'
+    describe '#chassis_id=(val)' do
+      it 'updates chassis_id in the provider' do
+        expect(api).to receive(:set_chassis_id).with(value: 'foo')
+        provider.chassis_id = 'foo'
+        expect(provider.chassis_id).to eq('foo')
       end
     end
   end
