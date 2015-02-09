@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('interfaces') }
 
   def vxlan
     vxlan = Fixtures[:vxlan]
@@ -134,35 +134,34 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
     describe '#create' do
       let(:name) { 'Vxlan1' }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(resource[:name])
-        provider.create
+        allow(api).to receive_messages(
+          :set_shutdown => true,
+          :set_description => true,
+          :set_source_interface => true,
+          :set_multicast_group => true
+        )
       end
 
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(name, value: false)
         provider.create
         expect(provider.enable).to be_truthy
       end
 
       it 'sets description on the resource' do
-        expect(api).to receive(:set_description).with(name, value: 'test interface')
         provider.create
-        expect(provider.description).to eq('test interface')
+        expect(provider.description).to eq(resource[:description])
       end
 
       it 'sets source_interface on the resource' do
-        expect(api).to receive(:set_source_interface)
-          .with(name, value: 'Loopback0')
         provider.create
-        expect(provider.source_interface).to eq('Loopback0')
+        expect(provider.source_interface).to eq(resource[:source_interface])
       end
 
       it 'sets multicast_group on the resource' do
-        expect(api).to receive(:set_multicast_group)
-          .with(name, value: '239.10.10.10')
         provider.create
-        expect(provider.multicast_group).to eq('239.10.10.10')
+        expect(provider.multicast_group).to eq(resource[:multicast_group])
       end
     end
 

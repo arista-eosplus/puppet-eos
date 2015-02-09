@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('vlans') }
 
   def vlans
     vlans = Fixtures[:vlans]
@@ -101,6 +101,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
           '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2'),
         }
       end
+
       subject { described_class.prefetch(resources) }
 
       it 'resource providers are absent prior to calling .prefetch' do
@@ -142,7 +143,10 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:getall).and_return(vlans)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
@@ -150,27 +154,31 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
     describe '#create' do
       let(:vid) { resource[:name] }
 
-      it 'sets ensure to :present' do
+      before do
+        allow(api).to receive_messages(
+          :set_state => true,
+          :set_name => true,
+          :set_trunk_group => true
+        )
         expect(api).to receive(:create).with(resource[:name])
+      end
+
+      it 'sets ensure to :present' do
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets enable to the resource value' do
-        expect(api).to receive(:set_state).with(vid, value: 'active')
         provider.create
         expect(provider.enable).to be_truthy
       end
 
       it 'sets vlan_name to the resource value' do
-        expect(api).to receive(:set_name).with(vid, value: resource[:vlan_name])
         provider.create
         expect(provider.vlan_name).to eq(provider.resource[:vlan_name])
       end
 
       it 'sets trunk_groups to the resource value array' do
-        expect(api).to receive(:set_trunk_group)
-          .with(vid, value: resource[:trunk_groups])
         provider.create
         expect(provider.trunk_groups).to eq(provider.resource[:trunk_groups])
       end

@@ -146,19 +146,18 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
       let(:name) { resource[:name] }
 
       before do
+        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
         allow(interfaces).to receive_messages(
           :set_mlag_id => true
         )
       end
 
       it 'sets ensure to :present' do
-        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets mlag_id to the resource value' do
-        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
         provider.create
         expect(provider.mlag_id).to eq(provider.resource[:mlag_id])
       end

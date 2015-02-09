@@ -50,7 +50,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('interfaces') }
 
   def portchannels
     portchannels = Fixtures[:portchannels]
@@ -153,7 +153,10 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:getall).and_return(portchannels)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
@@ -161,42 +164,43 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     describe '#create' do
       let(:name) { resource[:name] }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(name)
+        allow(api).to receive_messages(
+          :set_lacp_mode => true,
+          :set_members => true,
+          :set_minimum_links => true,
+          :set_lacp_fallback => true,
+          :set_lacp_timeout => true
+        )
+      end
+
+      it 'sets ensure to :present' do
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets lacp_mode to the resource value' do
-        expect(api).to receive(:set_lacp_mode)
-          .with(name, resource[:lacp_mode].to_s)
         provider.create
         expect(provider.lacp_mode).to eq resource[:lacp_mode]
       end
 
       it 'sets members to the resource value' do
-        expect(api).to receive(:set_members).with(name, resource[:members])
         provider.create
         expect(provider.members).to eq resource[:members]
       end
 
       it 'sets minimum_links to the resource value' do
-        expect(api).to receive(:set_minimum_links)
-          .with(name, value: resource[:minimum_links])
         provider.create
         expect(provider.minimum_links).to eq resource[:minimum_links]
       end
 
       it 'sets lacp_fallback to the resource value' do
-        expect(api).to receive(:set_lacp_fallback)
-          .with(name, value: resource[:lacp_fallback])
         provider.create
         expect(provider.lacp_fallback).to eq resource[:lacp_fallback]
       end
 
       it 'sets lacp_timeout to the resource value' do
-        expect(api).to receive(:set_lacp_timeout)
-          .with(name, value: resource[:lacp_timeout])
         provider.create
         expect(provider.lacp_timeout).to eq resource[:lacp_timeout]
       end

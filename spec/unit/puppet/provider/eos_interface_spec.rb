@@ -46,7 +46,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('interfaces') }
 
   def interfaces
     interfaces = Fixtures[:interfaces]
@@ -58,7 +58,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   before :each do
     allow(described_class.node).to receive(:api).with('interfaces')
       .and_return(api)
-
     allow(provider.node).to receive(:api).with('interfaces').and_return(api)
   end
 
@@ -128,19 +127,20 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     describe '#create' do
       let(:name) { 'Ethernet1' }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(resource[:name])
-        provider.create
+        allow(api).to receive_messages(
+          :set_shutdown => true,
+          :set_description => true
+        )
       end
 
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(name, value: false)
         provider.create
         expect(provider.enable).to be_truthy
       end
 
       it 'sets description on the resource' do
-        expect(api).to receive(:set_description).with(name, value: 'test interface')
         provider.create
         expect(provider.description).to eq('test interface')
       end

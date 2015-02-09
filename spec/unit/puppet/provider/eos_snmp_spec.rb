@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('snmp') }
 
   def snmp
     snmp = Fixtures[:snmp]
@@ -150,7 +150,10 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:get).and_return(snmp)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end

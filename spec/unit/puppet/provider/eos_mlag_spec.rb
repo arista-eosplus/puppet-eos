@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('mlag') }
 
   def mlag
     mlag = Fixtures[:mlag]
@@ -148,7 +148,10 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:get).and_return(mlag)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end

@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('switchports') }
 
   def switchports
     switchports = Fixtures[:switchports]
@@ -151,7 +151,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:getall).and_return(switchports)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
@@ -159,34 +162,37 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     describe '#create' do
       let(:name) { resource[:name] }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(name)
+        allow(api).to receive_messages(
+          :set_mode => true,
+          :set_access_vlan => true,
+          :set_trunk_native_vlan => true,
+          :set_trunk_allowed_vlans => true
+        )
+      end
+
+      it 'sets ensure to :present' do
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets mode to the resource value' do
-        expect(api).to receive(:set_mode).with(name, value: resource[:mode])
         provider.create
         expect(provider.mode).to eq provider.resource[:mode]
       end
 
       it 'sets trunk_allowed_vlans to the resource value' do
-        expect(api).to receive(:set_trunk_allowed_vlans)
-          .with(name, value: resource[:trunk_allowed_vlans])
         provider.create
         expect(provider.trunk_allowed_vlans).to eq resource[:trunk_allowed_vlans]
       end
 
       it 'sets trunk_native_vlan to the resource value' do
-        expect(api).to receive(:set_trunk_native_vlan)
-          .with(name, value: resource[:trunk_native_vlan])
         provider.create
         expect(provider.trunk_native_vlan).to eq resource[:trunk_native_vlan]
       end
 
       it 'sets access_vlan to the resource value' do
-        expect(api).to receive(:set_access_vlan).with(name, value: resource[:access_vlan])
         provider.create
         expect(provider.access_vlan).to eq resource[:access_vlan]
       end

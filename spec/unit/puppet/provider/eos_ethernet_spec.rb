@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('interfaces') }
 
   def ethernet
     ethernet = Fixtures[:ethernet]
@@ -138,31 +138,32 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
     describe '#create' do
       let(:name) { 'Ethernet1' }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(resource[:name])
-        provider.create
+        allow(api).to receive_messages(
+          :set_shutdown => true,
+          :set_description => true,
+          :set_flowcontrol_send => true,
+          :set_flowcontrol_receive => true
+        )
       end
 
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(name, value: false)
         provider.create
         expect(provider.enable).to be_truthy
       end
 
       it 'sets description on the resource' do
-        expect(api).to receive(:set_description).with(name, value: 'test interface')
         provider.create
         expect(provider.description).to eq('test interface')
       end
 
       it 'sets flowcontrol_send on the resource' do
-        expect(api).to receive(:set_flowcontrol_send).with(name, value: :on)
         provider.create
         expect(provider.flowcontrol_send).to eq(:on)
       end
 
       it 'sets flowcontrol_receive on the resource' do
-        expect(api).to receive(:set_flowcontrol_receive).with(name, value: :on)
         provider.create
         expect(provider.flowcontrol_receive).to eq(:on)
       end

@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('rbeapi').as_null_object }
+  let(:api) { double('ipinterfaces') }
 
   def ipinterfaces
     ipinterfaces = Fixtures[:ipinterfaces]
@@ -144,7 +144,10 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:getall).and_return(ipinterfaces)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
@@ -152,28 +155,31 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
     describe '#create' do
       let(:name) { resource[:name] }
 
-      it 'sets ensure to :present' do
+      before do
         expect(api).to receive(:create).with(name)
+        allow(api).to receive_messages(
+          :set_address => true,
+          :set_mtu => true,
+          :set_helper_address => true
+        )
+      end
+
+      it 'sets ensure to :present' do
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets address to the resource value' do
-        expect(api).to receive(:set_address)
-          .with(name, value: resource[:address])
         provider.create
         expect(provider.address).to eq(provider.resource[:address])
       end
 
       it 'sets mtu to the resource value' do
-        expect(api).to receive(:set_mtu).with(name, value: resource[:mtu])
         provider.create
         expect(provider.mtu).to eq(provider.resource[:mtu])
       end
 
       it 'sets helper_address to the resource value' do
-        expect(api).to receive(:set_helper_address)
-          .with(name, value: resource[:helper_address])
         provider.create
         expect(provider.helper_address).to eq(resource[:helper_address])
       end
