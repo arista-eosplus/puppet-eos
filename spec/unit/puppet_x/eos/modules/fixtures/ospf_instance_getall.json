@@ -1,5 +1,0 @@
-[
-    {
-        "output": "Routing Process \"ospf 1\" with ID 172.16.10.12 VRF default\n Supports opaque LSA\n Maximum number of LSA allowed 12000\n  Threshold for warning message 75%\n  Ignore-time 5 minutes, reset-time 5 minutes\n  Ignore-count allowed 5, current 0\n It is not an autonomous system boundary router and is not an area border router\n Initial SPF schedule delay 0 msecs\n Minimum hold time between two consecutive SPFs 5000 msecs\n Current hold time between two consecutive SPFs 5000 msecs\n Maximum wait time between two consecutive SPFs 5000 msecs\n Minimum LSA arrival 1000 msecs\n Initial LSA throttle delay 1000 msecs\n Minimum hold time for LSA throttle 5000 msecs\n Maximum wait time for LSA throttle 5000 msecs\n Number of external LSA 0, Checksum sum 0\n Number of opaque AS LSA 0,  Checksum sum 0\n Number of areas in this router is 0. 0 normal, 0 stub, 0 nssa\n Number of LSA 0\n Time since last SPF 412 secs\n No Scheduled SPF\n Adjacency exchange-start threshold is 20\n\n"
-    }
-]

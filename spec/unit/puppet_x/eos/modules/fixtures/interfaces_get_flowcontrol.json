@@ -1,5 +1,0 @@
-[
-    {
-        "output": "interface Ethernet1\n   flowcontrol send on\n   flowcontrol receive off\n"
-    }
-]

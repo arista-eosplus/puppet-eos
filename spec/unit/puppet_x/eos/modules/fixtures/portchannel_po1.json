@@ -1,7 +1,0 @@
-{
-    "name": "Port-Channel1",
-    "lacp_mode": "active",
-    "members": ["Ethernet1", "Ethernet2"],
-    "lacp_fallback": "static",
-    "lacp_timeout": 100
-}

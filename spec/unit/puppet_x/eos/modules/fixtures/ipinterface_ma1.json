@@ -1,5 +1,0 @@
- [
-   {
-      "output": "interface Management1\n   ip address 192.168.1.16/24\n"
-   }
-]
