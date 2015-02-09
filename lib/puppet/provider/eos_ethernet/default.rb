@@ -50,10 +50,10 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
       enable = attrs['shutdown'] ? :false : :true
       provider_hash[:enable] = enable
       provider_hash[:description] = attrs['description']
-      tx = attrs['flowcontrol_send'].to_sym
-      rx = attrs['flowcontrol_receive'].to_sym
-      provider_hash[:flowcontrol_send] = tx
-      provider_hash[:flowcontrol_receive] = rx
+      if attrs['type'] == 'ethernet'
+        provider_hash[:flowcontrol_send] = attrs['flowcontrol_send'].to_sym
+        provider_hash[:flowcontrol_receive] = attrs['flowcontrol_receive'].to_sym
+      end
       arry << new(provider_hash)
     end
   end
