@@ -44,7 +44,7 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Varp.get
+    result = node.api('varp').get
     provider_hash = { name: 'settings',
                       ensure: :present,
                       mac_address: result['mac_address'] }
@@ -52,7 +52,7 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
   end
 
   def mac_address=(val)
-    eapi.Varp.set_mac_address(value: val)
+    node.api('varp').set_mac_address(value: val)
     @property_hash[:mac_address] = val
   end
 

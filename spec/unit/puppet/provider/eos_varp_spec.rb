@@ -32,34 +32,35 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp).provider(:eos) do
-  let(:type) { Puppet::Type.type(:eos_varp) }
 
   let :resource do
     resource_hash = {
       name: 'settings',
-      mac_address: 'aaaa.bbbb.cccc'
+      mac_address: 'aa:bb:cc:dd:ee:ff'
     }
-    type.new(resource_hash)
+    Puppet::Type.type(:eos_varp).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('varp') }
+
   def varp
     varp = Fixtures[:varp]
     return varp if varp
-    file = File.join(File.dirname(__FILE__), 'fixtures/varp.json')
+    file = get_fixture('varp.json')
     Fixtures[:varp] = JSON.load(File.read(file))
   end
 
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Varp)
-    allow(described_class.eapi.Varp).to receive(:get)
-      .and_return(varp)
+    allow(described_class.node).to receive(:api).with('varp').and_return(api)
+    allow(provider.node).to receive(:api).with('varp').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(varp) }
+
     describe '.instances' do
       subject { described_class.instances }
 
@@ -81,50 +82,65 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
 
         include_examples 'provider resource methods',
                          name: 'settings',
-                         mac_address: 'aaaa.bbbb.cccc'
+                         mac_address: 'aa:bb:cc:dd:ee:ff'
       end
     end
 
     describe '.prefetch' do
-      let(:resources) { { 'settings' => type.new(name: 'settings') } }
+      let :resources do
+        {
+          'settings' => Puppet::Type.type(:eos_varp).new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_varp).new(name: 'alternative')
+        }
+      end
+
       subject { described_class.prefetch(resources) }
 
-      it 'updates the provider instance of managed resources' do
-        expect(resources['settings'].provider.mac_address).to eq(:absent)
+      it 'resource providers are absent prior to calling .prefetch' do
+        resources.values.each do |rsrc|
+          expect(rsrc.provider.mac_address).to eq(:absent)
+        end
+      end
+
+      it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['settings'].provider.mac_address).to \
-          eq('aaaa.bbbb.cccc')
+        expect(resources['settings'].provider.name).to eq 'settings'
+        expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.mac_address).to eq 'aa:bb:cc:dd:ee:ff'
+      end
+
+      it 'does not set the provider instance of the unmanged resource' do
+        subject
+        expect(resources['alternative'].provider.name).to eq 'alternative'
+        expect(resources['alternative'].provider.exists?).to be_falsey
+        expect(resources['alternative'].provider.mac_address).to eq(:absent)
       end
     end
   end
 
   context 'resource (instance) methods' do
 
-    let(:eapi) { double }
+    describe '#exists?' do
+      subject { provider.exists? }
 
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Varp)
+      context 'when the resource does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(api).to receive(:get).and_return(varp)
+          described_class.instances.first
+        end
+        it { is_expected.to be_truthy }
+      end
     end
 
-    describe '#mac_address=(val)' do
-      subject { provider.mac_address = 'aaaa.bbbb.cccc' }
-
-      before :each do
-        allow(provider.eapi.Varp).to receive(:set_mac_address)
-          .with(value: 'aaaa.bbbb.cccc')
-      end
-
-      it 'calls Varp.set_mac_address = "aaaa.bbbb.cccc"' do
-        expect(provider.eapi.Varp).to receive(:set_mac_address)
-          .with(value: 'aaaa.bbbb.cccc')
-        subject
-      end
-
-      it 'sets mac_address to "aaaa.bbbb.cccc" in the provider' do
-        expect(provider.mac_address).not_to eq('aaaa.bbbb.cccc')
-        subject
-        expect(provider.mac_address).to eq('aaaa.bbbb.cccc')
+    describe '#mac_address=(value)' do
+      it 'updates mac_address with value "11:22:33:44:55:66"' do
+        expect(api).to receive(:set_mac_address).with(value: '11:22:33:44:55:66')
+        provider.mac_address = '11:22:33:44:55:66'
+        expect(provider.mac_address).to eq('11:22:33:44:55:66')
       end
     end
   end
