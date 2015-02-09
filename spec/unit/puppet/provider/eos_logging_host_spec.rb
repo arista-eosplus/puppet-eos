@@ -44,23 +44,23 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('logging') }
+
   def logging
     logging = Fixtures[:logging]
     return logging if logging
-    file = File.join(File.dirname(__FILE__), 'fixtures/logging.json')
+    file = get_fixture('logging.json')
     Fixtures[:logging] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all logging instances
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Logging)
-    allow(described_class.eapi.Logging).to receive(:get)
-      .and_return(logging)
+    allow(described_class.node).to receive(:api).with('logging').and_return(api)
+    allow(provider.node).to receive(:api).with('logging').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(logging) }
 
     describe '.instances' do
       subject { described_class.instances }
@@ -77,11 +77,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
       end
 
       context 'eos_logging_host { 1.2.3.4: }' do
-        subject do
-          described_class.instances.find do |p|
-            p.name == '1.2.3.4'
-          end
-        end
+        subject { described_class.instances.find { |p| p.name == '1.2.3.4' } }
 
         include_examples 'provider resource methods',
                          name: '1.2.3.4',
@@ -92,10 +88,8 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
-            .new(name: '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
-            .new(name: '5.6.7.8')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host) .new(name: '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host) .new(name: '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -122,14 +116,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
   context 'resource (instance) methods' do
 
-    let(:name) { provider.resource[:name] }
-    let(:eapi) { double }
-
-    before :each do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Logging).and_return(eapi)
-    end
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -138,59 +124,27 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:get).and_return(logging)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
 
     describe '#create' do
-      before :each do
-        allow(eapi).to receive(:hosts)
-        allow(eapi.hosts).to receive(:create)
-      end
-
-      it 'calls Logging.hosts#create(name) with the resource id' do
-        expect(provider.eapi.Logging.hosts).to receive(:create)
-          .with(provider.resource[:name])
-        provider.create
-      end
-
       it 'sets ensure to :present' do
+        expect(api).to receive(:add_host).with(resource[:name])
         provider.create
         expect(provider.ensure).to eq(:present)
       end
     end
 
     describe '#destroy' do
-
-      before :each do
-        allow(eapi).to receive(:hosts)
-        allow(eapi.hosts).to receive(:create)
-        allow(eapi.hosts).to receive(:delete)
-      end
-
-      it 'calls Logging.hosts#delete(id)' do
-        expect(eapi.hosts).to receive(:delete)
-          .with(provider.resource[:name])
+      it 'sets ensure to :absent' do
+        expect(api).to receive(:remove_host).with(resource[:name])
         provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: provider.resource[:name], ensure: :absent)
-        end
+        expect(provider.ensure).to eq(:absent)
       end
     end
   end

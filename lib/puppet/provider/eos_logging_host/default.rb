@@ -44,11 +44,10 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Logging.get
-    Puppet.debug("result #{result}")
-    result['hosts'].each.map do |name, _|
-      provider_hash = { name: name, ensure: :present }
-      new(provider_hash)
+    result = node.api('logging').get
+    result['hosts'].each_with_object([]) do |host, arry|
+      provider_hash = { name: host, ensure: :present }
+      arry << new(provider_hash)
     end
   end
 
@@ -57,12 +56,12 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
   end
 
   def create
-    eapi.Logging.hosts.create(resource[:name])
+    node.api('logging').add_host(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
   end
 
   def destroy
-    eapi.Logging.hosts.delete(resource[:name])
+    node.api('logging').remove_host(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
