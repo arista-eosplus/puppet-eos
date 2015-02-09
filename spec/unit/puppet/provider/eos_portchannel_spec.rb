@@ -40,6 +40,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       name: 'Port-Channel1',
       lacp_mode: :active,
       members: %w(Ethernet1 Ethernet2),
+      minimum_links: 2,
       lacp_fallback: :static,
       lacp_timeout: 100,
       provider: described_class.name
@@ -49,68 +50,50 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('rbeapi').as_null_object }
+
   def portchannels
     portchannels = Fixtures[:portchannels]
     return portchannels if portchannels
-    file = File.join(File.dirname(__FILE__), 'fixtures/portchannels.json')
+    file = get_fixture('portchannels.json')
     Fixtures[:portchannels] = JSON.load(File.read(file))
   end
 
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Portchannel)
-    allow(described_class.eapi.Portchannel).to receive(:getall)
-      .and_return(portchannels)
+    allow(described_class.node).to receive(:api).with('interfaces')
+      .and_return(api)
+    allow(provider.node).to receive(:api).with('interfaces').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:getall).and_return(portchannels) }
+
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has two entries' do
-        expect(subject.size).to eq 2
+      it 'has one entry' do
+        expect(subject.size).to eq 1
       end
 
-      %w(Port-Channel1 Port-Channel2).each do |name|
-        it "has an instance for interface #{name}" do
-          instance = subject.find { |p| p.name == name }
-          expect(instance).to be_a described_class
-        end
+      it "has an instance for Port-Channel1" do
+        instance = subject.find { |p| p.name == 'Port-Channel1' }
+        expect(instance).to be_a described_class
       end
 
       context "eos_portchannel { 'Port-Channel1': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'Port-Channel1'
-          end
-        end
+        subject { described_class.instances.find { |p| p.name == 'Port-Channel1' } }
 
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Port-Channel1',
                          lacp_mode: :active,
                          members: %w(Ethernet1 Ethernet2),
+                         minimum_links: '2',
                          lacp_fallback: :static,
-                         lacp_timeout: 100
-      end
-
-      context "eos_portchannel { 'Port-Channel2': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'Port-Channel2'
-          end
-        end
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel2',
-                         lacp_mode: :passive,
-                         members: %w(Ethernet3 Ethernet4),
-                         lacp_fallback: :individual,
-                         lacp_timeout: 100
+                         lacp_timeout: '100'
       end
     end
 
@@ -129,6 +112,10 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
           expect(rsrc.provider.lacp_mode).to eq(:absent)
+          expect(rsrc.provider.members).to eq(:absent)
+          expect(rsrc.provider.minimum_links).to eq(:absent)
+          expect(rsrc.provider.lacp_fallback).to eq(:absent)
+          expect(rsrc.provider.lacp_timeout).to eq(:absent)
         end
       end
 
@@ -136,24 +123,27 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         subject
         expect(resources['Port-Channel1'].provider.name).to eq 'Port-Channel1'
         expect(resources['Port-Channel1'].provider.exists?).to be_truthy
+        expect(resources['Port-Channel1'].provider.lacp_mode).to eq :active
+        expect(resources['Port-Channel1'].provider.members).to eq %w(Ethernet1 Ethernet2)
+        expect(resources['Port-Channel1'].provider.minimum_links).to eq '2'
+        expect(resources['Port-Channel1'].provider.lacp_fallback).to eq :static
+        expect(resources['Port-Channel1'].provider.lacp_timeout).to eq '100'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['Port-Channel5'].provider.name).to eq('Port-Channel5')
         expect(resources['Port-Channel5'].provider.exists?).to be_falsey
+        expect(resources['Port-Channel5'].provider.lacp_mode).to eq :absent
+        expect(resources['Port-Channel5'].provider.members).to eq :absent
+        expect(resources['Port-Channel5'].provider.minimum_links).to eq :absent
+        expect(resources['Port-Channel5'].provider.lacp_fallback).to eq :absent
+        expect(resources['Port-Channel5'].provider.lacp_timeout).to eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Portchannel).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -169,98 +159,64 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     end
 
     describe '#create' do
-
-      before :each do
-        allow(eapi).to receive(:create)
-        allow(eapi).to receive(:set_lacp_mode)
-        allow(eapi).to receive(:set_lacp_fallback)
-        allow(eapi).to receive(:set_lacp_timeout)
-        allow(eapi).to receive(:set_members)
-      end
-
-      it "calls Portchannel#create('Port-Channel1')" do
-        expect(eapi).to receive(:create).with('Port-Channel1')
-        provider.create
-      end
+      let(:name) { resource[:name] }
 
       it 'sets ensure to :present' do
+        expect(api).to receive(:create).with(name)
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets lacp_mode to the resource value' do
+        expect(api).to receive(:set_lacp_mode)
+          .with(name, resource[:lacp_mode].to_s)
         provider.create
-        expect(provider.lacp_mode).to eq provider.resource[:lacp_mode]
+        expect(provider.lacp_mode).to eq resource[:lacp_mode]
       end
 
       it 'sets members to the resource value' do
+        expect(api).to receive(:set_members).with(name, resource[:members])
         provider.create
-        value = provider.resource[:members]
-        expect(provider.members).to eq value
+        expect(provider.members).to eq resource[:members]
+      end
+
+      it 'sets minimum_links to the resource value' do
+        expect(api).to receive(:set_minimum_links)
+          .with(name, value: resource[:minimum_links])
+        provider.create
+        expect(provider.minimum_links).to eq resource[:minimum_links]
       end
 
       it 'sets lacp_fallback to the resource value' do
+        expect(api).to receive(:set_lacp_fallback)
+          .with(name, value: resource[:lacp_fallback])
         provider.create
-        value = provider.resource[:lacp_fallback]
-        expect(provider.lacp_fallback).to eq value
+        expect(provider.lacp_fallback).to eq resource[:lacp_fallback]
       end
 
       it 'sets lacp_timeout to the resource value' do
+        expect(api).to receive(:set_lacp_timeout)
+          .with(name, value: resource[:lacp_timeout])
         provider.create
-        value = provider.resource[:lacp_timeout]
-        expect(provider.lacp_timeout).to eq value
+        expect(provider.lacp_timeout).to eq resource[:lacp_timeout]
       end
     end
 
     describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:delete)
-        allow(eapi).to receive(:create)
-        allow(eapi).to receive(:set_lacp_mode)
-        allow(eapi).to receive(:set_lacp_fallback)
-        allow(eapi).to receive(:set_lacp_timeout)
-        allow(eapi).to receive(:set_members)
-      end
-
-      it "calls Portchannel#delete('Port-Channel1')" do
-        expect(eapi).to receive(:delete).with('Port-Channel1')
+      it 'sets ensure to :absent' do
+        expect(api).to receive(:delete).with(resource[:name])
         provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Port-Channel1', ensure: :absent)
-        end
+        expect(provider.ensure).to eq(:absent)
       end
     end
 
     describe '#lacp_mode=(val)' do
-      before :each do
-        allow(provider.eapi.Portchannel).to receive(:set_lacp_mode)
-      end
-
+      let(:name) { resource[:name] }
       %w(active passive on).each do |value|
         let(:value) { value }
-        it "class Portchannel#set_lacp_mode(#{value})" do
-          expect(eapi).to receive(:set_lacp_mode)
-            .with('Port-Channel1', value)
-          provider.lacp_mode = value
-        end
 
-        it 'updates the lacp_mode property in the provider' do
-          expect(provider.lacp_mode).not_to eq value
+        it 'updates lacp_mode on the provider' do
+          expect(api).to receive(:set_lacp_mode).with(name, value)
           provider.lacp_mode = value
           expect(provider.lacp_mode).to eq value
         end
@@ -268,32 +224,29 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     end
 
     describe '#members=(val)' do
-      before :each do
-        allow(provider.eapi.Portchannel).to receive(:set_members)
+      let(:value) { %w(Ethernet1 Ethernet2 Ethernet3) }
+      it 'updates members on the provider' do
+        expect(api).to receive(:set_members) .with(resource[:name], value)
+        provider.members = value
+        expect(provider.members).to eq value
       end
+    end
 
-      it 'handles both add and remove member operations' do
-        expect(eapi).to receive(:set_members)
-          .with('Port-Channel1', %w(Ethernet1 Ethernet3))
-        provider.members = %w(Ethernet1 Ethernet3)
+    describe '#minimum_links=(val)' do
+      it 'updates minimum_links on the provider' do
+        expect(api).to receive(:set_minimum_links).with(resource[:name], value: 4)
+        provider.minimum_links = 4
+        expect(provider.minimum_links).to eq 4
       end
     end
 
     describe '#lacp_fallback=(val)' do
-      before :each do
-        allow(provider.eapi.Portchannel).to receive(:set_lacp_fallback)
-      end
 
       %w(static individual).each do |value|
         let(:value) { value }
-        it "calls Portchannel#set_lacp_fallback=#{value}" do
-          expect(eapi).to receive(:set_lacp_fallback)
-            .with('Port-Channel1', value: value)
-          provider.lacp_fallback = value
-        end
 
-        it 'updates the lacp_fallback property in the provider' do
-          expect(provider.lacp_fallback).not_to eq value
+        it 'updates lacp_fallback on the provider' do
+          expect(api).to receive(:set_lacp_fallback).with(resource[:name], value: value)
           provider.lacp_fallback = value
           expect(provider.lacp_fallback).to eq value
         end
@@ -301,18 +254,8 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
     end
 
     describe '#lacp_timeout=(val)' do
-      before :each do
-        allow(provider.eapi.Portchannel).to receive(:set_lacp_timeout)
-      end
-
-      it 'class Portchannel#set_lacp_timeout=100' do
-        expect(eapi).to receive(:set_lacp_timeout)
-          .with('Port-Channel1', value: 900)
-        provider.lacp_timeout = 900
-      end
-
-      it 'updates the lacp_timeout property in the provider' do
-        expect(provider.lacp_timeout).not_to eq 900
+      it 'updates lacp_timeout on the provider' do
+        expect(api).to receive(:set_lacp_timeout).with(resource[:name], value: 900)
         provider.lacp_timeout = 900
         expect(provider.lacp_timeout).to eq 900
       end

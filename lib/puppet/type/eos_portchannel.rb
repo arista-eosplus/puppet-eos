@@ -62,6 +62,19 @@ Puppet::Type.newtype(:eos_portchannel) do
     end
   end
 
+  newproperty(:minimum_links) do
+    desc 'Specifies the minimum number of links that must operationally up
+          for the Port-Channel interface to be considered up'
+
+    munge { |value| Integer(value).to_s }
+
+    validate do |value|
+      unless value.to_i.between?(0, 16)
+        fail 'value #{value.inspect} is not between 0 and 16'
+      end
+    end
+  end
+
   newproperty(:lacp_fallback) do
     desc 'Specifies the LACP fallback setting'
     newvalues(:static, :individual)

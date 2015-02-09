@@ -67,6 +67,16 @@ describe Puppet::Type.type(:eos_portchannel) do
     include_examples 'rejects values', [0, [1], { two: :three }]
   end
 
+  describe 'minimum_links' do
+    let(:attribute) { :minimum_links }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(0 16)
+    include_examples 'rejects values', [[-1], 'string', { two: :three }]
+  end
+
   describe 'lacp_fallback' do
     let(:attribute) { :lacp_fallback }
     subject { described_class.attrclass(attribute) }

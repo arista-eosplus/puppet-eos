@@ -44,33 +44,42 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Portchannel.getall.map do |attrs|
-      provider_hash = { name: attrs['name'], ensure: :present }
-      provider_hash[:lacp_mode] = attrs['lacp_mode'].to_sym
-      provider_hash[:members] = attrs['members']
-      provider_hash[:lacp_fallback] = attrs['lacp_fallback'].to_sym
-      provider_hash[:lacp_timeout] = attrs['lacp_timeout']
-      new(provider_hash)
+    interfaces = node.api('interfaces').getall
+    interfaces.each_with_object([]) do |(name, attrs), arry|
+      if attrs['type'] == 'portchannel'
+        provider_hash = { name: name, ensure: :present }
+        provider_hash[:minimum_links] = attrs['minimum_links']
+        provider_hash[:lacp_mode] = attrs['lacp_mode'].to_sym
+        provider_hash[:members] = attrs['members']
+        provider_hash[:lacp_fallback] = attrs['lacp_fallback'].to_sym
+        provider_hash[:lacp_timeout] = attrs['lacp_timeout']
+        arry << new(provider_hash)
+      end
     end
   end
 
   def lacp_mode=(val)
-    eapi.Portchannel.set_lacp_mode(resource[:name], val)
+    node.api('interfaces').set_lacp_mode(resource[:name], val.to_s)
     @property_hash[:lacp_mode] = val
   end
 
   def members=(val)
-    eapi.Portchannel.set_members(resource[:name], val)
+    node.api('interfaces').set_members(resource[:name], val)
     @property_hash[:members] = val
   end
 
+  def minimum_links=(val)
+    node.api('interfaces').set_minimum_links(resource[:name], value: val)
+    @property_hash[:minimum_links] = val
+  end
+
   def lacp_fallback=(val)
-    eapi.Portchannel.set_lacp_fallback(resource[:name], value: val)
+    node.api('interfaces').set_lacp_fallback(resource[:name], value: val)
     @property_hash[:lacp_fallback] = val
   end
 
   def lacp_timeout=(val)
-    eapi.Portchannel.set_lacp_timeout(resource[:name], value: val)
+    node.api('interfaces').set_lacp_timeout(resource[:name], value: val)
     @property_hash[:lacp_timeout] = val
   end
 
@@ -79,16 +88,17 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def create
-    eapi.Portchannel.create(resource[:name])
+    node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
     self.lacp_timeout = resource[:lacp_timeout] if resource[:lacp_timeout]
+    self.minimum_links = resource[:minimum_links] if resource[:minimum_links]
   end
 
   def destroy
-    eapi.Portchannel.delete(resource[:name])
+    node.api('interfaces').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
