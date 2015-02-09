@@ -1,0 +1,7 @@
+{
+    "domain_id": "MLAG-Domain",
+    "local_interface": "Port-Channel1",
+    "peer_address": "1.1.1.1",
+    "peer_link": "Vlan4094",
+    "shutdown": false
+}

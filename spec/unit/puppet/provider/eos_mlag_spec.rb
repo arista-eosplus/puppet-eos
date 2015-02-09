@@ -49,23 +49,23 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('rbeapi').as_null_object }
+
   def mlag
     mlag = Fixtures[:mlag]
     return mlag if mlag
-    file = File.join(File.dirname(__FILE__), 'fixtures/mlag.json')
+    file = get_fixture('mlag.json')
     Fixtures[:mlag] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Mlag)
-    allow(described_class.eapi.Mlag).to receive(:get)
-      .and_return(mlag)
+    allow(described_class.node).to receive(:api).with('mlag').and_return(api)
+    allow(provider.node).to receive(:api).with('mlag').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(mlag) }
 
     describe '.instances' do
       subject { described_class.instances }
@@ -82,17 +82,13 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
       end
 
       context "eos_mlag { 'settings': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'settings'
-          end
-        end
+        subject { described_class.instances.find { |p| p.name == 'settings' } }
 
         include_examples 'provider resource methods',
                          name: 'settings',
                          domain_id: 'MLAG-Domain',
                          local_interface: 'Port-Channel1',
-                         peer_address: '10.1.1.1',
+                         peer_address: '1.1.1.1',
                          peer_link: 'Vlan4094',
                          enable: :true
       end
@@ -101,7 +97,8 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'settings' => Puppet::Type.type(:eos_mlag).new(name: 'settings')
+          'settings' => Puppet::Type.type(:eos_mlag).new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_mlag).new(name: 'alternative')
         }
       end
 
@@ -113,6 +110,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
           expect(rsrc.provider.local_interface).to eq(:absent)
           expect(rsrc.provider.peer_address).to eq(:absent)
           expect(rsrc.provider.peer_link).to eq(:absent)
+          expect(rsrc.provider.enable).to eq(:absent)
         end
       end
 
@@ -120,18 +118,27 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         subject
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.domain_id).to eq 'MLAG-Domain'
+        expect(resources['settings'].provider.local_interface).to eq 'Port-Channel1'
+        expect(resources['settings'].provider.peer_address).to eq '1.1.1.1'
+        expect(resources['settings'].provider.peer_link).to eq 'Vlan4094'
+        expect(resources['settings'].provider.enable).to eq :true
+      end
+
+      it 'does not set the provider instance of the unmanaged resource' do
+        subject
+        expect(resources['alternative'].provider.name).to eq 'alternative'
+        expect(resources['alternative'].provider.exists?).to be_falsy
+        expect(resources['alternative'].provider.domain_id).to eq :absent
+        expect(resources['alternative'].provider.local_interface).to eq :absent
+        expect(resources['alternative'].provider.peer_address).to eq :absent
+        expect(resources['alternative'].provider.peer_link).to eq :absent
+        expect(resources['alternative'].provider.enable).to eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Mlag).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -147,77 +154,49 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
     end
 
     describe '#local_interface=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_local_interface)
-      end
-
-      it "calls Mlag#set_local_interface='Port-Channel1'" do
-        expect(eapi).to receive(:set_local_interface)
-          .with(value: 'Port-Channel1')
-        provider.local_interface = 'Port-Channel1'
-      end
-
-      it 'updates the local_interface property in the provider' do
-        expect(provider.local_interface).not_to eq 'Port-Channel1'
-        provider.local_interface = 'Port-Channel1'
-        expect(provider.local_interface).to eq 'Port-Channel1'
+      it 'updates the local_interface with Loopback1' do
+        expect(api).to receive(:set_local_interface).with(value: 'Loopback1')
+        provider.local_interface = 'Loopback1'
+        expect(provider.local_interface).to eq('Loopback1')
       end
     end
 
-    describe '#peer_link=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_peer_link)
-      end
-
-      it "calls Mlag#set_peer_link='Vlan4094'" do
-        expect(eapi).to receive(:set_peer_link)
-          .with(value: 'Vlan4094')
-        provider.peer_link = 'Vlan4094'
-      end
-
-      it 'updates the peer_link property in the provider' do
-        expect(provider.peer_link).not_to eq 'Vlan4094'
-        provider.peer_link = 'Vlan4094'
-        expect(provider.peer_link).to eq 'Vlan4094'
+    describe '#domain_id=(val)' do
+      it 'updates the domain_id with value "foo"' do
+        expect(api).to receive(:set_domain_id).with(value: 'foo')
+        provider.domain_id = 'foo'
+        expect(provider.domain_id).to eq('foo')
       end
     end
 
     describe '#peer_address=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_peer_address)
+      it 'updates the peer_address with value "2.2.2.2"' do
+        expect(api).to receive(:set_peer_address).with(value: '2.2.2.2')
+        provider.peer_address = '2.2.2.2'
+        expect(provider.peer_address).to eq('2.2.2.2')
       end
+    end
 
-      it "calls Mlag#set_peer_address='10.1.1.1'" do
-        expect(eapi).to receive(:set_peer_address)
-          .with(value: '10.1.1.1')
-        provider.peer_address = '10.1.1.1'
-      end
 
-      it 'updates the peer_address property in the provider' do
-        expect(provider.peer_address).not_to eq '10.1.1.1'
-        provider.peer_address = '10.1.1.1'
-        expect(provider.peer_address).to eq '10.1.1.1'
+    describe '#peer_link=(val)' do
+      it 'updates the peer_link with value "Vlan1234"' do
+        expect(api).to receive(:set_peer_link).with(value: 'Vlan1234')
+        provider.peer_link = 'Vlan1234'
+        expect(provider.peer_link).to eq('Vlan1234')
       end
     end
 
     describe '#enable=(val)' do
-      before :each do
-        allow(eapi).to receive(:set_shutdown)
+      it 'updates enable with value :true' do
+        expect(api).to receive(:set_shutdown).with(value: false)
+        provider.enable = :true
+        expect(provider.enable).to eq(:true)
       end
 
-      %w(:true, :false).each do |value|
-        let(:value) { value }
-        it "calls Mlag#set_shutdown=#{value}" do
-          expect(eapi).to receive(:set_shutdown)
-            .with(value: !value)
-          provider.enable = value
-        end
-
-        it 'updates the enable property in the provider' do
-          expect(provider.enable).not_to eq value
-          provider.enable = value
-          expect(provider.enable).to eq value
-        end
+      it 'updates enable with the value :false' do
+        expect(api).to receive(:set_shutdown).with(value: true)
+        provider.enable = :false
+        expect(provider.enable).to eq(:false)
       end
     end
   end

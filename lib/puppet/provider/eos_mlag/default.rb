@@ -44,9 +44,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Mlag.get
-    Puppet.debug("RESULT #{result}")
-    return [] if result.empty?
+    result = node.api('mlag').get
     provider_hash = { name: 'settings',  ensure: :present }
     provider_hash[:domain_id] = result['domain_id']
     provider_hash[:local_interface] = result['local_interface']
@@ -54,32 +52,31 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
     provider_hash[:peer_link] = result['peer_link']
     enable = result['shutdown'] ? :false : :true
     provider_hash[:enable] = enable
-    Puppet.debug("HASH #{provider_hash}")
     [new(provider_hash)]
   end
 
   def domain_id=(val)
-    eapi.Mlag.set_domain_id(value: val)
+    node.api('mlag').set_domain_id(value: val)
     @property_hash[:domain_id] = val
   end
 
   def local_interface=(val)
-    eapi.Mlag.set_local_interface(value: val)
+    node.api('mlag').set_local_interface(value: val)
     @property_hash[:local_interface] = val
   end
 
   def peer_address=(val)
-    eapi.Mlag.set_peer_address(value: val)
+    node.api('mlag').set_peer_address(value: val)
     @property_hash[:peer_address] = val
   end
 
   def peer_link=(val)
-    eapi.Mlag.set_peer_link(value: val)
+    node.api('mlag').set_peer_link(value: val)
     @property_hash[:peer_link] = val
   end
 
   def enable=(val)
-    eapi.Mlag.set_shutdown(value: val == :false)
+    node.api('mlag').set_shutdown(value: val == :false)
     @property_hash[:enable] = val
   end
 
