@@ -3,5 +3,10 @@
     "local_interface": "Port-Channel1",
     "peer_address": "1.1.1.1",
     "peer_link": "Vlan4094",
-    "shutdown": false
+    "shutdown": false,
+    "interfaces": {
+        "Port-Channel1": {
+            "mlag_id": "1"
+        }
+    }
 }

@@ -44,17 +44,16 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Mlag.get_interfaces
-    result.first['interfaces'].map do |name, attrs|
-      provider_hash = { name: attrs['localInterface'],
-                        mlag_id: name,
-                        ensure: :present }
-      new(provider_hash)
+    mlag = node.api('mlag').get
+    mlag['interfaces'].each_with_object([]) do |(name, attrs), arry|
+      provider_hash = { name: name, ensure: :present,
+                        mlag_id: attrs['mlag_id'] }
+      arry << new(provider_hash)
     end
   end
 
   def mlag_id=(val)
-    eapi.Mlag.set_mlag_id(resource[:name], value: val)
+    node.api('mlag').interfaces.set_mlag_id(resource[:name], value: val)
     @property_hash[:mlag_id] = val
   end
 
@@ -63,13 +62,13 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   end
 
   def create
-    eapi.Mlag.add_interface(resource[:name], resource['mlag_id'])
+    node.api('mlag').interfaces.create(resource[:name], resource[:mlag_id])
     @property_hash = { name: resource['name'], ensure: :present }
     self.mlag_id = resource[:mlag_id] if resource[:mlag_id]
   end
 
   def destroy
-    eapi.Mlag.remove_interface(resource[:name])
+    node.api('mlag').interfaces.delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

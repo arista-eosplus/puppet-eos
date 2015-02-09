@@ -46,64 +46,47 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  def mlag_interfaces
-    mlag_interfaces = Fixtures[:mlag_interfaces]
-    return mlag_interfaces if mlag_interfaces
-    file = File.join(File.dirname(__FILE__), 'fixtures/mlag_interfaces.json')
-    Fixtures[:mlag_interfaces] = JSON.load(File.read(file))
+  let(:api) { double('mlag') }
+  let(:interfaces) { double('mlag.interfaces') }
+
+  def mlag
+    mlag = Fixtures[:mlag]
+    return mlag if mlag
+    file = get_fixture('mlag.json')
+    Fixtures[:mlag] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Mlag)
-    allow(described_class.eapi.Mlag).to receive(:get_interfaces)
-      .and_return(mlag_interfaces)
+    allow(described_class.node).to receive(:api).with('mlag').and_return(api)
+    allow(provider.node).to receive(:api).with('mlag').and_return(api)
+    allow(api).to receive(:interfaces).and_return(interfaces)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(mlag) }
 
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has two entries' do
-        expect(subject.size).to eq 2
+      it 'has one entry' do
+        expect(subject.size).to eq 1
       end
 
-      %w(Port-Channel1 Port-Channel2).each do |name|
-        it "has an instance for interface #{name}" do
-          instance = subject.find { |p| p.name == name }
-          expect(instance).to be_a described_class
-        end
+      it "has an instance for interface Port-Channel1" do
+        instance = subject.find { |p| p.name == 'Port-Channel1' }
+        expect(instance).to be_a described_class
       end
 
       context "eos_mlag_interface { 'Port-Channel1': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'Port-Channel1'
-          end
-        end
+        subject { described_class.instances.find { |p| p.name == 'Port-Channel1' } }
 
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Port-Channel1',
                          mlag_id: '1'
-      end
-
-      context "eos_mlag_interface { 'Port-Channel2': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'Port-Channel2'
-          end
-        end
-
-        include_examples 'provider resource methods',
-                         ensure: :present,
-                         name: 'Port-Channel2',
-                         mlag_id: '2'
       end
     end
 
@@ -129,24 +112,19 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         subject
         expect(resources['Port-Channel1'].provider.name).to eq 'Port-Channel1'
         expect(resources['Port-Channel1'].provider.exists?).to be_truthy
+        expect(resources['Port-Channel1'].provider.mlag_id).to eq('1')
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['Port-Channel3'].provider.name).to eq('Port-Channel3')
         expect(resources['Port-Channel3'].provider.exists?).to be_falsey
+        expect(resources['Port-Channel3'].provider.mlag_id).to eq(:absent)
       end
     end
   end
 
   context 'resource (instance) methods' do
-
-    let(:eapi) { double }
-
-    before do
-      allow(provider).to receive(:eapi)
-      allow(provider.eapi).to receive(:Mlag).and_return(eapi)
-    end
 
     describe '#exists?' do
       subject { provider.exists? }
@@ -156,82 +134,49 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
       end
 
       context 'when the resource exists on the system' do
-        let(:provider) { described_class.instances.first }
+        let(:provider) do
+          allow(api).to receive(:get).and_return(mlag)
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
     end
 
     describe '#create' do
+      let(:name) { resource[:name] }
 
-      before :each do
-        allow(eapi).to receive(:add_interface)
-        allow(eapi).to receive(:set_mlag_id)
-      end
-
-      it "calls Mlag#add_interface('Port-Channel1)" do
-        expect(eapi).to receive(:add_interface)
-          .with('Port-Channel1', '1')
-        provider.create
+      before do
+        allow(interfaces).to receive_messages(
+          :set_mlag_id => true
+        )
       end
 
       it 'sets ensure to :present' do
+        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
         provider.create
         expect(provider.ensure).to eq(:present)
       end
 
       it 'sets mlag_id to the resource value' do
+        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
         provider.create
         expect(provider.mlag_id).to eq(provider.resource[:mlag_id])
       end
     end
 
     describe '#destroy' do
-      before :each do
-        allow(eapi).to receive(:remove_interface)
-        allow(eapi).to receive(:add_interface)
-        allow(eapi).to receive(:set_mlag_id)
-      end
-
-      it "calls Mlag#delete('Port-Channel1')" do
-        expect(eapi).to receive(:remove_interface).with('Port-Channel1')
+      it 'sets ensure to :absent' do
+        expect(interfaces).to receive(:delete).with(resource[:name])
         provider.destroy
-      end
-
-      context 'when the resource has been created' do
-        subject do
-          provider.create
-          provider.destroy
-        end
-
-        it 'sets ensure to :absent' do
-          subject
-          expect(provider.ensure).to eq(:absent)
-        end
-
-        it 'clears the property hash' do
-          subject
-          expect(provider.instance_variable_get(:@property_hash))
-            .to eq(name: 'Port-Channel1', ensure: :absent)
-        end
+        expect(provider.ensure).to eq(:absent)
       end
     end
 
     describe '#mlag_id=(val)' do
-      before :each do
-        allow(provider.eapi.Mlag).to receive(:set_mlag_id)
-          .with('Port-Channel1', value: '3')
-      end
-
-      it "calls Mlag#set_mlag_id='3')" do
-        expect(eapi).to receive(:set_mlag_id)
-          .with('Port-Channel1', value: '3')
-        provider.mlag_id = '3'
-      end
-
-      it 'updates the mlag_id property in the provider' do
-        expect(provider.mlag_id).not_to eq '3'
-        provider.mlag_id = '3'
-        expect(provider.mlag_id).to eq '3'
+      it 'sets mlag_id to value "100"' do
+        expect(interfaces).to receive(:set_mlag_id).with(resource[:name], value: '100')
+        provider.mlag_id = '100'
+        expect(provider.mlag_id).to eq('100')
       end
     end
   end
