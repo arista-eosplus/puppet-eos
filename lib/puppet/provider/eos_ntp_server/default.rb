@@ -43,16 +43,12 @@ Puppet::Type.type(:eos_ntp_server).provide(:eos) do
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
-  def initialize(resource = {})
-    super(resource)
-    @property_flush = {}
-  end
-
   def self.instances
-    result = eapi.Ntp.get
-    result['servers'].map do |name, _|
+    ntp = node.api('ntp').get
+    return [] if ntp['servers'].empty?
+    ntp['servers'].each_with_object([]) do |(name, _), arry|
       provider_hash = { name: name, ensure: :present }
-      new(provider_hash)
+      arry << new(provider_hash)
     end
   end
 
@@ -61,12 +57,12 @@ Puppet::Type.type(:eos_ntp_server).provide(:eos) do
   end
 
   def create
-    eapi.Ntp.add_server(resource[:name])
+    node.api('ntp').add_server(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
   end
 
   def destroy
-    eapi.Ntp.remove_server(resource[:name])
+    node.api('ntp').remove_server(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

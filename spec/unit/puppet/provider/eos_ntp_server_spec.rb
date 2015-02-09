@@ -32,52 +32,51 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
-  let(:type) { Puppet::Type.type(:eos_ntp_server) }
 
   let :resource do
     resource_hash = {
       name: '1.2.3.4',
       ensure: :present
     }
-    type.new(resource_hash)
+    Puppet::Type.type(:eos_ntp_server).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
 
+  let(:api) { double('ntp') }
+
   def ntp
     ntp = Fixtures[:ntp]
     return ntp if ntp
-    file = File.join(File.dirname(__FILE__), 'fixtures/ntp.json')
+    file = get_fixture('ntp.json')
     Fixtures[:ntp] = JSON.load(File.read(file))
   end
 
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:Ntp)
-    allow(described_class.eapi.Ntp).to receive(:get)
-      .and_return(ntp)
+    allow(described_class.node).to receive(:api).with('ntp').and_return(api)
+    allow(provider.node).to receive(:api).with('ntp').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(ntp) }
+
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has two instances' do
-        expect(subject.size).to eq(2)
+      it 'has one entry' do
+        expect(subject.size).to eq(1)
       end
 
-      it 'contains Eos_ntp_server[1.2.3.4]' do
+      it 'has an instance for server 1.2.3.4' do
         instance = subject.find { |p| p.name == '1.2.3.4' }
         expect(instance).to be_a described_class
       end
 
-      describe 'Eos_ntp_config[1.2.3.4]' do
-        subject do
-          described_class.instances.find { |p| p.name == '1.2.3.4' }
-        end
+      context 'eos_ntp_config { 1.2.3.4: } ' do
+        subject { described_class.instances.find { |p| p.name == '1.2.3.4' } }
 
         include_examples 'provider resource methods',
                          name: '1.2.3.4',
@@ -88,10 +87,8 @@ describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_ntp_server)
-            .new(name: '1.2.3.4'),
-          '11.12.13.14' => Puppet::Type.type(:eos_ntp_server)
-            .new(name: '11.12.13.14')
+          '1.2.3.4' => Puppet::Type.type(:eos_ntp_server).new(name: '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_ntp_server).new(name: '5.6.7.8')
         }
       end
 
@@ -111,8 +108,47 @@ describe Puppet::Type.type(:eos_ntp_server).provider(:eos) do
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['11.12.13.14'].provider.name).to eq('11.12.13.14')
-        expect(resources['11.12.13.14'].provider.exists?).to be_falsey
+        expect(resources['5.6.7.8'].provider.name).to eq('5.6.7.8')
+        expect(resources['5.6.7.8'].provider.exists?).to be_falsey
+      end
+    end
+  end
+
+  context 'resource (instnce) methods' do
+
+    describe '#exists?' do
+      subject { provider.exists? }
+
+      context 'when the reosurce does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(api).to receive(:get).and_return(ntp)
+          described_class.instances.first
+        end
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    describe '#create' do
+
+      before do
+        expect(api).to receive(:add_server).with(resource[:name])
+      end
+
+      it 'sets ensure on :present' do
+        provider.create
+        expect(provider.ensure).to eq(:present)
+      end
+    end
+
+    describe '#destroy' do
+      it 'sets ensure to :absent' do
+        expect(api).to receive(:remove_server).with(resource[:name])
+        provider.destroy
+        expect(provider.ensure).to eq(:absent)
       end
     end
   end
