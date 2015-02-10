@@ -1,0 +1,60 @@
+# README for fixtures
+
+This file contains a list of the fixture files in the fixtures folder along
+with the tests that implement the fixtures.  This file needs to be maintained
+in order to void fixture file "bloat" in this folder.
+
+The file format is "filename" followed by a list of modules that implement
+that fixture file.
+
+## Fixtures
+
+###vlans.json
+* spec/unit/puppet/provider/eos_vlan_spec.rb
+
+###interfaces.json
+* spec/unit/puppet/provider/eos_interface_spec.rb
+
+###ethernet.json
+* spec/unit/puppet/provider/eos_ethernet_spec.rb
+
+###ipinterfaces.json
+* spec/unit/puppet/provider/eos_ipinterface_spec.rb
+
+###switchports.json
+* spec/unit/puppet/provider/eos_switchport_spec.rb
+
+###portchannels.json
+* spec/unit/puppet/provider/eos_portchannel_spec.rb
+
+###vxlan.json
+* spec/unit/puppet/provider/eos_vxlan_spec.rb
+
+###snmp.json
+* spec/unit/puppet/provider/eos_snmp_spec.rb
+
+###mlag.json
+* spec/unit/puppet/provider/eos_mlag_spec.rb
+* spec/unit/puppet/provider/eos_mlag_interface_spec.rb
+
+###ntp.json
+* spec/unit/puppet/provider/eos_ntp_config_spec.rb
+* spec/unit/puppet/provider/eos_ntp_server_spec.rb
+
+###logging.json
+* spec/unit/puppet/provider/eos_logging_host_spec.rb
+
+###ospf.json
+* spec/unit/puppet/provider/eos_ospf_instnace_spec.rb
+
+###varp.json
+* spec/unit/puppet/provider/eos_varp_spec.rb
+* spec/unit/puppet/provider/eos_varp_interface_spec.rb
+
+###stp.json
+* spec/unit/puppet/provider/eos_stp_config_spec.rb
+
+###system.json
+* spec/unit/puppet/provider/eos_system_spec.rb
+
+
