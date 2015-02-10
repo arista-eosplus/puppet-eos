@@ -34,6 +34,8 @@
 Puppet::Type.newtype(:eos_varp_interface) do
   @doc = 'Manage logical VARP service interfaces'
 
+  ensurable
+
   # Parameters
 
   newparam(:name) do
