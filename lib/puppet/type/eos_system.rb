@@ -37,9 +37,26 @@ Puppet::Type.newtype(:eos_system) do
   # Parameters
 
   newparam(:name) do
-    desc 'Configures the system name (hostname)'
+    desc 'Manages the global system settings on the node'
   end
 
   # Properties (state management)
+
+  newproperty(:hostname) do
+    desc 'The global system hostname is a locally significant value that
+      identifies the host portion of the nodes fully qualified domain
+      name (FQDN).
+
+      The default hostname for a new system is localhost'
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
 
 end

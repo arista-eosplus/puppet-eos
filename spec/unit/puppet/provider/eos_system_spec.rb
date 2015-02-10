@@ -36,76 +36,94 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'localhost',
+      name: 'settings',
+      hostname: 'localhost',
       provider: described_class.name
     }
     Puppet::Type.type(:eos_system).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
+  let(:api) { double('system') }
 
   def system
     system = Fixtures[:system]
     return system if system
-    file = File.join(File.dirname(__FILE__), 'fixtures/system.json')
+    file = get_fixture('system.json')
     Fixtures[:system] = JSON.load(File.read(file))
   end
 
-  # Stub the Api method class to obtain all vlans.
   before :each do
-    allow_message_expectations_on_nil
-    allow(described_class).to receive(:eapi)
-    allow(described_class.eapi).to receive(:System)
-    allow(described_class.eapi.System).to receive(:get)
-      .and_return(system)
+    allow(described_class.node).to receive(:api).with('system').and_return(api)
+    allow(provider.node).to receive(:api).with('system').and_return(api)
   end
 
   context 'class methods' do
+
+    before { allow(api).to receive(:get).and_return(system) }
 
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has an instance for hostname=localhost' do
-        instance = subject.find { |p| p.name == 'localhost' }
+      it 'has only one entry' do
+        expect(subject.size).to eq 1
+      end
+
+      it 'has an instance for settings' do
+        instance = subject.find { |p| p.name == 'settings' }
         expect(instance).to be_a described_class
       end
 
-      context "eos_system { 'localhost': }" do
-        subject do
-          described_class.instances.find do |p|
-            p.name == 'localhost'
-          end
-        end
+      context "eos_system { 'settings': }" do
+        subject { described_class.instances.find { |p| p.name == 'settings' } }
 
         include_examples 'provider resource methods',
-                         name: 'localhost'
+                         name: 'settings',
+                         hostname: 'localhost'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'localhost' => Puppet::Type.type(:eos_system)
-            .new(name: 'localhost'),
-          'alternative' => Puppet::Type.type(:eos_system)
-            .new(name: 'alternative')
+          'settings' => Puppet::Type.type(:eos_system).new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_system).new(name: 'alternative')
         }
       end
 
       subject { described_class.prefetch(resources) }
 
+      it 'resource providers are absent prior to calling .prefetch' do
+        resources.values.each do |rsrc|
+          expect(rsrc.provider.hostname).to eq(:absent)
+        end
+      end
+
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['localhost'].provider.name).to eq('localhost')
-        expect(resources['localhost'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.name).to eq('settings')
+        expect(resources['settings'].provider.exists?).to be_truthy
+        expect(resources['settings'].provider.hostname).to eq('localhost')
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
         expect(resources['alternative'].provider.name).to eq('alternative')
         expect(resources['alternative'].provider.exists?).to be_falsey
+        expect(resources['alternative'].provider.hostname).to eq(:absent)
+      end
+    end
+  end
+
+  context 'resource (instance) methods' do
+
+    describe '#hostname=(value)' do
+      it 'updates hostname with value=foo' do
+        expect(api).to receive(:set_hostname).with(value: 'foo')
+        provider.hostname = 'foo'
+        expect(provider.hostname).to eq('foo')
       end
     end
   end

@@ -44,18 +44,17 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.System.get
-    return [] if result.empty?
-    [new(name: result['hostname'], ensure: :present)]
+    result = node.api('system').get
+    [new(name: 'settings', ensure: :present, hostname: result['hostname'])]
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def create
-    eapi.System.set_hostname(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
+  def hostname=(val)
+    node.api('system').set_hostname(value: val)
+    @property_hash[:hostname] = val
   end
 
 end

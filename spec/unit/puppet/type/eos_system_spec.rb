@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_system) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'localhost', catalog: catalog) }
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -43,6 +43,16 @@ describe Puppet::Type.type(:eos_system) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+  end
+
+  describe 'hostname' do
+    let(:attribute) { :hostname }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(localhost foo bar)
+    include_examples 'rejects values', [[1], { two: 'three' }]
   end
 
 end
