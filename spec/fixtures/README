@@ -46,6 +46,7 @@ that fixture file.
 
 ###ospf.json
 * spec/unit/puppet/provider/eos_ospf_instnace_spec.rb
+* spec/unit/puppet/provider/eos_ospf_interface_spec.rb
 
 ###varp.json
 * spec/unit/puppet/provider/eos_varp_spec.rb

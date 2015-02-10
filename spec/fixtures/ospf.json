@@ -4,5 +4,10 @@
         "areas": {
             "0.0.0.0": ["192.168.10.0/24"]
         }
+    },
+    "interfaces": {
+        "Ethernet1": {
+            "network_type": "point-to-point"
+        }
     }
 }
