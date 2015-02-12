@@ -39,7 +39,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       ensure: :present,
       name: 'Ethernet1',
       address: '1.2.3.4/5',
-      helper_address: %w(5.6.7.8 9.10.11.12),
+      helper_addresses: %w(5.6.7.8 9.10.11.12),
       mtu: '9000',
       provider: described_class.name
     }
@@ -87,7 +87,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          ensure: :present,
                          name: 'Ethernet1',
                          address: '1.2.3.4/5',
-                         helper_address: %w(5.6.7.8 9.10.11.12),
+                         helper_addresses: %w(5.6.7.8 9.10.11.12),
                          mtu: '1500',
                          exists?: true
       end
@@ -110,7 +110,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         resources.values.each do |rsrc|
           expect(rsrc.provider.address).to eq(:absent)
           expect(rsrc.provider.mtu).to eq(:absent)
-          expect(rsrc.provider.helper_address).to eq(:absent)
+          expect(rsrc.provider.helper_addresses).to eq(:absent)
         end
       end
 
@@ -119,7 +119,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
         expect(resources['Ethernet1'].provider.address).to eq '1.2.3.4/5'
         expect(resources['Ethernet1'].provider.mtu).to eq '1500'
-        expect(resources['Ethernet1'].provider.helper_address).to eq %w(5.6.7.8 9.10.11.12)
+        expect(resources['Ethernet1'].provider.helper_addresses).to eq %w(5.6.7.8 9.10.11.12)
         expect(resources['Ethernet1'].provider.exists?).to be_truthy
       end
 
@@ -128,7 +128,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(resources['Ethernet2'].provider.name).to eq('Ethernet2')
         expect(resources['Ethernet2'].provider.address).to eq(:absent)
         expect(resources['Ethernet2'].provider.mtu).to eq(:absent)
-        expect(resources['Ethernet2'].provider.helper_address).to eq(:absent)
+        expect(resources['Ethernet2'].provider.helper_addresses).to eq(:absent)
         expect(resources['Ethernet2'].provider.exists?).to be_falsey
       end
     end
@@ -160,7 +160,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         allow(api).to receive_messages(
           :set_address => true,
           :set_mtu => true,
-          :set_helper_address => true
+          :set_helper_addresses => true
         )
       end
 
@@ -179,9 +179,9 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(provider.mtu).to eq(provider.resource[:mtu])
       end
 
-      it 'sets helper_address to the resource value' do
+      it 'sets helper_addresses to the resource value' do
         provider.create
-        expect(provider.helper_address).to eq(resource[:helper_address])
+        expect(provider.helper_addresses).to eq(resource[:helper_addresses])
       end
     end
 
@@ -210,14 +210,14 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       end
     end
 
-    describe '#helper_address=(val)' do
+    describe '#helper_addresses=(val)' do
       let(:value) { %w(5.6.7.8 9.10.11.12) }
 
-      it 'updates helper_address on the provider' do
-        expect(api).to receive(:set_helper_address)
+      it 'updates helper_addresses on the provider' do
+        expect(api).to receive(:set_helper_addresses)
           .with(resource[:name], value: value)
-        provider.helper_address = value
-        expect(provider.helper_address).to eq(value)
+        provider.helper_addresses = value
+        expect(provider.helper_addresses).to eq(value)
       end
     end
   end

@@ -58,8 +58,8 @@ describe Puppet::Type.type(:eos_ipinterface) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'helper_address' do
-    let(:attribute) { :helper_address }
+  describe 'helper_addresses' do
+    let(:attribute) { :helper_addresses }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
