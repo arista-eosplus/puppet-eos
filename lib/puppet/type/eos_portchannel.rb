@@ -77,7 +77,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
   newproperty(:lacp_fallback) do
     desc 'Specifies the LACP fallback setting'
-    newvalues(:static, :individual)
+    newvalues(:static, :individual, :disabled)
   end
 
   newproperty(:lacp_timeout) do

@@ -74,7 +74,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def lacp_fallback=(val)
-    node.api('interfaces').set_lacp_fallback(resource[:name], value: val)
+    node.api('interfaces').set_lacp_fallback(resource[:name], value: val.to_s)
     @property_hash[:lacp_fallback] = val
   end
 
