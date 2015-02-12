@@ -62,7 +62,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
 
   context 'class methods' do
 
-    before { allow(api).to receive(:get).and_return(ospf) }
+    before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
       subject { described_class.instances }
@@ -132,7 +132,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
 
       context 'when the resource exists on the system' do
         let(:provider) do
-          allow(api).to receive(:get).and_return(ospf)
+          allow(api).to receive(:getall).and_return(ospf)
           described_class.instances.first
         end
         it { is_expected.to be_truthy }

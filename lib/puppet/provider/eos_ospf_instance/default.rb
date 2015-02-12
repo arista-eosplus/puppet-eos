@@ -44,7 +44,7 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    ospf = node.api('ospf').get
+    ospf = node.api('ospf').getall
     ospf.each_with_object([]) do |(name, attrs), arry|
       if name != 'interfaces'
         provider_hash = { name: name, ensure: :present }
