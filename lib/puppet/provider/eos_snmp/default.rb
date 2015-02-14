@@ -44,37 +44,33 @@ Puppet::Type.type(:eos_snmp).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = node.api('snmp').get
-    provider_hash = { name: 'settings',
-                      ensure: :present,
-                      contact: result['contact'],
-                      location: result['location'],
-                      chassis_id: result['chassis_id'],
-                      source_interface: result['source_interface'] }
+    provider_hash = { name: 'settings', ensure: :present }
+    provider_hash.merge!(node.api('snmp').get)
     [new(provider_hash)]
   end
 
-  def contact=(val)
-    node.api('snmp').set_contact(value: val)
-    @property_hash[:contact] = val
+  def contact=(value)
+    node.api('snmp').set_contact(value: value)
+    @property_hash[:contact] = value
   end
 
-  def location=(val)
-    node.api('snmp').set_location(value: val)
-    @property_hash[:location] = val
+  def location=(value)
+    node.api('snmp').set_location(value: value)
+    @property_hash[:location] = value
   end
 
-  def chassis_id=(val)
-    node.api('snmp').set_chassis_id(value: val)
-    @property_hash[:chassis_id] = val
+  def chassis_id=(value)
+    node.api('snmp').set_chassis_id(value: value)
+    @property_hash[:chassis_id] = value
   end
 
-  def source_interface=(val)
-    node.api('snmp').set_source_interface(value: val)
-    @property_hash[:source_interface] = val
+  def source_interface=(value)
+    node.api('snmp').set_source_interface(value: value)
+    @property_hash[:source_interface] = value
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
+
 end
