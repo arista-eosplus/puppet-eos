@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_snmp).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -53,8 +55,7 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
   def snmp
     snmp = Fixtures[:snmp]
     return snmp if snmp
-    file = File.join(File.dirname(__FILE__), 'fixture_api_snmp.json')
-    Fixtures[:snmp] = JSON.load(File.read(file), nil, symbolize_names: true)
+    fixture('snmp', dir: File.dirname(__FILE__))
   end
 
   # Stub the Api method class to obtain all vlans.
