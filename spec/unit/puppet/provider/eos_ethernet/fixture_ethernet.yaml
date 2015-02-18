@@ -1,0 +1,8 @@
+---
+Ethernet1:
+  :type: ethernet
+  :description: test interface
+  :shutdown: false
+  :flowcontrol_send: 'on'
+  :flowcontrol_receive: 'on' 
+

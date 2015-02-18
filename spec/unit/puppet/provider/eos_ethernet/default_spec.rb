@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -53,8 +55,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
   def ethernet
     ethernet = Fixtures[:ethernet]
     return ethernet if ethernet
-    file = get_fixture('ethernet.json')
-    Fixtures[:ethernet] = JSON.load(File.read(file))
+    fixture('ethernet', dir: File.dirname(__FILE__))
   end
 
   before :each do

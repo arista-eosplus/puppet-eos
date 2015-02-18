@@ -45,16 +45,14 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.each_with_object([]) do |(name, attrs), arry|
+    interfaces.map do |(name, attrs)|
+      next unless attrs[:type] == 'ethernet'
       provider_hash = { name: name }
-      enable = attrs['shutdown'] ? :false : :true
-      provider_hash[:enable] = enable
-      provider_hash[:description] = attrs['description']
-      if attrs['type'] == 'ethernet'
-        provider_hash[:flowcontrol_send] = attrs['flowcontrol_send'].to_sym
-        provider_hash[:flowcontrol_receive] = attrs['flowcontrol_receive'].to_sym
-      end
-      arry << new(provider_hash)
+      provider_hash[:enable] = attrs[:shutdown] ? :false : :true
+      provider_hash[:description] = attrs[:description]
+      provider_hash[:flowcontrol_send] = attrs[:flowcontrol_send].to_sym
+      provider_hash[:flowcontrol_receive] = attrs[:flowcontrol_receive].to_sym
+      new(provider_hash)
     end
   end
 
