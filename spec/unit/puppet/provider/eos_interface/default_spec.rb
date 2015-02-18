@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -51,8 +53,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   def interfaces
     interfaces = Fixtures[:interfaces]
     return interfaces if interfaces
-    file = get_fixture('interfaces.json')
-    Fixtures[:interfaces] = JSON.load(File.read(file))
+    fixture('interfaces', dir: File.dirname(__FILE__))
   end
 
   before :each do

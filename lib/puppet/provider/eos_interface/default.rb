@@ -45,12 +45,11 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.each_with_object([]) do |(name, attrs), arry|
+    interfaces.map do |(name, attrs)|
       provider_hash = { name: name }
-      enable = attrs['shutdown'] ? :false : :true
-      provider_hash[:enable] = enable
-      provider_hash[:description] = attrs['description']
-      arry << new(provider_hash)
+      provider_hash.merge!(attrs)
+      provider_hash[:enable] = attrs[:shutdown] ? :false : :true
+      new(provider_hash)
     end
   end
 
