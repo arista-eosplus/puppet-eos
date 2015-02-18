@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -54,8 +56,7 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
   def mlag
     mlag = Fixtures[:mlag]
     return mlag if mlag
-    file = get_fixture('mlag.json')
-    Fixtures[:mlag] = JSON.load(File.read(file))
+    fixture('mlag', dir: File.dirname(__FILE__))
   end
 
   before :each do

@@ -45,9 +45,9 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
   def self.instances
     mlag = node.api('mlag').get
-    mlag['interfaces'].each_with_object([]) do |(name, attrs), arry|
+    mlag[:interfaces].each_with_object([]) do |(name, attrs), arry|
       provider_hash = { name: name, ensure: :present,
-                        mlag_id: attrs['mlag_id'] }
+                        mlag_id: attrs[:mlag_id] }
       arry << new(provider_hash)
     end
   end

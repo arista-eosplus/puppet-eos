@@ -46,11 +46,8 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   def self.instances
     result = node.api('mlag').get
     provider_hash = { name: 'settings',  ensure: :present }
-    provider_hash[:domain_id] = result['domain_id']
-    provider_hash[:local_interface] = result['local_interface']
-    provider_hash[:peer_address] = result['peer_address']
-    provider_hash[:peer_link] = result['peer_link']
-    enable = result['shutdown'] ? :false : :true
+    provider_hash.merge!(result)
+    enable = result[:shutdown] ? :false : :true
     provider_hash[:enable] = enable
     [new(provider_hash)]
   end
