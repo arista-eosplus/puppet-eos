@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -53,8 +55,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
   def ipinterfaces
     ipinterfaces = Fixtures[:ipinterfaces]
     return ipinterfaces if ipinterfaces
-    file = get_fixture('ipinterfaces.json')
-    Fixtures[:ipinterfaces] = JSON.load(File.read(file))
+    fixture('ipinterfaces', dir: File.dirname(__FILE__))
   end
 
   before :each do
