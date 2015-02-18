@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -53,8 +55,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
   def vxlan
     vxlan = Fixtures[:vxlan]
     return vxlan if vxlan
-    file = get_fixture('vxlan.json')
-    Fixtures[:vxlan] = JSON.load(File.read(file))
+    fixture('vxlan', dir: File.dirname(__FILE__))
   end
 
   before :each do
