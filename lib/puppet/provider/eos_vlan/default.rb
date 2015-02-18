@@ -44,31 +44,30 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = node.api('vlans').getall
-    result.map do |name, attrs|
+    vlans = node.api('vlans').getall
+    vlans.map do |name, attrs|
       provider_hash = { name: name, vlanid: name, ensure: :present }
-      provider_hash[:vlan_name] = attrs['name']
-      enable = attrs['state'] == 'active' ? :true : :false
-      provider_hash[:enable] = enable
-      provider_hash[:trunk_groups] = attrs['trunk_groups']
+      provider_hash[:vlan_name] = attrs[:name]
+      provider_hash[:enable] = attrs[:state] == 'active' ? :true : :false
+      provider_hash[:trunk_groups] = attrs[:trunk_groups]
       new(provider_hash)
     end
   end
 
-  def enable=(val)
-    arg = val == :true ? 'active' : 'suspend'
-    node.api('vlans').set_state(resource[:vlanid], value: arg)
-    @property_hash[:enable] = val
+  def enable=(value)
+    val = value == :true ? 'active' : 'suspend'
+    node.api('vlans').set_state(resource[:vlanid], value: val)
+    @property_hash[:enable] = value
   end
 
-  def vlan_name=(val)
-    node.api('vlans').set_name(resource[:vlanid], value: val)
-    @property_hash[:vlan_name] = val
+  def vlan_name=(value)
+    node.api('vlans').set_name(resource[:vlanid], value: value)
+    @property_hash[:vlan_name] = value
   end
 
-  def trunk_groups=(val)
-    node.api('vlans').set_trunk_group(resource[:vlanid], value: val)
-    @property_hash[:trunk_groups] = val
+  def trunk_groups=(value)
+    node.api('vlans').set_trunk_group(resource[:vlanid], value: value)
+    @property_hash[:trunk_groups] = value
   end
 
   def exists?
@@ -77,8 +76,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
 
   def create
     node.api('vlans').create(resource[:name])
-    @property_hash = { name: resource[:name],
-                       vlanid: resource[:vlanid],
+    @property_hash = { name: resource[:name], vlanid: resource[:vlanid],
                        ensure: :present }
 
     self.enable = resource[:enable] if resource[:enable]

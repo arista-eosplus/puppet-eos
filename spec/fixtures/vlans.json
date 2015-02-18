@@ -1,8 +1,0 @@
-{
-    "1": {
-        "vlanid": "1",
-        "name": "default",
-        "state": "active",
-        "trunk_groups": []
-    }
-}
