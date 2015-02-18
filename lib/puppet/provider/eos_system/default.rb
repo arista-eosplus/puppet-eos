@@ -45,7 +45,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
 
   def self.instances
     result = node.api('system').get
-    [new(name: 'settings', ensure: :present, hostname: result['hostname'])]
+    [new(name: 'settings', ensure: :present, hostname: result[:hostname])]
   end
 
   def exists?

@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_system).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -49,8 +51,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   def system
     system = Fixtures[:system]
     return system if system
-    file = get_fixture('system.json')
-    Fixtures[:system] = JSON.load(File.read(file))
+    fixture('system', dir: File.dirname(__FILE__))
   end
 
   before :each do
