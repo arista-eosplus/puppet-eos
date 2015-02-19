@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -55,8 +57,7 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
   def portchannels
     portchannels = Fixtures[:portchannels]
     return portchannels if portchannels
-    file = get_fixture('portchannels.json')
-    Fixtures[:portchannels] = JSON.load(File.read(file))
+    fixture('portchannels', dir: File.dirname(__FILE__))
   end
 
   before :each do

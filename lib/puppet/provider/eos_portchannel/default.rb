@@ -45,16 +45,13 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.each_with_object([]) do |(name, attrs), arry|
-      if attrs['type'] == 'portchannel'
-        provider_hash = { name: name, ensure: :present }
-        provider_hash[:minimum_links] = attrs['minimum_links']
-        provider_hash[:lacp_mode] = attrs['lacp_mode'].to_sym
-        provider_hash[:members] = attrs['members']
-        provider_hash[:lacp_fallback] = attrs['lacp_fallback'].to_sym
-        provider_hash[:lacp_timeout] = attrs['lacp_timeout']
-        arry << new(provider_hash)
-      end
+    interfaces.map do |(name, attrs)|
+      next unless attrs[:type] == 'portchannel'
+      provider_hash = { name: name, ensure: :present }
+      provider_hash.merge!(attrs)
+      provider_hash[:lacp_mode] = attrs[:lacp_mode].to_sym
+      provider_hash[:lacp_fallback] = attrs[:lacp_fallback].to_sym
+      new(provider_hash)
     end
   end
 
