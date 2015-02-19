@@ -45,10 +45,9 @@ Puppet::Type.type(:eos_ntp_server).provide(:eos) do
 
   def self.instances
     ntp = node.api('ntp').get
-    return [] if ntp['servers'].empty?
-    ntp['servers'].each_with_object([]) do |(name, _), arry|
+    ntp[:servers].map do |(name, _)|
       provider_hash = { name: name, ensure: :present }
-      arry << new(provider_hash)
+      new(provider_hash)
     end
   end
 

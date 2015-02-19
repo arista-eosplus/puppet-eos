@@ -1,6 +1,0 @@
-{
-    "source_interface": "Loopback0",
-    "servers": [
-        "1.2.3.4"
-    ]
-}
