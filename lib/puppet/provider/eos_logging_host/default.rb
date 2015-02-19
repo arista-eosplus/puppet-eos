@@ -45,9 +45,9 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def self.instances
     result = node.api('logging').get
-    result['hosts'].each_with_object([]) do |host, arry|
+    result[:hosts].map do |host|
       provider_hash = { name: host, ensure: :present }
-      arry << new(provider_hash)
+      new(provider_hash)
     end
   end
 
