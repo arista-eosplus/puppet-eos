@@ -1,8 +1,0 @@
-{
-    "Ethernet1": {
-        "mode": "trunk",
-        "access_vlan": "1",
-        "trunk_native_vlan": "1",
-        "trunk_allowed_vlans": "ALL"
-    }
-}

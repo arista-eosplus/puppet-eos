@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
   # Puppet RAL memoized methods
@@ -54,8 +56,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
   def switchports
     switchports = Fixtures[:switchports]
     return switchports if switchports
-    file = get_fixture('switchports.json')
-    Fixtures[:switchports] = JSON.load(File.read(file))
+    fixture('switchports', dir: File.dirname(__FILE__))
   end
 
   before :each do
@@ -91,7 +92,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
                          ensure: :present,
                          name: 'Ethernet1',
                          mode: :trunk,
-                         trunk_allowed_vlans: 'ALL',
+                         trunk_allowed_vlans: [1, 10, 100, 1000],
                          trunk_native_vlan: '1',
                          access_vlan: '1'
 
@@ -126,7 +127,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet1'].provider.mode).to eq :trunk
         expect(resources['Ethernet1'].provider.access_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_native_vlan).to eq '1'
-        expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to eq 'ALL'
+        expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to eq [1, 10, 100, 1000]
       end
 
       it 'does not set the provider instance of the unmanaged resource' do

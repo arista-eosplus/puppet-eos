@@ -45,14 +45,11 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def self.instances
     switchports = node.api('switchports').getall
-    switchports.each_with_object([]) do |(name, attrs), arry|
-      provider_hash = { name: name,
-                        ensure: :present,
-                        mode: attrs['mode'].to_sym,
-                        trunk_allowed_vlans: attrs['trunk_allowed_vlans'],
-                        trunk_native_vlan: attrs['trunk_native_vlan'],
-                        access_vlan: attrs['access_vlan'] }
-      arry << new(provider_hash)
+    switchports.map do |(name, attrs)|
+      provider_hash = { name: name, ensure: :present }
+      provider_hash.merge!(attrs)
+      provider_hash[:mode] = attrs[:mode].to_sym
+      new(provider_hash)
     end
   end
 
