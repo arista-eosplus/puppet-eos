@@ -31,6 +31,8 @@
 #
 require 'spec_helper'
 
+include FixtureHelpers
+
 describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
   let(:type) { Puppet::Type.type(:eos_ntp_config) }
 
@@ -49,8 +51,7 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
   def ntp
     ntp = Fixtures[:ntp]
     return ntp if ntp
-    file = get_fixture('ntp.json')
-    Fixtures[:ntp] = JSON.load(File.read(file))
+    fixture('ntp', dir: File.dirname(__FILE__))
   end
 
   before :each do
