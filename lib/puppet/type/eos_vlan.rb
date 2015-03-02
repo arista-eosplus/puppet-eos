@@ -29,12 +29,12 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_vlan) do
-  @doc = "Manage Vlans.  This type provides management of Layer 2 Vlans on
-    EOS systems.   This type currently supports EOS 4.12.0 or greater
-    using eAPI."
+  @doc = <<-EOS
+    This type provides management of VLANs on the Arista EOS node from
+    within Puppet.
+  EOS
 
   ensurable
 
@@ -52,72 +52,79 @@ Puppet::Type.newtype(:eos_vlan) do
   # Parameters
 
   newparam(:vlanid, namevar: true) do
-    desc "The vlanid parameter configures a virtual LAN in the range
-        of 1 to 4094."
+    desc <<-EOS
+      The name parameter specifies the VLAN ID to manage on the
+      node.  The VLAN ID parameter must be in the valid VLAN ID
+      range of 1 to 4094 expressed as a String.
+    EOS
 
     # Make sure we have a string for the ID
     munge do |value|
       Integer(value).to_s
+    end
+
+    validate do |value|
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} must be between 1 and 4094"
+      end
     end
   end
 
   # Properties (state management)
 
   newproperty(:vlan_name) do
-    desc "The vlan_name property configures the VLAN name. The name consists
-      of up to 32 characters. The default name for VLAN 1 is default. The
-      default name for all other VLANs is VLANxxxx, where xxxx is the VLAN
-      number. The default name for VLAN 55 is VLAN0055.
-
-      The name command accepts all characters except the space."
+    desc <<-EOS
+      The vlan_name property configures the alphanumber VLAN name
+      setting in EOS.  TThe name consists of up to 32 characters.  The
+      system will automatically truncate any value larger than 32
+      characters.
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ /[^\s]/
+        fail "value #{value.inspect} is invalid, must not contain spaces"
       end
     end
   end
 
   newproperty(:enable, boolean: true) do
-    desc "The enable property configures the VLAN transmission state of
-        configured VLAN.  When enable is True, ports forward VLAN traffic
-        and when enable is False, ports block VLAN traffic.
+    desc <<-EOS
+      The enable property configures the administrative state of the
+      VLAN ID.  When enable is configured as true, the ports forward traffic
+      configured with the specified VLAN and when enable is false, the
+      specified VLAN ID is blocked.  Valid VLAN ID values:
 
-        The default configuration for enable is True"
+      * true - Administratively enable (active) the VLAN
+      * false - Administratively disable (suspend) the VLAN
+    EOS
 
-    newvalue(:true)
-    newvalue(:false)
+    newvalues(:true, :false)
 
     munge do |value|
       @resource.munge_boolean(value)
     end
   end
 
-  newproperty(:vni) do
-    desc 'The VXLAN Virtual Network Identifier'
+  newproperty(:trunk_groups, array_matching: :all) do
+    desc <<-EOS
+      The trunk_groups property assigns an array of trunk group names to
+      the specified VLANs.  A trunk group is the set of physical interfaces
+      that comprise the trunk and the collection of VLANs whose traffic
+      is carried only on ports that are members of the trunk gorups to which
+      the VLAN belongs
 
-    # Make sure we have a string for the ID
-    munge do |value|
-      Integer(value).to_s
-    end
+      Example configuration
+
+        trunk_groups => ['group1', 'group2']
+
+      The default configure is an empty list
+    EOS
 
     validate do |value|
-      unless value.to_i.between?(1, 16_777_215)
-        fail "value #{value.inspect} is not between 1 and 16777215"
+      case value
+      when String then super(value)
+      else fail "value #{value.inspect} is invalid, elements must be Strings"
       end
     end
-  end
-
-  newproperty(:trunk_groups, array_matching: :all) do
-    desc "The trunk group property assigns the array of trunk groups to
-        the specified VLAN.  A trunk group is the set of physical interfaces
-        that comprise the trunk and th ecollections of VLANs whose traffic
-        is carried only on ports that are members of trunk groups to which
-        the VLAN belongs.
-
-        The default configuration is an empty list"
   end
 end

@@ -75,23 +75,13 @@ describe Puppet::Type.type(:eos_vlan) do
     include_examples 'rejected parameter values'
   end
 
-  describe 'vni' do
-    let(:attribute) { :vni }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 5000 16777215)
-    include_examples 'rejects values', \
-                     [{ two: :three }, 'abc', '0', '16_777_216', -1]
-  end
-
   describe 'trunk_groups' do
     let(:attribute) { :trunk_groups }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [['tg1', 'tg2']]
   end
 
 end
