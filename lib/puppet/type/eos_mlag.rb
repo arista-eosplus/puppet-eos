@@ -32,73 +32,104 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_mlag) do
-  @doc = 'Configure MLAG settings'
+
+  @doc = <<-EOS
+    This type manages the global MLAG instance on EOS nodes.  It
+    provides configuration for global MLAG configuration parameters.
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'Resource name, not used to configure the device'
+    desc <<-EOS
+      The name parameter identifies the global MLAG instance for
+      configuration and should be configured as 'settings'.  All
+      other values for name will be siliently ignored by the eos_mlag
+      provider.
+    EOS
+    isnamevar
   end
 
   # Properties (state management)
 
   newproperty(:domain_id) do
-    desc 'Specifies MLAG domain ID for the running configuration'
+    desc <<-EOS
+      The domain_id property configures the MLAG domain-id value for
+      the global MLAG configuration instance.  The domain-id setting
+      identifies the domain name for the MLAG domain. Valid values
+      include alphanumeric characters
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
+      when String then super(value)
       else fail "value #{value.inspect} is invalid, must be a string."
       end
     end
   end
 
   newproperty(:local_interface) do
-    desc 'Specifies the VLAN of the SVI upon which the switch sends '\
-         'MLAG control traffic.'
+    desc <<-EOS
+      The local_interface property configures the MLAG local-interface
+      value for the global MLAG configuration instance.  The local-interface
+      setting specifies the VLAN SVI to send MLAG control traffic on.
+
+      Valid values must be a VLAN SVI identifier
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~/^Vlan\d+$/
+        fail "value #{value.inspect} is invalid, must be a VLAN SVI"
       end
     end
   end
 
   newproperty(:peer_address) do
-    desc 'Specifies destination address on peer switch for MLAG control '\
-         'traffic.'
+    desc <<-EOS
+      The peer_address property configures the MLAG peer-address value
+      for the global MLAG configuration instance.  The peer-address setting
+      specifieds the MLAG peer control endpoint IP address.
+
+      The specified value must be a valid IP address
+    EOS
+
+    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ IPADDR_REGEXP
+        fail "value #{value.inspect} is invalid, must be an IP address"
       end
     end
   end
 
   newproperty(:peer_link) do
-    desc 'Specifies switch interface used to communicate MLAG '\
-         'control traffic.'
+    desc <<-EOS
+      The peer_link property configures the MLAG peer-link value for the
+      glboal MLAG configuration instance.  The peer-link setting specifies
+      the interface used to communicate control traffic to the MLAG peer
+
+      The provided value must be a valid Ethernet or Port-Channel interface
+      identifer
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ /^[Et|Po].+/
+        fail "value #{value.inspect} is invalid, must be a valid " \
+             "Ethernet or Port-Channel interface identifier"
       end
     end
   end
 
   newproperty(:enable) do
-    desc 'Enables or disables the MLAG.'
+    desc <<-EOS
+      The enable property configures the admininstrative state of the
+      global MLAG configuration.  Valid values for enable are:
+
+      * true - globally enables the MLAG configuration
+      * false - glboally disables the MLAG configuration
+    EOS
+
     newvalues(:true, :false)
   end
 

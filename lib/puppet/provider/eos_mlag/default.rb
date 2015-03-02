@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_mlag).provide(:eos) do
 
@@ -44,7 +47,8 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = node.api('mlag').get
+    api = node.api('mlag').get
+    result = api[:global]
     provider_hash = { name: 'settings',  ensure: :present }
     provider_hash.merge!(result)
     enable = result[:shutdown] ? :false : :true

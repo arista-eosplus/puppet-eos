@@ -40,9 +40,9 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
     resource_hash = {
       name: 'settings',
       domain_id: 'MLAG-Domain',
-      local_interface: 'Port-Channel1',
+      local_interface: 'Vlan4094',
       peer_address: '10.1.1.1',
-      peer_link: 'Vlan4094',
+      peer_link: 'Port-Channel1',
       enable: :true,
       provider: described_class.name
     }
@@ -88,9 +88,9 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         include_examples 'provider resource methods',
                          name: 'settings',
                          domain_id: 'MLAG-Domain',
-                         local_interface: 'Port-Channel1',
+                         local_interface: 'Vlan4094',
                          peer_address: '1.1.1.1',
-                         peer_link: 'Vlan4094',
+                         peer_link: 'Port-Channel1',
                          enable: :true
       end
     end
@@ -120,9 +120,9 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
         expect(resources['settings'].provider.domain_id).to eq 'MLAG-Domain'
-        expect(resources['settings'].provider.local_interface).to eq 'Port-Channel1'
+        expect(resources['settings'].provider.local_interface).to eq 'Vlan4094'
         expect(resources['settings'].provider.peer_address).to eq '1.1.1.1'
-        expect(resources['settings'].provider.peer_link).to eq 'Vlan4094'
+        expect(resources['settings'].provider.peer_link).to eq 'Port-Channel1'
         expect(resources['settings'].provider.enable).to eq :true
       end
 
@@ -180,7 +180,6 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
         expect(provider.peer_address).to eq('2.2.2.2')
       end
     end
-
 
     describe '#peer_link=(val)' do
       it 'updates the peer_link with value "Vlan1234"' do

@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_mlag) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'MLAG_12', catalog: catalog) }
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }
@@ -60,9 +60,9 @@ describe Puppet::Type.type(:eos_mlag) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     %w(portchannel10 Ethernet42/1)
+    include_examples 'accepts values without munging', ['Vlan1234']
     include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'rejects values', ['Port-Channel1', 'Ethernet1']
   end
 
   describe 'peer_address' do
@@ -71,7 +71,8 @@ describe Puppet::Type.type(:eos_mlag) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # XXX Validate IP address
+    include_examples 'accepts values without munging', ['1.2.3.4']
+    include_examples 'rejects values', ['1.2', '255.255.255.256']
   end
 
   describe 'peer_link' do
@@ -81,7 +82,7 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
-                     %w(portchannel10 Ethernet42/1)
+                     %w(Port-Channel10 Ethernet42/1)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
