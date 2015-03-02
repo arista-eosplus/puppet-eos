@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
@@ -45,16 +48,21 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
   def self.instances
     mlag = node.api('mlag').get
-    mlag[:interfaces].each_with_object([]) do |(name, attrs), arry|
+    mlag[:interfaces].map do |(name, attrs)|
       provider_hash = { name: name, ensure: :present,
                         mlag_id: attrs[:mlag_id] }
-      arry << new(provider_hash)
+      new(provider_hash)
     end
   end
 
-  def mlag_id=(val)
-    node.api('mlag').interfaces.set_mlag_id(resource[:name], value: val)
-    @property_hash[:mlag_id] = val
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def mlag_id=(value)
+    node.api('mlag').set_mlag_id(resource[:name], value:value)
+    @property_hash[:mlag_id] = value
   end
 
   def exists?
@@ -62,13 +70,22 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   end
 
   def create
-    node.api('mlag').interfaces.create(resource[:name], resource[:mlag_id])
-    @property_hash = { name: resource['name'], ensure: :present }
-    self.mlag_id = resource[:mlag_id] if resource[:mlag_id]
+    @property_hash = resource.to_hash
   end
 
   def destroy
-    node.api('mlag').interfaces.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash = resource.to_hash
+  end
+
+  def flush
+    api = node.api('mlag')
+    desired_state = @property_hash.merge!(@property_flush)
+    case desired_state[:ensure]
+    when :present
+      api.set_mlag_id(desired_state[:name], value: desired_state[:mlag_id])
+    when :absent
+      api.set_mlag_id(desired_state[:name])
+    end
+    @property_hash = desired_state
   end
 end

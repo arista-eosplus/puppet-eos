@@ -40,7 +40,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
     resource_hash = {
       ensure: :present,
       name: 'Port-Channel1',
-      mlag_id: '1',
+      mlag_id: 1,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_mlag_interface).new(resource_hash)
@@ -49,7 +49,6 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
   let(:provider) { resource.provider }
 
   let(:api) { double('mlag') }
-  let(:interfaces) { double('mlag.interfaces') }
 
   def mlag
     mlag = Fixtures[:mlag]
@@ -60,7 +59,6 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
   before :each do
     allow(described_class.node).to receive(:api).with('mlag').and_return(api)
     allow(provider.node).to receive(:api).with('mlag').and_return(api)
-    allow(api).to receive(:interfaces).and_return(interfaces)
   end
 
   context 'class methods' do
@@ -87,7 +85,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: 'Port-Channel1',
-                         mlag_id: '1'
+                         mlag_id: 1
       end
     end
 
@@ -113,7 +111,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         subject
         expect(resources['Port-Channel1'].provider.name).to eq 'Port-Channel1'
         expect(resources['Port-Channel1'].provider.exists?).to be_truthy
-        expect(resources['Port-Channel1'].provider.mlag_id).to eq('1')
+        expect(resources['Port-Channel1'].provider.mlag_id).to eq(1)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -146,37 +144,34 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
     describe '#create' do
       let(:name) { resource[:name] }
 
-      before do
-        expect(interfaces).to receive(:create).with(name, resource[:mlag_id])
-        allow(interfaces).to receive_messages(
-          :set_mlag_id => true
-        )
-      end
-
       it 'sets ensure to :present' do
+        expect(api).to receive(:set_mlag_id).with(name, value: 1)
         provider.create
+        provider.flush
         expect(provider.ensure).to eq(:present)
-      end
-
-      it 'sets mlag_id to the resource value' do
-        provider.create
-        expect(provider.mlag_id).to eq(provider.resource[:mlag_id])
       end
     end
 
     describe '#destroy' do
+      let(:name) { resource[:name] }
+
       it 'sets ensure to :absent' do
-        expect(interfaces).to receive(:delete).with(resource[:name])
+        expect(api).to receive(:set_mlag_id).with(name)
+        resource[:ensure] = :absent
         provider.destroy
+        provider.flush
         expect(provider.ensure).to eq(:absent)
       end
     end
 
     describe '#mlag_id=(val)' do
-      it 'sets mlag_id to value "100"' do
-        expect(interfaces).to receive(:set_mlag_id).with(resource[:name], value: '100')
-        provider.mlag_id = '100'
-        expect(provider.mlag_id).to eq('100')
+      let(:name) { resource[:name] }
+
+      it 'sets mlag_id to value 100' do
+        expect(api).to receive(:set_mlag_id).with(name, value: 100)
+        provider.mlag_id = 100
+        provider.flush
+        expect(provider.mlag_id).to eq(100)
       end
     end
   end

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2015, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,33 +29,53 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_mlag_interface) do
-  @doc = 'Configure MLAG interfaces'
+
+  @doc = <<-EOS
+    This type manages MLAG interfaces on the node used to establish
+    a valid MLAG with a peer switch.  The mlag_id parameter is required
+    for this type.
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'Specifies the MLAG domain ID'
+    desc <<-EOS
+      The name property identifies the interface to be present
+      or absent from the MLAG interface list.  The interface must
+      be of type portchannel.
+
+      This property expectes the full interface identifier
+    EOS
 
     validate do |value|
-      if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      unless value =~ /^Port-Channel/
+        fail "value #{value.inspect} is invalid, must be a Port-Channel"
       end
     end
   end
 
+
   # Properties (state management)
 
   newproperty(:mlag_id) do
-    desc 'Specifies the MLAG ID'
+    desc <<-EOS
+      The mlag_id property assigns a MLAG ID to a Port-Channel interface
+      used for forming a MLAG with a peer switch.  Only one MLAG ID can
+      be associated with an interface.
 
-    # Make sure we have a string for the ID
+      Valid values are in the range of 1 to 2000
+
+      **Note**
+      Changing this value on an operational link will cause traffic
+      distruption
+    EOS
+
     munge do |value|
-      Integer(value).to_s
+      Integer(value).to_i
     end
 
     validate do |value|
@@ -64,5 +84,4 @@ Puppet::Type.newtype(:eos_mlag_interface) do
       end
     end
   end
-
 end
