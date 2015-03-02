@@ -30,7 +30,11 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
+
 
 Puppet::Type.type(:eos_ethernet).provide(:eos) do
 
@@ -45,14 +49,14 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.map do |(name, attrs)|
+    interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'ethernet'
       provider_hash = { name: name }
       provider_hash[:enable] = attrs[:shutdown] ? :false : :true
       provider_hash[:description] = attrs[:description]
       provider_hash[:flowcontrol_send] = attrs[:flowcontrol_send].to_sym
       provider_hash[:flowcontrol_receive] = attrs[:flowcontrol_receive].to_sym
-      new(provider_hash)
+      arry << new(provider_hash)
     end
   end
 

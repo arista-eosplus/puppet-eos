@@ -32,40 +32,70 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_ethernet) do
-  @doc = 'Manage Ethernet Interfaces'
+  @doc = <<-EOS
+    This type provides management of physical Ethernet interfaces on
+    Arista EOS nodes from within Puppet.  Physical Ethernet interfaces
+    include the physical characteristics of front panel data plane
+    ports with but does not include the out-of-band Management interface.
+  EOS
 
   # Parameters
   newparam(:name) do
-    desc 'The resource name for the interface instance'
+    desc <<-EOS
+      The name of the physical interface to configure.  The interface
+      name must coorelate to the full physical interface identifier
+      in EOS.
+    EOS
+    isnamevar
   end
 
   # Properties (state management)
 
   newproperty(:description) do
-    desc 'The description for the interface'
+    desc <<-EOS
+      The one line description to configure for the interface.  The
+      description can be any valid alphanumeric string including symbols
+      and spaces.
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      when String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
 
   newproperty(:enable) do
-    desc 'Interface admin state'
+    desc <<-EOS
+      The enable value configures the administrative state of the physical
+      Ethernet interfaces.   Valid values for enable are:
+
+      * true - Administratively enables the Ethernet interface
+      * false - Administratively disables the Ethernet interface
+    EOS
     newvalues(:true, :false)
   end
 
   newproperty(:flowcontrol_send) do
-    desc 'Flow control settings for TX'
+    desc <<-EOS
+      This property configures the flowcontrol send value for the
+      specified Ethernet interface.  Valid values for flowcontrol are:
+
+      * on - Configures flowcontrol send on
+      * off - Configures flowcontrol send off
+    EOS
     newvalues(:on, :off)
   end
 
   newproperty(:flowcontrol_receive) do
-    desc 'Flow contorl settings for RX'
+    desc <<-EOS
+      This property configures the flowcontrol receive value for the
+      specified Ethernet interface.  Valid values for flowcontrol are:
+
+      * on - Configures flowcontrol receive on
+      * off - Configures flowcontrol receive off
+    EOS
     newvalues(:on, :off)
   end
 
