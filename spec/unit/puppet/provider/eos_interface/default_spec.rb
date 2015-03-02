@@ -38,7 +38,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      name: 'Ethernet1',
+      name: 'Loopback0',
       description: 'test interface',
       enable: :true,
       provider: described_class.name
@@ -75,16 +75,16 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it "has an instance for interface Ethernet1" do
-        instance = subject.find { |p| p.name == 'Ethernet1' }
+      it "has an instance for interface Loopback0" do
+        instance = subject.find { |p| p.name == 'Loopback0' }
         expect(instance).to be_a described_class
       end
 
-      context 'eos_interface { Ethernet1: }' do
-        subject { described_class.instances.find { |p| p.name == 'Ethernet1' } }
+      context 'eos_interface { Loopback0: }' do
+        subject { described_class.instances.find { |p| p.name == 'Loopback0' } }
 
         include_examples 'provider resource methods',
-                         name: 'Ethernet1',
+                         name: 'Loopback0',
                          description: 'test interface',
                          enable: :true
       end
@@ -94,10 +94,10 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Ethernet1'),
-          'Ethernet2' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Ethernet2')
+          'Loopback0' => Puppet::Type.type(:eos_interface)
+            .new(name: 'Loopback0'),
+          'Loopback2' => Puppet::Type.type(:eos_interface)
+            .new(name: 'Loopback2')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -111,14 +111,14 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['Ethernet1'].provider.description).to eq('test interface')
-        expect(resources['Ethernet1'].provider.enable).to eq :true
+        expect(resources['Loopback0'].provider.description).to eq('test interface')
+        expect(resources['Loopback0'].provider.enable).to eq :true
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['Ethernet2'].provider.description).to eq :absent
-        expect(resources['Ethernet2'].provider.enable).to eq :absent
+        expect(resources['Loopback2'].provider.description).to eq :absent
+        expect(resources['Loopback2'].provider.enable).to eq :absent
       end
     end
   end
@@ -126,7 +126,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   context 'resource (instance) methods' do
 
     describe '#create' do
-      let(:name) { 'Ethernet1' }
+      let(:name) { 'Loopback0' }
 
       before do
         expect(api).to receive(:create).with(resource[:name])
@@ -166,7 +166,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     describe '#enable=(value)' do
      %w(true false).each do |val|
         let(:value) { !val }
-        let(:name) { 'Ethernet1' }
+        let(:name) { 'Loopback0' }
 
         it "updates enable in the provider" do
           expect(api).to receive(:set_shutdown).with(name, value: !val)

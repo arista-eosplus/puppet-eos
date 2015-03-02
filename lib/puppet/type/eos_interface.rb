@@ -32,31 +32,48 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_interface) do
-  @doc = 'Manage interfaces in EOS'
+  @doc = <<-EOS
+    This type provides management of Arista EOS interfaces.  The type
+    is used as a basis type for any interface available in EOS and
+    therefore the properties are common across all interface types
+  EOS
+
+  ensurable
 
   # Parameters
   newparam(:name) do
-    desc 'The resource name for the interface instance'
+    desc <<-EOS
+      The name parameter specifies the full interface identifier of
+      the Arista EOS interface to manage.  This value must correspond
+      to a valid interface identifier in EOS.
+    EOS
   end
 
   # Properties (state management)
 
   newproperty(:description) do
-    desc 'The description for the interface'
+    desc <<-EOS
+      The one line description to configure for the interface.  The
+      description can be any valid alphanumeric string including symbols
+      and spaces.
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      when String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
 
   newproperty(:enable) do
-    desc 'Interface admin state'
+    desc <<-EOS
+      The enable value configures the administrative state of the
+      specified interface.   Valid values for enable are:
+
+      * true - Administratively enables the interface
+      * false - Administratively disables the interface
+    EOS
     newvalues(:true, :false)
   end
-
 end

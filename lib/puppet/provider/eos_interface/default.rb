@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_interface).provide(:eos) do
 
@@ -46,23 +49,11 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   def self.instances
     interfaces = node.api('interfaces').getall
     interfaces.map do |(name, attrs)|
-      provider_hash = { name: name }
+      provider_hash = { name: name, ensure: :present }
       provider_hash.merge!(attrs)
       provider_hash[:enable] = attrs[:shutdown] ? :false : :true
       new(provider_hash)
     end
-  end
-
-  def create
-    node.api('interfaces').create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
-    self.enable = resource[:enable] if resource[:enable]
-    self.description = resource[:description] if resource[:description]
-  end
-
-  def destroy
-    node.api('interfaces').delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
   end
 
   def enable=(val)
@@ -73,5 +64,27 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   def description=(val)
     node.api('interfaces').set_description(resource[:name], value: val)
     @property_hash[:description] = val
+  end
+
+  def exists?
+    @property_hash[:ensure] == :present
+  end
+
+  def create
+    if resource[:name] =~ /^[Et|Ma]/
+      fail 'Creating physical interfaces is not supported'
+    end
+    node.api('interfaces').create(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :present }
+    self.enable = resource[:enable] if resource[:enable]
+    self.description = resource[:description] if resource[:description]
+  end
+
+  def destroy
+    if resource[:name] =~ /^[Et|Ma]/
+      fail 'Destroying physical interfaces is not supported'
+    end
+    node.api('interfaces').delete(resource[:name])
+    @property_hash = { name: resource[:name], ensure: :absent }
   end
 end
