@@ -29,44 +29,115 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_portchannel) do
-  @doc = 'Manage port channels'
+  @doc = <<-EOS
+    This type manages Port-Channel interface instances on Arista
+    EOS nodes.  It provides configuration resources for logical
+    Port-Channel instances and settings
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the port channel instance'
+    desc <<-EOS
+      The name parameter specifies the name of the Port-Channel
+      interface to configure.  The value must be the full
+      interface name identifier that corresponds to a valid
+      interface name in EOS.
+    EOS
+
+    validate do |value|
+      unless value =~ /^Port-Channel/
+        fail "value #{value.inspect} is invalid, must be a valid "
+             "Port-Channel interface name"
+      end
+    end
   end
 
   # Properties (state management)
 
+  newproperty(:description) do
+    desc <<-EOS
+      The one line description to configure for the interface.  The
+      description can be any valid alphanumeric string including symbols
+      and spaces.
+
+      The default value for description is ''
+    EOS
+
+    validate do |value|
+      case value
+      when String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
+  end
+
+  newproperty(:enable) do
+    desc <<-EOS
+      The enable value configures the administrative state of the
+      specified interface.   Valid values for enable are:
+
+        * true - Administratively enables the interface
+        * false - Administratively disables the interface
+
+      The default value for enable is :true
+    EOS
+    newvalues(:true, :false)
+  end
+
   newproperty(:lacp_mode) do
-    desc 'Specifies the interface LACP mode'
+    desc <<-EOS
+      The lacp_mode property configures the LACP operating mode of
+      the Port-Channel interface.  The LACP mode supports the following
+      valid values
+
+        * active - Interface is an active LACP port that transmits and
+            receives LACP negotiation packets.
+        * passive - Interface is a passive LACP port that only responds
+            to LACP negotiation packets.
+        * on - Interface is a static port channel, LACP disabled.
+
+      The default value for lacp_mode is :on
+    EOS
+
     newvalues(:active, :passive, :on)
   end
 
   newproperty(:members, array_matching: :all) do
-    desc 'Array of interfaces that belong to the channel group'
+    desc <<-EOS
+      The members property manages the Array of physical interfaces
+      that comprise the logical Port-Channel interface.  Each entry
+      in the members Array must be the full interface identifer of
+      a physical interface name.
+
+      The default value for members is []
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail 'value #{value.inspect} is invalid, must be a string.'
+      unless value =~ /^Ethernet\d(:\/\d+)?/
+        fail "value #{value.inspect} is invalid, must be an Ethernet interface"
       end
     end
   end
 
   newproperty(:minimum_links) do
-    desc 'Specifies the minimum number of links that must operationally up
-          for the Port-Channel interface to be considered up'
+    desc <<-EOS
+      The minimum links property configures the port-channel min-links
+      value.  This setting specifies the minimum number of physical
+      interfaces that must be operationally up for the Port-Channel
+      interface to be considered operationally up.
 
-    munge { |value| Integer(value).to_s }
+      Valid range of values for the minimum_links property are from
+      0 to 16.
+
+      The default value for minimum_links is 0
+    EOS
+
+    munge { |value| Integer(value) }
 
     validate do |value|
       unless value.to_i.between?(0, 16)
@@ -76,16 +147,36 @@ Puppet::Type.newtype(:eos_portchannel) do
   end
 
   newproperty(:lacp_fallback) do
-    desc 'Specifies the LACP fallback setting'
+    desc <<-EOS
+      The lacp_fallback property configures the port-channel lacp
+      fallback setting in EOS for the specified interface.  This
+      setting accepts the following values
+
+        * static  - Fallback to static LAG mode
+        * individual - Fallback to individual ports
+        * disabled - Disable LACP fallback
+
+      The default value for lacp_fallback is :disabled
+    EOS
+
     newvalues(:static, :individual, :disabled)
   end
 
   newproperty(:lacp_timeout) do
-    desc 'LACP fallback timeout'
+    desc <<-EOS
+      The lacp_timeout property configures the port-channel lacp
+      timeout value in EOS for the specified interface.  The fallback
+      timeout configures the period an interface in fallback mode
+      remains in LACP mode without receiving a PDU.
 
-    # Make sure we have a string for the value
+      The lacp_timeout value is configured in seconds with a valid
+      range betwee 1 and 100.
+
+      The default value is 90
+    EOS
+
     munge do |value|
-      Integer(value).to_s
+      Integer(value)
     end
 
     # Validate each value is a valid timeout value

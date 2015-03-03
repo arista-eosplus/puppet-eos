@@ -30,7 +30,11 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
+
 
 Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
@@ -45,14 +49,26 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.map do |(name, attrs)|
+    interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'portchannel'
       provider_hash = { name: name, ensure: :present }
       provider_hash.merge!(attrs)
+      provider_hash[:enable] = attrs[:shutdown] ? :false : :true
       provider_hash[:lacp_mode] = attrs[:lacp_mode].to_sym
       provider_hash[:lacp_fallback] = attrs[:lacp_fallback].to_sym
-      new(provider_hash)
+      Puppet.debug("#{provider_hash}")
+      arry << new(provider_hash)
     end
+  end
+
+  def enable=(val)
+    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
+    @property_hash[:enable] = val
+  end
+
+  def description=(val)
+    node.api('interfaces').set_description(resource[:name], value: val)
+    @property_hash[:description] = val
   end
 
   def lacp_mode=(val)
@@ -87,6 +103,8 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   def create
     node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
+    self.enable = resource[:enable] if resource[:enable]
+    self.description = resource[:description] if resource[:description]
     self.lacp_mode = resource[:lacp_mode] if resource[:lacp_mode]
     self.members = resource[:members] if resource[:members]
     self.lacp_fallback = resource[:lacp_fallback] if resource[:lacp_fallback]
