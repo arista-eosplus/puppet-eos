@@ -5,3 +5,5 @@ Vxlan1:
   :shutdown: false
   :source_interface: Loopback0
   :multicast_group: 239.10.10.10
+  :udp_port: 4789
+  :flood_list: ['1.1.1.1', '2.2.2.2']

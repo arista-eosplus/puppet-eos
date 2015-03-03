@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
@@ -45,12 +48,12 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    interfaces.map do |(name, attrs)|
+    interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'vxlan'
       provider_hash = { name: name, ensure: :present }
       provider_hash.merge!(attrs)
       provider_hash[:enable] = attrs[:shutdown] ? :false : :true
-      new(provider_hash)
+      arry << new(provider_hash)
     end
   end
 
@@ -62,6 +65,16 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   def multicast_group=(val)
     node.api('interfaces').set_multicast_group(resource[:name], value: val)
     @property_hash[:multicast_group] = val
+  end
+
+  def udp_port=(val)
+    node.api('interfaces').set_udp_port(resource[:name], value: val)
+    @property_hash[:udp_port] = val
+  end
+
+  def flood_list=(val)
+    node.api('interfaces').set_flood_list(resource[:name], value: val)
+    @property_hash[:flood_list] = val
   end
 
   def enable=(val)
@@ -83,6 +96,8 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
     @property_hash = { name: resource[:name], ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
+    self.udp_port = resource[:udp_port] if resource[:udp_port]
+    self.flood_list = resource[:flood_list] if resource[:flood_list]
     self.source_interface = resource[:source_interface] \
                             if resource[:source_interface]
     self.multicast_group = resource[:multicast_group] \

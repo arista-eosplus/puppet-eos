@@ -73,7 +73,7 @@ describe Puppet::Type.type(:eos_vxlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(Ethernet 42/1)
+    include_examples 'accepts values without munging', %w(Ethernet42/1)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
@@ -83,9 +83,29 @@ describe Puppet::Type.type(:eos_vxlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging',\
-                     %w(227.10.1.1, FF01:0:0:0:0:0:0:2)
+    include_examples 'accepts values without munging',
+                     %w(224.0.0.0 239.255.255.255)
     include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'udp_port' do
+    let(:attribute) { :udp_port }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1024, 65535]
+    include_examples 'rejects values', [[1], { foo: :bar }, 1023, 65536, 'foo']
+  end
+
+  describe 'flood_list' do
+    let(:attribute) { :flood_list }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [['1.1.1.1', '2.2.2.2']]
+    include_examples 'rejects values', [[1], { foo: :bar }, 1023, 65536, 'foo']
   end
 
 end

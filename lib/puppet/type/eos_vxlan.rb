@@ -32,61 +32,143 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_vxlan) do
-  @doc = 'Configure VXLAN settings'
+  @doc = <<-EOS
+    This type mananges VXLAN interface configuration on Arista
+    EOS nodes.  It provides configuration of logical Vxlan interface
+    instances and settings
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the VXLAN instance'
+    desc <<-EOS
+      The name parameter specifies the name of the Vxlan
+      interface to configure.  The value must be the full
+      interface name identifier that corresponds to a valid
+      interface name in EOS.
+    EOS
+
+    validate do |value|
+      unless value =~ /^Vxlan\d+/
+        fail "value #{value.inspect} is invalid, must be a valid "
+             "Vxlan interface name"
+      end
+    end
   end
 
   # Properties (state management)
 
   newproperty(:description) do
-    desc 'The description for the interface'
+    desc <<-EOS
+      The one line description to configure for the interface.  The
+      description can be any valid alphanumeric string including symbols
+      and spaces.
+
+      The default value for description is ''
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      when String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
 
   newproperty(:enable) do
-    desc 'Interface admin state'
+    desc <<-EOS
+      The enable value configures the administrative state of the
+      specified interface.   Valid values for enable are:
+
+        * true - Administratively enables the interface
+        * false - Administratively disables the interface
+
+      The default value for enable is :true
+    EOS
     newvalues(:true, :false)
   end
 
   newproperty(:source_interface) do
-    desc 'Specifies the loopback interface from which the VTEP derives '\
-         'the source IP address'
+    desc <<-EOS
+      The source interface property specifies the interface address
+      to use to source Vxlan packets from.  This value configures
+      the vxlan source-interface value in EOS
+
+      The default value for source_interface is ''
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      when String then super(resource)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
 
   newproperty(:multicast_group) do
-    desc 'Associates a specified multicast group with the interface'
+    desc <<-EOS
+      The multicast group property specifies the multicast group
+      address to use for VTEP communication.  This value configures
+      the vxlan multicast-group value in EOS.  The configured value
+      must be a valid multicast address in the range of 224/8.
+
+      The default value for multicast_group is ''
+    EOS
+
+    MCAST_REGEXP = /^2(?:2[4-9]|3\d)
+                    (?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d?|0)){3}$/x
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ MCAST_REGEXP
+        fail "value #{value.inspect} is invalid, must a multicast address"
       end
     end
   end
 
+  newproperty(:udp_port) do
+    desc <<-EOS
+      The udp_port property specifies the VXLAN UDP port associated
+      with sending and receiveing VXLAN traffic.  This value configures
+      the vxlan udp-port value in EOS.  The configured value must be
+      an integer in the range of 1024 to 65535.
+
+      The default value for the udp_port setting is 4789
+    EOS
+
+    munge { |value| Integer(value) }
+
+    validate do |value|
+      unless value.to_i.between?(1024, 65_535)
+        fail "value #{value.inspect} must be between 1024 and 65535"
+      end
+    end
+  end
+
+
+  newproperty(:flood_list, array_matching: :all) do
+    desc <<-EOS
+      This parameter mantains the default VXLAN flood list for all
+      VNIs that do not have an explicit flood list configured.  The
+      flood list supports forwarding broadcast, unicast, and multicast
+      traffic for head-end replication.
+
+      The flood list value is configured as an Array of IP addresses.
+
+        flood => ['1.1.1.1', '2.2.2.2']
+
+      The default flood_list value is []
+    EOS
+
+
+    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
+
+    validate do |value|
+      unless value =~ IPADDR_REGEXP
+        fail "value #{value.inspect} is invalid, must be an IP address"
+      end
+    end
+  end
 end

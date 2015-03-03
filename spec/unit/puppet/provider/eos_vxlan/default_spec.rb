@@ -43,6 +43,8 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
       enable: :true,
       source_interface: 'Loopback0',
       multicast_group: '239.10.10.10',
+      udp_port: 4789,
+      flood_list: ['1.1.1.1', '2.2.2.2'],
       provider: described_class.name
     }
     Puppet::Type.type(:eos_vxlan).new(resource_hash)
@@ -91,7 +93,9 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
                          description: 'test interface',
                          enable: :true,
                          source_interface: 'Loopback0',
-                         multicast_group: '239.10.10.10'
+                         multicast_group: '239.10.10.10',
+                         udp_port: 4789,
+                         flood_list: ['1.1.1.1', '2.2.2.2']
       end
 
     end
@@ -141,7 +145,9 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
           :set_shutdown => true,
           :set_description => true,
           :set_source_interface => true,
-          :set_multicast_group => true
+          :set_multicast_group => true,
+          :set_udp_port => true,
+          :set_flood_list => true
         )
       end
 
@@ -163,6 +169,16 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
       it 'sets multicast_group on the resource' do
         provider.create
         expect(provider.multicast_group).to eq(resource[:multicast_group])
+      end
+
+      it 'sets udp_port on the resource' do
+        provider.create
+        expect(provider.udp_port).to eq(resource[:udp_port])
+      end
+
+      it 'sets flood_list on the resource' do
+        provider.create
+        expect(provider.flood_list).to eq(resource[:flood_list])
       end
     end
 
@@ -213,5 +229,21 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
       end
     end
 
+    describe '#udp_port=(value)' do
+      it 'updates udp_port in the provider' do
+        expect(api).to receive(:set_udp_port).with('Vxlan1', value: 1024)
+        provider.udp_port = 1024
+        expect(provider.udp_port).to eq(1024)
+      end
+    end
+
+    describe '#flood_list=(value)' do
+      let(:value) { %w(1.1.1.1 2.2.2.2 3.3.3.3) }
+      it 'updates flood_list in the provider' do
+        expect(api).to receive(:set_flood_list).with('Vxlan1', value: value)
+        provider.flood_list = value
+        expect(provider.flood_list).to match_array(value)
+      end
+    end
   end
 end
