@@ -64,7 +64,7 @@ describe Puppet::Type.type(:eos_ipinterface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'array of strings value'
+    include_examples 'accepts values without munging', [['1.1.1.1', '2.2.2.2']]
   end
 
   describe 'mtu' do
@@ -77,7 +77,7 @@ describe Puppet::Type.type(:eos_ipinterface) do
     [100, '100'].each do |val|
       it "validates #{val.inspect} as isomorphic to '100'"  do
         type[attribute] = val
-        expect(type[attribute]).to eq(val.to_s)
+        expect(type[attribute]).to eq(val.to_i)
       end
     end
   end

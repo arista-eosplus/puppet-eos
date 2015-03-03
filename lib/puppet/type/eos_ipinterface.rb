@@ -29,52 +29,83 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_ipinterface) do
-  @doc = 'Manage the IP address of an interface'
+  @doc = <<-EOS
+    This type provides management of logical IP interfaces configured
+    in EOS.  It provides configuration of IPv4 properties on physical
+    interfaces and logical virtual interfaces.
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the IP interface instance'
+    desc <<-EOS
+      The name parameter specifies the full interface identifier of
+      the Arista EOS interface to manage.  This value must correspond
+      to a valid interface identifier in EOS.
+    EOS
   end
 
   # Properties (state management)
 
   newproperty(:address) do
-    desc 'Specifies IP address for the interface'
+    desc <<-EOS
+      The address property configures the IPv4 address on the
+      specified interface.  The address value is configured using
+      address/mask format.
+
+      For example
+
+        address => 192.168.10.16/24
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      begin
+        IPAddr.new value
+      rescue ArgumentError => exc
+        fail "value #{value.inspect} is invalid, #{exc.message}"
       end
     end
   end
 
   newproperty(:helper_addresses, array_matching: :all) do
-    desc 'Specifies forwarding address for DHCP relay agent'
+    desc <<-EOS
+      The helper_addresses property configures the list of IP
+      helper addresses on the specified interface.  IP helper
+      addresses configure a list of forwarding address to send
+      send broadcast traffic to as unicast, typically used to
+      assist DHCP relay.
+
+      Helper addresses are configured using dotted decimal
+      notation.  For example
+
+        helper_addresses => ['192.168.10.254', '192.168.11.254']
+    EOS
+
+    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
+                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ IPADDR_REGEXP
+        fail "value #{value.inspect} is invalid, must be an IP address"
       end
     end
   end
 
   newproperty(:mtu) do
-    desc 'Specifies the IP interface MTU value'
+    desc <<-EOS
+      The mtu property configures the IP interface MTU value
+      which specifies the largest IP datagram that can pass
+      over the interface without fragementation.  The MTU value
+      is specified in bytes and accepts an integer in the range of
+      68 to 9214.
+    EOS
 
     munge do |value|
-      Integer(value).to_s
+      Integer(value)
     end
 
     validate do |value|
