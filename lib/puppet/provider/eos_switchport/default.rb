@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_switchport).provide(:eos) do
 
@@ -81,6 +84,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     node.api('switchports').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.mode = resource[:mode] if resource[:mode]
+
     self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] \
                                if resource[:trunk_allowed_vlans]
 

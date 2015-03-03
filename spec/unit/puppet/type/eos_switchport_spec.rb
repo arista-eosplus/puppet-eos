@@ -65,7 +65,7 @@ describe Puppet::Type.type(:eos_switchport) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'vlan range string value'
+    include_examples 'vlan range value'
   end
 
   describe 'trunk_native_vlan' do

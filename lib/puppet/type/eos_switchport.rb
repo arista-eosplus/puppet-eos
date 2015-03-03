@@ -29,21 +29,36 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_switchport) do
-  @doc = 'Configure interface for switched (Layer 2) or routed (Layer 3) port'
+  @doc = <<-EOS
+    This type provides a resource for configuring logical layer 2
+    switchports in EOS.  The resource provides configuration for both
+    access and trunk operating modes.
+
+    When creating a logical switchport interface, if the specified
+    physical interface was previously configured with an IP interface,
+    the logical IP interface will be removed.
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'Full interface name to configure switch port on'
+    desc <<-EOS
+      The name parameter specifies the full interface identifier of
+      the Arista EOS interface to manage.  This value must correspond
+      to a valid interface identifier in EOS.
+
+      Only Ethernet and Port-Channel interfaces can be configured as
+      switchports.
+    EOS
 
     validate do |value|
-      if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      unless value =~ /^[Et|Po]/
+        fail "value #{value.inspect} is invalid, must be of type "\
+             "Ethernet or Port-Channel"
       end
     end
   end
@@ -51,16 +66,35 @@ Puppet::Type.newtype(:eos_switchport) do
   # Properties (state management)
 
   newproperty(:mode) do
-    desc 'The switchport mode access or trunk'
+    desc <<-EOS
+      The mode property configures the operating mode of the
+      logical switchport.  Suppport modes of operation include
+      access port or trunk port.  The default value for a new
+      switchport is access
+
+      * access - Configures the switchport mode to access
+      * trunk - Configures the switchport mode to trunk
+
+    EOS
     newvalues(:access, :trunk)
   end
 
   newproperty(:trunk_allowed_vlans, array_matching: :all) do
-    desc 'Array of VLANs strings to trunk on the interface'
+    desc <<-EOS
+      The trunk_allowed_vlans property configures the list of
+      VLAN IDs that are allowed to pass on the switchport operting
+      in trunk mode.  If the switchport is configured for access
+      mode, this property is configured but has no effect.
 
-    # Make sure we have a string for the ID
+      The list of allowed VLANs must be configured as an Array with
+      each entry in the valid VLAN range of 1 to 4094.
+
+      The default value for a new switchport is to allow all valid
+      VLAN IDs (1-4094).
+    EOS
+
     munge do |value|
-      Integer(value).to_s
+      Integer(value)
     end
 
     validate do |value|
@@ -71,11 +105,18 @@ Puppet::Type.newtype(:eos_switchport) do
   end
 
   newproperty(:trunk_native_vlan) do
-    desc 'Specifies the trunk mode native VLAN'
+    desc <<-EOS
+      The trunk_native_vlan property specifies the VLAN ID to
+      be used for untagged traffic that enters the switchport
+      in trunk mode.  If the switchport is configured for access
+      mode, this value is configured but has no effect.  The value
+      must be an integer in the valid VLAN ID range of 1 to 4094.
 
-    # Make sure we have a string for the ID
+      The default value for the trunk_natve_vlan is 1
+    EOS
+
     munge do |value|
-      Integer(value).to_s
+      Integer(value)
     end
 
     validate do |value|
@@ -86,11 +127,18 @@ Puppet::Type.newtype(:eos_switchport) do
   end
 
   newproperty(:access_vlan) do
-    desc 'Specifies the access VLAN'
+    desc <<-EOS
+      The access_vlan property specifies the VLAN ID to be used
+      for untagged traffic that enters the switchport when configured
+      in access mode.  If the switchport is configured for trunk mode,
+      this value is configured but has no effect.  The value must be
+      an integer in the valid VLAN ID range of 1 to 4094.
 
-    # Make sure we have a string for the ID
+      The default value for the access_vlan is 1
+    EOS
+
     munge do |value|
-      Integer(value).to_s
+      Integer(value)
     end
 
     validate do |value|
