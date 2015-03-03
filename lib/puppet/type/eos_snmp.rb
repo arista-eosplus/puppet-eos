@@ -29,35 +29,55 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_snmp) do
-  @doc = 'Configure SNMP settings'
+  @doc = <<-EOS
+    This type manages the global SNMP configuration instance on EOS
+    nodes.  It provides configuration resources for global SNMP
+    settings.
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'Resource name, not used to configure the device'
+    desc <<-EOS
+      The name parameter identifis the global SNMP instance for
+      configuration and should be configured as 'settings'.  All
+      other values for name will be silently ignored by the eos_snmp
+      provider.
+    EOS
   end
 
   # Properties (state management)
 
   newproperty(:contact) do
-    desc 'Informative text that typically displays the name of a person '\
-         'or organization associated with the SNMP agent.'
+    desc <<-EOS
+      The contact property provides configuration management of the
+      SNMP contact value.  This setting provides informative text that
+      typically displays the name of a person or organization associated
+      with the SNMP agent.
+
+      The default value for contact is ''
+    EOS
 
     validate do |value|
       case value
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
 
   newproperty(:location) do
-    desc 'Provides information about the physical location of the SNMP agent.'
+    desc <<-EOS
+      The location property provides configuration management of the
+      SNMP location value.  This setting typcially provides information
+      about the physical lcoation of the SNMP agent.
+
+      The default value for location is ''
+    EOS
 
     validate do |value|
       case value
@@ -70,7 +90,13 @@ Puppet::Type.newtype(:eos_snmp) do
   end
 
   newproperty(:chassis_id) do
-    desc 'The chassis ID of the switch'
+    desc <<-EOS
+      The chassis id propperty provides configuration management of
+      the SNMP chassis-id value.  This setting typically provides
+      information to uniquely identify the SNMP agent host.
+
+      The default value for chassis_id is ''
+    EOS
 
     validate do |value|
       case value
@@ -83,16 +109,19 @@ Puppet::Type.newtype(:eos_snmp) do
   end
 
   newproperty(:source_interface) do
-    desc 'Specifies interface from which a SNMP inform or trap originates'
+    desc <<-EOS
+      The source interface property provides configuration management
+      of the SNMP source-interface value.  The source interface value
+      configures the interface address to use as the source address
+      when sending SNMP packets on the network.
+
+      The default value for source_interface is ''
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ /^[EMPLV]/
+        fail "value #{value.inspect} is invalid, must be an interface name"
       end
     end
   end
-
 end
