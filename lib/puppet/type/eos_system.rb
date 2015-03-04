@@ -29,32 +29,40 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_system) do
-  @doc = 'Configure system settings'
+  @doc = <<-EOS
+    This type manages the global EOS node settings.  It provides
+    configuration of global node attributes.
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'Manages the global system settings on the node'
+    desc <<-EOS
+      The name parameter identifies the global node instance for
+      configuration and should be configured as 'settings'.  All
+      other values for name will be siliently ignored by the eos_system
+      provider.
+    EOS
+    isnamevar
   end
 
   # Properties (state management)
 
   newproperty(:hostname) do
-    desc 'The global system hostname is a locally significant value that
+    desc <<-EOS
+      The global system hostname is a locally significant value that
       identifies the host portion of the nodes fully qualified domain
       name (FQDN).
 
       The default hostname for a new system is localhost'
+    EOS
 
     validate do |value|
       case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      when String then super(resource)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

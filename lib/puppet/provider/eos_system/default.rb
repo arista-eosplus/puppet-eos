@@ -30,7 +30,10 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
+
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_system).provide(:eos) do
 
@@ -45,7 +48,9 @@ Puppet::Type.type(:eos_system).provide(:eos) do
 
   def self.instances
     result = node.api('system').get
-    [new(name: 'settings', ensure: :present, hostname: result[:hostname])]
+    provider_hash = { name: 'settings', ensure: :present,
+                      hostname: result[:hostname] }
+    [new(provider_hash)]
   end
 
   def exists?

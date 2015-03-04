@@ -52,7 +52,7 @@ describe Puppet::Type.type(:eos_system) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(localhost foo bar)
-    include_examples 'rejects values', [[1], { two: 'three' }]
+    include_examples 'rejects values', [[1], { two: 'three' }, 1]
   end
 
 end
