@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ntp_config) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'configuration', catalog: catalog) }
+  let(:type) { described_class.new(name: 'settings', catalog: catalog) }
 
   describe 'name' do
     let(:attribute) { :name }

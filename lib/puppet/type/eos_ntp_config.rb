@@ -32,27 +32,39 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_ntp_config) do
-  @doc = 'Configure global NTP settings in EOS'
+  @doc = <<-EOS
+    This type manages the nodes global NTP configuration settings.
+    It provides a configuration resource for setting global NTP
+    values
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the NTP instance'
+    desc <<-EOS
+      The name parameter identifies the global NTP instance for
+      configuration and should be configured as 'settings'.  All
+      other values for name will be siliently ignored by the provider.
+    EOS
+    isnamevar
   end
 
   # Properties (state management)
-
+  #
   newproperty(:source_interface) do
-    desc 'Specifies interface that NTP requests originate from'
+    desc <<-EOS
+      The source interface property provides configuration management
+      of the NTP source-interface value.  The source interface value
+      configures the interface address to use as the source address
+      when sending NTP packets on the network.
+
+      The default value for source_interface is ''
+    EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value =~ /^[EMPLV]/
+        fail "value #{value.inspect} is invalid, must be an interface name"
       end
     end
   end
-
 end
