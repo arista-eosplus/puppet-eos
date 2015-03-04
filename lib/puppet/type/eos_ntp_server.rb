@@ -29,19 +29,25 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# encoding: utf-8
 
 Puppet::Type.newtype(:eos_ntp_server) do
-  @doc = 'Configure NTP servers'
+  @doc = <<-EOS
+    This type manages the list of NTP servers.  It provides a
+    configuration resource for managing the list of NTP servers
+    used by the node.
+  EOS
 
   ensurable
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the NTP instance'
+    desc <<-EOS
+      The name parameter configures the NTP server list by
+      adding or removing NTP server entries.  The value can be
+      configured as either the host IP address or the fully qualified
+      domain name of the desired NTP server.
+    EOS
   end
-
-  # Properties (state management)
 
 end
