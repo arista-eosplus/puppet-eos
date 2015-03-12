@@ -78,6 +78,7 @@ Puppet::Type.type(:eos_vxlan_vlan).provide(:eos) do
   def flush
     api = node.api('interfaces')
     desired_state = @property_hash.merge!(@property_flush)
+    validate([:vni], desired_state)
     case desired_state[:ensure]
     when :present
       api.update_vlan(desired_state[:name], desired_state[:vni])

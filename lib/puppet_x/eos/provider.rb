@@ -64,6 +64,25 @@ module PuppetX
         connection_name = ENV['RBEAPI_CONNECTION'] || 'localhost'
         @node = Rbeapi::Client.connect_to(connection_name)
       end
+
+      ##
+      # validate checkes the set of opts that have been configured for a
+      # resource against the required options.  If any of the required options
+      # are missing, this method will fail.
+      #
+      # @api private
+      #
+      # @param [Hash] :opts The set of options configured on the resource
+      #
+      # @param [Array] :req The set of required option keys
+      def validate(req, opts = {})
+        errors = false
+        missing = req.reject { |k| opts[k] }
+        errors = !missing.empty?
+        msg = "Invalid options #{opts.inspect} missing: #{missing.join(', ')}"
+        fail Puppet::Error, msg if errors
+      end
+      private :validate
     end
   end
 end
