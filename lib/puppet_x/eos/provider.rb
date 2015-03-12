@@ -29,7 +29,6 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-require 'puppet_x/eos/eapi'
 require 'rbeapi/client'
 
 ##
@@ -41,6 +40,7 @@ module PuppetX
     ##
     # EapiProviderMixin module
     module EapiProviderMixin
+
       def prefetch(resources)
         provider_hash = instances.each_with_object({}) do |provider, hsh|
           hsh[provider.name] = provider
@@ -51,15 +51,13 @@ module PuppetX
         end
       end
 
-      def conf
-        filename = ENV['PUPPET_X_EAPI_CONF'] || '/mnt/flash/eapi.conf'
-        YAML.load_file(filename)
-      end
-
-      def eapi
-        @eapi ||= PuppetX::Eos::Eapi.new(conf)
-      end
-
+      ##
+      # Instance of Rbeapi::Client::Node used to sending and receiving
+      # eAPI messages.  In addition, the node object provides access to
+      # Ruby Client for eAPI API modules used to configure EOS resources.
+      #
+      # @return [Node] An instance of Rbeapi::Client::Node used to send
+      #   and receive eAPI messages
       def node
         return @node if @node
         Rbeapi::Client.load_config(ENV['RBEAPI_CONF']) if ENV['RBEAPI_CONF']
