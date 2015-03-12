@@ -160,7 +160,7 @@ RSpec.shared_examples 'vlan id value' do
 
   it 'munges [10, 20] to 10' do
     type[attribute] = [10, 20]
-    expect(type[attribute]).to eq('10')
+    expect(type[attribute]).to eq(10)
   end
 
   [-1, 4096, 8192, 'asdf', { foo: 1 }, true, false, nil].each do |val|
@@ -200,7 +200,7 @@ RSpec.shared_examples 'vlan range string value' do
 
   it 'munges [10, 20] to ["10", "20"]' do
     type[attribute] = [10, 20]
-    expect(type[attribute]).to eq(%w(10 20))
+    expect(type[attribute]).to eq([10, 20])
   end
 
   [-1, 4096, '8192', 'asdf', { foo: 1 }, true, false, nil].each do |val|
