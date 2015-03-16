@@ -81,9 +81,9 @@ Puppet::Type.type(:eos_vxlan_vlan).provide(:eos) do
     validate([:vni], desired_state)
     case desired_state[:ensure]
     when :present
-      api.update_vlan(desired_state[:name], desired_state[:vni])
+      api.update_vlan('Vxlan1', desired_state[:name], desired_state[:vni])
     when :absent
-      api.remove_vlan(desired_state[:name])
+      api.remove_vlan('Vxlan1', desired_state[:name])
     end
     @property_hash = desired_state
   end

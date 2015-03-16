@@ -123,7 +123,7 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
     describe '#create' do
       before do
         expect(api).to receive(:update_vlan)
-          .with(resource[:name], resource[:vni])
+          .with('Vxlan1', resource[:name], resource[:vni])
       end
 
       it 'sets ensure to :present' do
@@ -142,7 +142,7 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:remove_vlan).with(resource[:name])
+        expect(api).to receive(:remove_vlan).with('Vxlan1', resource[:name])
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)
