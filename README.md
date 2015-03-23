@@ -1,30 +1,107 @@
-# Puppet EOS Modules
+# Puppet EOS Module
+
+#### Table of Contents
+
+1. [Overview](#overview)
+2. [Module Description](#module-description)
+3. [Setup](#setup)
+    * [What Puppet EOS affects](#what-puppet-eos-affects)
+    * [Setup requirements](#setup-requirements)
+    * [Beginning with NetDev EOS Providers](#beginning-eos)
+4. [Usage - Configuration options and additional functionality](#usage)
+5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+6. [Development - Guide for getting started developing the module](#development)
+7. [Contributing - Contributing to this project](#contributing)
+8. [License](#license)
+
 
 ## Overview
 
-This module provides native Puppet modules for automating Arista EOS node
-configurations.  This module allows for the configuration of EOS nodes using
-the Puppet agent running natively in EOS
+The Arista EOS module for Puppet provides a set of types and providers for
+automating Arista EOS node configuraitons.  The module allows for configuration
+of EOS nodes using the Puppet agent running native in EOS.
+
+The Puppet EOS modules are freely provided to the open source community for
+automating Arista EOS node configurations using Puppet.  Support for the
+modules is provided on a best effort basis by the Arista EOS+ community.
+Please file any bugs, questions or enhancement requests using [Github
+Issues](http://github.com/arista-eosplus/puppet-eos/issues)
 
 ## Requirements
 * Puppet 3.6 or later
 * Ruby 1.9.3 or later
-* Arista EOS 4.13.7 or later
-* Ruby Client for eAPI 0.1.0 or later
+* [Arista EOS 4.13.7M or later](arista)
+* [Ruby Client for eAPI 0.1.0 or later](rbeapi)
 
-## Local Development
+## Module Description
+
+This module provides network abstractions for configuring network services on
+Arista EOS nodes.  The module provides a set of types and providers to serve as
+building blocks for automating the configuration of Arista EOS nodes.  This
+module extends Puppet's capability to configure network devices including node
+system services, access services and trunk side services of EOS nodes running
+EOS 4.13 or later with the Puppet agent installed.  The Puppet agent running on
+the node will use pluginsync todownload the types and providers from the Puppet
+master and uses the Ruby Client for eAPI to interface with the nodes
+configuration.
+
+## Setup
+
+### What Puppet EOS affects
+
+The types and providers in this module provide native abstractions for
+configuring Arista EOS nodes.
+
+### Setup Requirements
+
+This module requires pluginsync in order to synchronize the types and providers
+to the node.  This module also requires the [Ruby Client for eAPI](rbeapi) to
+be installed on the node.
+
+### Beginning with eos
+
+ 1. Install the module on the Puppet master
+ 2. Install the rbeapi gem on the switch [See Ruby Client for eAPI](rbeapi)
+ 3. Run the puppet agent on the switch to synchronize the types and providers
+ 4. Verify the providrs by running `bash sudo puppet resource <resource>` from 
+    the EOS CLI enable mode
+
+```
+$ bundle exec puppet resource eos_vlan
+eos_vlan { '1':
+  ensure    => 'present',
+  enable    => 'true',
+  vlan_name => 'default',
+}
+eos_vlan { '100':
+  ensure    => 'present',
+  enable    => 'true',
+  vlan_name => 'TEST_VLAN_100',
+}
+```
+
+## Usage
+
+TODO
+
+## Reference
+
+TODO
+
+## Development
 
 This module can be configured to run directly from source and configured to do
 local development, sending the commands to the node over HTTP.  The following
 instructions explain how to configure your local development environment.
 
 This module requires one dependency that must be checked out as Git working
-copy in the context of ongoing development.  
+copy in the context of ongoing development in addition to running Puppet from
+source.  
 
-* [rbeapi][rbeapi]
+ * [rbeapi][rbeapi]
 
 The dependency is managed via the bundler Gemfile and the environment needs to
-be configured ot use lcoal Git copies:
+be configured ot use local Git copies:
 
     cd /workspace
     git clone https://github.com/arista-eosplus/rbeapi
@@ -43,30 +120,49 @@ working properly:
     bundle exec rspec spec
 
 Finally, configure the eapi.conf file for rbeapi [See rbeapi for
-details][rbeap] and set the connection enviroment variable to run sanity tests
+details][rbeapi] and set the connection enviroment variable to run sanity tests
 using `puppet resource`:
 
     export RBEAPI_CONNECTION=veos01
 
-```
-$ bundle exec puppet resource eos_vlan
-eos_vlan { '1':
-  ensure    => 'present',
-  enable    => 'true',
-  vlan_name => 'default',
-}
-eos_vlan { '100':
-  ensure    => 'present',
-  enable    => 'true',
-  vlan_name => 'TEST_VLAN_100',
-}
-```
+## Contributing
 
+Contributions to this project are gladly welcomed in the form of issues (bugs,
+questions, enhancement proposals) and pull requests.  All pull requests must be
+accompanied by spec unit tests otherwise the pull request will be rejected.
 
 ## License
+Copyright (c) 2014, Arista Networks EOS+
+All rights reserved.
 
-BSD-3 (see LICENSE)
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of swisscom nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+
+[rbeapi]: https://github.com/arista-eosplus/rbeapi
+[arista]: http://www.arista.com
 
 
