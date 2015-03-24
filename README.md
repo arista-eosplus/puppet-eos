@@ -94,14 +94,14 @@ This module can be configured to run directly from source and configured to do
 local development, sending the commands to the node over HTTP.  The following
 instructions explain how to configure your local development environment.
 
-This module requires one dependency that must be checked out as Git working
+This module requires one dependency that must be checked out as a Git working
 copy in the context of ongoing development in addition to running Puppet from
 source.  
 
  * [rbeapi][rbeapi]
 
 The dependency is managed via the bundler Gemfile and the environment needs to
-be configured ot use local Git copies:
+be configured to use local Git copies:
 
     cd /workspace
     git clone https://github.com/arista-eosplus/rbeapi
@@ -110,7 +110,7 @@ be configured ot use local Git copies:
 Once the dependencies are installed and the environment configured, then
 install all of the dependencies:
 
-    git clone https://github.com/puppet-eos
+    git clone https://github.com/arista-eosplus/puppet-eos
     cd puppet-eos
     bundle install --path .bundle/gems
 
