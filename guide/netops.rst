@@ -1,5 +1,5 @@
-NetOps = DevOps + Networks
-==========================
+NetOps = DevOps for Networks
+============================
 
 .. contents:: :local:
 
@@ -16,7 +16,7 @@ NetOps is DevOps for networking. Utilizing similar automation, orchestration, an
 
 +--------------------------+------------------+-----------------+
 |                          | Servers          | Network devices |
-+--------------------------+------------------+-----------------+
++==========================+==================+=================+
 | Bootstrap                | DHCP + PXE       | DHCP + ZTP      |
 +--------------------------+------------------+-----------------+
 | Configuration Management | Puppet, Ansible, | Puppet, Ansible |

@@ -8,9 +8,9 @@ Configuring the Puppet Master
 
 Follow the standard practices for installing either Puppet Enterprise or Puppet Open-source master servers and your environment(s). As the paths to various items and specifics may vary from system to system, you might need to make minor adjustments to the instructions, below, to conform to your particular system.  The command ``puppet confing print`` can assist you in locating the right directories.
 
-On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.  Compare this to the netdev_stdlib module in which PuppetLabs maintains a common set of Types in netdev_stdlib and the EOS providers are in puppet-netdev.
+On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.  There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a common set of Types in netdev_stdlib and the EOS providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
-Add the puppet-eos module to your server's modulepath.
+Add the puppet-eos module to your server's modulepath:
 
 Puppet installer::
 
@@ -21,17 +21,16 @@ Install from source::
   $ git clone https://github.com/arista-eosplus/puppet-eos.git modulepath/eos
   $ git checkout <version or branch>
 
-Git submodules::
+Link using Git submodules::
 
   $ git submodule add https://github.com/arista-eosplus/puppet-eos.git modulepath/eos
 
 Bootstrapping EOS switches
 --------------------------
 
-There are a number of ways to bootstrap these on to a node.  We strongly suggest `ZTP Server`_ to take a node, fresh out of the box, and automatically load the minimak initial configuration and package instalation.
+There are a number of ways to bootstrap the necessary components on to a switch, and automatically load the minimal, initial configuration.  We strongly suggest _`ZTP Server` to automate the steps from initial power-on to contacting the Puppet master.
 
-
-Sample minimal configuration on a switch
+Sample minimal configuration on a switch includes basic IP connectivity, hostname and domain-name which are used to generate the switch's SSL certificate, a name-server or host entry for "puppet", the default master name unless otherwise specified, and enabling eAPI (management api http-commands):
 
 .. code-block:: console
 
@@ -65,15 +64,15 @@ Sample minimal configuration on a switch
 
 Install the puppet agent from `PuppetLabs`_::
 
-  copy http://myserver/puppet-enterprise-3.7.2-eos-4-i386.swix extensions:
-  extension puppet-enterprise-3.7.2-eos-4-i386.swix
-  copy installed-extensions boot-extensions
+  Arista#copy http://myserver/puppet-enterprise-3.7.2-eos-4-i386.swix extensions:
+  Arista#extension puppet-enterprise-3.7.2-eos-4-i386.swix
+  Arista#copy installed-extensions boot-extensions
 
 Install the rbeapi extension::
 
-  copy http://myserver/rbeapi-0.1.0.swix extensions:
-  extension rbeapi-0.1.0.swix
-  copy installed-extensions boot-extensions
+  Arista#copy http://myserver/rbeapi-0.1.0.swix extensions:
+  Arista#extension rbeapi-0.1.0.swix
+  Arista#copy installed-extensions boot-extensions
 
 Additional Puppet Master configuration
 --------------------------------------
@@ -81,8 +80,8 @@ Additional Puppet Master configuration
 Configuring rbeapi
 ^^^^^^^^^^^^^^^^^^
 
-Rbeapi, in many cases, requires a configuration file describing its connection method and credentials to eAPI on the switch. Transports include https, http, http-local, and unix socket (EOS 4.14.5).  Unix socket is recommended if available in the running version of EOS due to ease of configuration and security posture.  
-The /mnt/flash/eapi.conf (also flash:eapi.conf) can be installed at bootstrap time or by a simple puppet module.   To do so with puppet, modify the sample files, below to meet your needs.
+Rbeapi, in many cases, requires a configuration file describing its connection method and credentials to eAPI on the switch. Available transports include https, http, http-local, and unix socket (EOS 4.14.5).  Unix socket is recommended if available in the running version of EOS due to ease of configuration and security posture.  
+The /mnt/flash/eapi.conf file (also flash:eapi.conf) can be installed at bootstrap time or by puppet afterward. To do so with puppet, modify the sample files, below, to meet your needs.
 
 Create the module skeleton on the Puppet master::
 
@@ -112,7 +111,7 @@ Create an eapi.conf template in <modulepath>/rbeapi/templates/eapi.conf.erb
   port: <%= @port %>
   <% end -%>
 
-Create a class that can be referenced by nodes in <modulepath>/rbeapi/manifests/init.pp
+Create a class that can be applied to nodes in <modulepath>/rbeapi/manifests/init.pp
 
 .. code-block:: ruby
 
@@ -132,7 +131,7 @@ Create a class that can be referenced by nodes in <modulepath>/rbeapi/manifests/
       provider => 'gem',
     }
 
-    # Check the EOS version
+    # Check the EOS version (split in to major.minor.patch)
     $section = split($::operatingsystemrelease, '\.')
     $major = $section[0]
     $minor = $section[1]
