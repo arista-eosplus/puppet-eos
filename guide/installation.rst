@@ -85,10 +85,11 @@ The /mnt/flash/eapi.conf file (also flash:eapi.conf) can be installed at bootstr
 
 Create the module skeleton on the Puppet master::
 
-  mkdir -p <modulepath>/rbeapi/manifests/
-  mkdir -p <modulepath>/rbeapi/templates/
+  cd <modulepath>
+  puppet module generate <username-modulename>
+  mkdir <username-modulename>/templates/
 
-Create an eapi.conf template in <modulepath>/rbeapi/templates/eapi.conf.erb
+Create an eapi.conf template in <modulepath>/<username-modulename>/templates/eapi.conf.erb
 
 .. code-block:: erb
 
@@ -111,7 +112,7 @@ Create an eapi.conf template in <modulepath>/rbeapi/templates/eapi.conf.erb
   port: <%= @port %>
   <% end -%>
 
-Create a class that can be applied to nodes in <modulepath>/rbeapi/manifests/init.pp
+Create a class that can be applied to nodes in <modulepath>/<username-modulename>/manifests/init.pp
 
 .. code-block:: ruby
 
