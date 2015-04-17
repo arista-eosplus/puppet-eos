@@ -1,5 +1,5 @@
-Getting Started
-===============
+Installation
+============
 
 .. contents:: :local:
 
