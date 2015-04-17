@@ -3,18 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to puppet_eos's documentation!
-======================================
+Arista EOS Module for Puppet
+============================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   netops
    overview
-   gettingstarted
-   node_definitions
+   quickstart
+   installation
+   types
+   cookbook
+   troubleshooting
+   developing
+   testing
+   faq
+   release-notes
    license
 
 
