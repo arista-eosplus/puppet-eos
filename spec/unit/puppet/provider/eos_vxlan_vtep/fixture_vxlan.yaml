@@ -1,0 +1,11 @@
+---
+:type: vxlan
+:description: test interface
+:shutdown: false
+:source_interface: Loopback0
+:multicast_group: 239.10.10.10
+:udp_port: 4789
+:flood_list: ['1.1.1.1', '3.3.3.3']
+:vlans:
+  '10':
+    :vni: '10'
