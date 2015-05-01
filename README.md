@@ -10,9 +10,11 @@
     * [Beginning with NetDev EOS Providers](#beginning-eos)
 4. [Usage - Configuration options and additional functionality](#usage)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-6. [Development - Guide for getting started developing the module](#development)
-7. [Contributing - Contributing to this project](#contributing)
-8. [License](#license)
+6. [Limitations - OS compatibility, etc.](#limitations)
+7. [Development - Guide for getting started developing the module](#development)
+8. [Contributing - Contributing to this project](#contributing)
+9. [License](#license)
+10. [Release Notes](#release-notes)
 
 
 ## Overview
@@ -27,12 +29,6 @@ modules is provided on a best effort basis by the Arista EOS+ community.
 Please file any bugs, questions or enhancement requests using [Github
 Issues](http://github.com/arista-eosplus/puppet-eos/issues)
 
-## Requirements
-* Puppet 3.6 or later
-* Ruby 1.9.3 or later
-* [Arista EOS 4.13.7M or later](arista)
-* [Ruby Client for eAPI 0.1.0 or later](rbeapi)
-
 ## Module Description
 
 This module provides network abstractions for configuring network services on
@@ -41,8 +37,8 @@ building blocks for automating the configuration of Arista EOS nodes.  This
 module extends Puppet's capability to configure network devices including node
 system services, access services and trunk side services of EOS nodes running
 EOS 4.13 or later with the Puppet agent installed.  The Puppet agent running on
-the node will use pluginsync todownload the types and providers from the Puppet
-master and uses the Ruby Client for eAPI to interface with the nodes
+the node will use pluginsync to download the types and providers from the Puppet
+master and uses the Ruby Client for eAPI (rbeapi) to interface with the nodes
 configuration.
 
 ## Setup
@@ -56,18 +52,21 @@ configuring Arista EOS nodes.
 
 This module requires pluginsync in order to synchronize the types and providers
 to the node.  This module also requires the [Ruby Client for eAPI](rbeapi) to
-be installed on the node.
+be installed on the master and nodes.
 
 ### Beginning with eos
 
  1. Install the module on the Puppet master
- 2. Install the rbeapi gem on the switch [See Ruby Client for eAPI](rbeapi)
- 3. Run the puppet agent on the switch to synchronize the types and providers
- 4. Verify the providrs by running `bash sudo puppet resource <resource>` from 
+ 2. Install the rbeapi gem on the Puppet master [See Ruby Client for eAPI](rbeapi)
+ 3. Install the rbeapi gem on the switch [See Ruby Client for eAPI](rbeapi)
+ 4. Run the puppet agent on the switch to synchronize the types and providers
+ 5. List the types by running `bash sudo puppet resource --types | grep eos`
+    from the EOS CLI enable mode
+ 6. Verify the providrs by running `bash sudo puppet resource <resource>` from 
     the EOS CLI enable mode
 
 ```
-$ bundle exec puppet resource eos_vlan
+Arista$ bash sudo puppet resource eos_vlan
 eos_vlan { '1':
   ensure    => 'present',
   enable    => 'true',
@@ -82,11 +81,17 @@ eos_vlan { '100':
 
 ## Usage
 
-TODO
+See the [Documentation](http://puppet-eos.readthedocs.org/en/latest/)
 
 ## Reference
 
-TODO
+See the [Type reverence](http://puppet-eos.readthedocs.org/en/latest/types.html) in the documentation
+
+## Limitations
+* Puppet 3.6 or later
+* Ruby 1.9.3 or later
+* [Arista EOS 4.13.7M or later](arista)
+* [Ruby Client for eAPI 0.1.0 or later](rbeapi)
 
 ## Development
 
@@ -96,7 +101,7 @@ instructions explain how to configure your local development environment.
 
 This module requires one dependency that must be checked out as a Git working
 copy in the context of ongoing development in addition to running Puppet from
-source.  
+source.
 
  * [rbeapi][rbeapi]
 
@@ -129,10 +134,11 @@ using `puppet resource`:
 
 Contributions to this project are gladly welcomed in the form of issues (bugs,
 questions, enhancement proposals) and pull requests.  All pull requests must be
-accompanied by spec unit tests otherwise the pull request will be rejected.
+accompanied by spec unit tests and up-to-date doc-strings, otherwise the pull
+request will be rejected.
 
 ## License
-Copyright (c) 2014, Arista Networks EOS+
+Copyright (c) 2014-2015, Arista Networks EOS+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -160,6 +166,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+## Release Notes
+
+See the [Release Notes](http://puppet-eos.readthedocs.org/en/latest/release-notes.html)
+in the official documentation.
 
 
 [rbeapi]: https://github.com/arista-eosplus/rbeapi
