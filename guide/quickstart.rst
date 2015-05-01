@@ -43,7 +43,7 @@ Sample minimal configuration on a switch includes basic IP connectivity, hostnam
   !
 
 If you configured eAPI (``management api http-commands``) for anything other than
-``unix-socket``, then ``flash:eapi.conf`` is also required.  Ensure that the connection is ``localhost`` and enter the transport, port, username, and password required for the puppet module to connect to eAPI.  See more about configuring `eapi.conf`_.
+``unix-socket``, then an ``flash:eapi.conf`` is also required.  Ensure that the connection is ``localhost`` and enter the transport, port, username, and password required for the puppet module to connect to eAPI.  See more about configuring `eapi.conf`_.
 
 Example ``flash:eapi.conf``:
 
@@ -61,7 +61,7 @@ Install the puppet agent from `PuppetLabs`_::
   Arista#copy http://myserver/puppet-enterprise-3.7.2-eos-4-i386.swix extensions:
   Arista#extension puppet-enterprise-3.7.2-eos-4-i386.swix
 
-Install the rbeapi extension::
+Install the `rbeapi extension`_::
 
   Arista#copy http://myserver/rbeapi-0.1.0.swix extensions:
   Arista#extension rbeapi-0.1.0.swix
@@ -91,23 +91,28 @@ With the above aliases, repetitive typing can be reduced to, for example:
 Configuring the Puppet Master
 -----------------------------
 
-Follow the standard instructions for installing either a Puppet Enterprise or Puppet Open-source master server and setup your environment(s). As the paths to various items and specifics may vary from system to system, you may need to make minor adjustments to the ommands, below, to conform to your particular system.  Use ``puppet config print`` to locate the correct paths.
+Follow the standard instructions for `installing either a Puppet Enterprise or Puppet Open-source master <https://docs.puppetlabs.com/>`_ server and setup your environment(s). (Standalone Puppet, also known as headless or masterless puppet, is covered in a separate section.) As the paths to various items and specifics may vary from system to system, you may need to make minor adjustments to the ommands, below, to conform to your particular system.  Use ``puppet config print`` to locate the correct paths.
 
 On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.
 
 .. note::
   There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
+Install the rbeapi rubygem on the server::
+
+  $ sudo gem install rbeapi
+
 Add the puppet-eos module to your server's modulepath:
 
 Puppet installer::
 
-  $ puppet module install puppet-eos [--environment production ] [--modulepath $basemodulepath ]
+  $ sudo puppet module install puppet-eos [--environment production ] [--modulepath $basemodulepath ]
 
 Install from source::
 
-  $ git clone https://github.com/arista-eosplus/puppet-eos.git modulepath/eos
-  $ git checkout <version or branch>
+  $ sudo git clone https://github.com/arista-eosplus/puppet-eos.git <environment>/modules/eos
+  $ cd <environment>/modules/eos/
+  $ sudo git checkout <version or branch>
 
 Link using Git submodules::
 
@@ -116,15 +121,6 @@ Link using Git submodules::
   $ git submodule status
   $ git submodule init
   $ git status
-
-Ensure plugins are available on the master
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-After adding new modules containing libraries to the server, these must be synced into the libdir to be shared with agents:
-
-.. code-block:: console
-
-  $ puppet plugin download
 
 Verifying the agent on EOS
 --------------------------
@@ -137,7 +133,7 @@ Run the puppet agent on EOS.  This performs several key tasks:
 
 .. code-block:: console
 
-  Arista#bash sudo puppet agent --test --onetime true --waitforcert 30
+  Arista#bash sudo puppet agent [--environment <env_name>] --test --onetime --no-daemonize --waitforcert 30
 
 On the Master, sign the node's certificate request:
 
@@ -150,7 +146,7 @@ If you did not include ``waitforcert``, above, then re-run the puppet agent comm
 
 .. code-block:: console
 
-  Arista#bash sudo puppet agent --test --onetime true --waitforcert 30
+  Arista#bash sudo puppet agent [--environment <env_name>] --test --onetime --waitforcert 30
 
 Verify that the ``eos_*`` types are available on the switch:
 
@@ -184,4 +180,5 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. _`Github: puppet-eos`: https://github.com/arista-eosplus/puppet-eos
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
 .. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
+.. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi
 
