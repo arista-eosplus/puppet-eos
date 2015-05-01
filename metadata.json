@@ -1,11 +1,11 @@
 {
-  "name": "arista-eos",
+  "name": "aristanetworks-eos",
   "version": "0.1.0",
-  "author": "Arista EOS+",
-  "summary": "Arista EOS provides Puppet modules to configure EOS devices",
-  "license": "BSD-3",
-  "source": "http://github.com/arista-eosplus/puppet-eos",
-  "project_page": "https://github.com/arista-eosplus/puppet-eos",
+  "author": "Arista Networks, EOS+",
+  "summary": "Arista Networks types and providers for configuring EOS devices",
+  "license": "BSD-3-Clause",
+  "source": "https://github.com/arista-eosplus/puppet-eos",
+  "project_page": "http://puppet-eos.readthedocs.org/",
   "issues_url": "https://github.com/arista-eosplus/puppet-eos/issues",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
