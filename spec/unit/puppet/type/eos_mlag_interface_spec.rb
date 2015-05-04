@@ -59,5 +59,4 @@ describe Puppet::Type.type(:eos_mlag_interface) do
     include_examples 'accepts values without munging', [1, 200, 777, 2000]
     include_examples 'rejects values', ['0', '2001', 'string', { two: :three }]
   end
-
 end
