@@ -31,6 +31,8 @@
 #
 # encoding: utf-8
 
+require 'puppet_x/eos/utils/helpers'
+
 Puppet::Type.newtype(:eos_mlag) do
 
   @doc = <<-EOS
@@ -92,9 +94,6 @@ Puppet::Type.newtype(:eos_mlag) do
 
       The specified value must be a valid IP address
     EOS
-
-    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
