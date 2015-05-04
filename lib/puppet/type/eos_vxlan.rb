@@ -31,6 +31,8 @@
 #
 # encoding: utf-8
 
+require 'puppet_x/eos/utils/helpers'
+
 Puppet::Type.newtype(:eos_vxlan) do
   @doc = <<-EOS
     This type mananges VXLAN interface configuration on Arista
@@ -161,9 +163,6 @@ Puppet::Type.newtype(:eos_vxlan) do
       The default flood_list value is []
     EOS
 
-
-    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
       unless value =~ IPADDR_REGEXP

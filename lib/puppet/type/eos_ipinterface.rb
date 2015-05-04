@@ -30,6 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+require 'puppet_x/eos/utils/helpers'
+
 Puppet::Type.newtype(:eos_ipinterface) do
   @doc = <<-EOS
     This type provides management of logical IP interfaces configured
@@ -84,9 +86,6 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
         helper_addresses => ['192.168.10.254', '192.168.11.254']
     EOS
-
-    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
