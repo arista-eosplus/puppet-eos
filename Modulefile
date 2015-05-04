@@ -1,8 +1,0 @@
-name    'arista-eos'
-version '0.1.0'
-source 'https://github.com/arista-eosplus/swisscom'
-author 'Arista EOS+'
-license 'BSD-3'
-summary 'Modules for managing EOS nodes'
-description 'EOS types and providers for managing network resources on Arista EOS nodes'
-project_page 'https://github.com/arista-eosplus/swisscom'
