@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -50,9 +49,9 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
   let(:api) { double('interfaces') }
 
   def vxlan
-    vxlan = Fixtures[:vxlan]
+    vxlan = Fixtures[:vxlan_get]
     return vxlan if vxlan
-    fixture('vxlan', dir: File.dirname(__FILE__))
+    fixture('vxlan_get')
   end
 
   before :each do
@@ -63,7 +62,6 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(vxlan) }
 
     describe '.instances' do
@@ -75,7 +73,7 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it "has an instance for vlan 10" do
+      it 'has an instance for vlan 10' do
         instance = subject.find { |p| p.name == '10' }
         expect(instance).to be_a described_class
       end
@@ -88,7 +86,6 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
                          vni: '10',
                          ensure: :present
       end
-
     end
 
     describe '.prefetch' do
@@ -119,7 +116,6 @@ describe Puppet::Type.type(:eos_vxlan_vlan).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#create' do
       before do
         expect(api).to receive(:update_vlan)

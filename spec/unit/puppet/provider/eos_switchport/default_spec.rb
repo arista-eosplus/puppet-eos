@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_switchport).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -68,7 +67,6 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(switchports) }
 
     describe '.instances' do
@@ -95,7 +93,6 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
                          trunk_allowed_vlans: [1, 10, 100, 1000],
                          trunk_native_vlan: '1',
                          access_vlan: '1'
-
       end
     end
 
@@ -127,7 +124,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet1'].provider.mode).to eq :trunk
         expect(resources['Ethernet1'].provider.access_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_native_vlan).to eq '1'
-        expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to eq [1, 10, 100, 1000]
+        expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to \
+          eq [1, 10, 100, 1000]
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -137,13 +135,13 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet2'].provider.mode).to eq :absent
         expect(resources['Ethernet2'].provider.access_vlan).to eq :absent
         expect(resources['Ethernet2'].provider.trunk_native_vlan).to eq :absent
-        expect(resources['Ethernet2'].provider.trunk_allowed_vlans).to eq :absent
+        expect(resources['Ethernet2'].provider.trunk_allowed_vlans).to \
+          eq :absent
       end
     end
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -166,10 +164,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       before do
         expect(api).to receive(:create).with(name)
         allow(api).to receive_messages(
-          :set_mode => true,
-          :set_access_vlan => true,
-          :set_trunk_native_vlan => true,
-          :set_trunk_allowed_vlans => true
+          set_mode: true,
+          set_access_vlan: true,
+          set_trunk_native_vlan: true,
+          set_trunk_allowed_vlans: true
         )
       end
 
@@ -185,7 +183,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
       it 'sets trunk_allowed_vlans to the resource value' do
         provider.create
-        expect(provider.trunk_allowed_vlans).to eq resource[:trunk_allowed_vlans]
+        expect(provider.trunk_allowed_vlans).to eq \
+          resource[:trunk_allowed_vlans]
       end
 
       it 'sets trunk_native_vlan to the resource value' do
@@ -221,7 +220,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
     describe '#trunk_native_vlan=(val)' do
       it 'updates trunk_native_vlan in the provider' do
-        expect(api).to receive(:set_trunk_native_vlan).with(resource[:name], value: '100')
+        expect(api).to receive(:set_trunk_native_vlan)
+          .with(resource[:name], value: '100')
         provider.trunk_native_vlan = '100'
         expect(provider.trunk_native_vlan).to eq('100')
       end
@@ -231,7 +231,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       let(:vlans) { %w(1 10 100 1000) }
 
       it 'updates trunk_allowed_vlans in the provider' do
-        expect(api).to receive(:set_trunk_allowed_vlans).with(resource[:name], value: vlans)
+        expect(api).to receive(:set_trunk_allowed_vlans)
+          .with(resource[:name], value: vlans)
         provider.trunk_allowed_vlans = vlans
         expect(provider.trunk_allowed_vlans).to eq(vlans)
       end
@@ -239,7 +240,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
 
     describe '#access_vlan=(val)' do
       it 'updates access_vlan in the provider' do
-        expect(api).to receive(:set_access_vlan).with(resource[:name], value: 1000)
+        expect(api).to receive(:set_access_vlan)
+          .with(resource[:name], value: 1000)
         provider.access_vlan = 1000
         expect(provider.access_vlan).to eq(1000)
       end

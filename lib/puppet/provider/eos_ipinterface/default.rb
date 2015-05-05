@@ -36,7 +36,6 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_ipinterface).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -79,7 +78,8 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     @property_hash = { name: resource[:name], ensure: :present }
     self.address = resource[:address] if resource[:address]
     self.mtu = resource[:mtu] if resource[:mtu]
-    self.helper_addresses = resource[:helper_addresses] if resource[:helper_addresses]
+    self.helper_addresses = resource[:helper_addresses] \
+      if resource[:helper_addresses]
   end
 
   def destroy

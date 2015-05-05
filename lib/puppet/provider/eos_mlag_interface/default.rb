@@ -36,7 +36,6 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -61,7 +60,7 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
   end
 
   def mlag_id=(value)
-    node.api('mlag').set_mlag_id(resource[:name], value:value)
+    node.api('mlag').set_mlag_id(resource[:name], value: value)
     @property_hash[:mlag_id] = value
   end
 

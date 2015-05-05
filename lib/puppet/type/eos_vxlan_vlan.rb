@@ -42,7 +42,7 @@ Puppet::Type.newtype(:eos_vxlan_vlan) do
 
   # Parameters
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc <<-EOS
       The VLAN ID that is associated with this mapping in the valid
       VLAN ID range of 1 to 4094.  The VLAN ID is configured on the

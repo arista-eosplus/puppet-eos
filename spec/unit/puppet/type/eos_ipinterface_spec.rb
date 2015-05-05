@@ -81,5 +81,4 @@ describe Puppet::Type.type(:eos_ipinterface) do
       end
     end
   end
-
 end

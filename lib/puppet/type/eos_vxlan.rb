@@ -54,8 +54,8 @@ Puppet::Type.newtype(:eos_vxlan) do
 
     validate do |value|
       unless value =~ /^Vxlan\d+/
-        fail "value #{value.inspect} is invalid, must be a valid "
-             "Vxlan interface name"
+        fail 'value #{value.inspect} is invalid, must be a valid ' \
+             'Vxlan interface name'
       end
     end
   end
@@ -148,7 +148,6 @@ Puppet::Type.newtype(:eos_vxlan) do
     end
   end
 
-
   newproperty(:flood_list, array_matching: :all) do
     desc <<-EOS
       This parameter mantains the default VXLAN flood list for all
@@ -162,7 +161,6 @@ Puppet::Type.newtype(:eos_vxlan) do
 
       The default flood_list value is []
     EOS
-
 
     validate do |value|
       unless value =~ IPADDR_REGEXP

@@ -48,9 +48,9 @@ describe Puppet::Type.type(:eos_vxlan_vtep).provider(:eos) do
   let(:api) { double('interfaces') }
 
   def vxlan
-    vxlan = Fixtures[:vxlan]
+    vxlan = Fixtures[:vxlan_get]
     return vxlan if vxlan
-    fixture('vxlan', dir: File.dirname(__FILE__))
+    fixture('vxlan_get')
   end
 
   before :each do

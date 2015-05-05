@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_interface).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -63,7 +62,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(interfaces) }
 
     describe '.instances' do
@@ -75,7 +73,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it "has an instance for interface Loopback0" do
+      it 'has an instance for interface Loopback0' do
         instance = subject.find { |p| p.name == 'Loopback0' }
         expect(instance).to be_a described_class
       end
@@ -88,7 +86,6 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
                          description: 'test interface',
                          enable: :true
       end
-
     end
 
     describe '.prefetch' do
@@ -111,7 +108,8 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['Loopback0'].provider.description).to eq('test interface')
+        expect(resources['Loopback0'].provider.description).to \
+          eq('test interface')
         expect(resources['Loopback0'].provider.enable).to eq :true
       end
 
@@ -124,15 +122,14 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#create' do
       let(:name) { 'Loopback0' }
 
       before do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
-          :set_shutdown => true,
-          :set_description => true
+          set_shutdown: true,
+          set_description: true
         )
       end
 
@@ -164,11 +161,11 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-     %w(true false).each do |val|
+      %w(true false).each do |val|
         let(:value) { !val }
         let(:name) { 'Loopback0' }
 
-        it "updates enable in the provider" do
+        it 'updates enable in the provider' do
           expect(api).to receive(:set_shutdown).with(name, value: !val)
           provider.enable = val
           expect(provider.enable).to eq(val)

@@ -95,5 +95,4 @@ describe Puppet::Type.type(:eos_mlag) do
     include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
-
 end

@@ -51,8 +51,8 @@ Puppet::Type.newtype(:eos_portchannel) do
 
     validate do |value|
       unless value =~ /^Port-Channel/
-        fail "value #{value.inspect} is invalid, must be a valid "
-             "Port-Channel interface name"
+        fail "value #{value.inspect} is invalid, must be a valid " \
+             'Port-Channel interface name'
       end
     end
   end
@@ -118,7 +118,7 @@ Puppet::Type.newtype(:eos_portchannel) do
     EOS
 
     validate do |value|
-      unless value =~ /^Ethernet\d(:\/\d+)?/
+      unless value =~ %r{^Ethernet\d(:\/\d+)?}
         fail "value #{value.inspect} is invalid, must be an Ethernet interface"
       end
     end
@@ -141,7 +141,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
     validate do |value|
       unless value.to_i.between?(0, 16)
-        fail 'value #{value.inspect} is not between 0 and 16'
+        fail "value #{value.inspect} is not between 0 and 16"
       end
     end
   end
@@ -182,9 +182,8 @@ Puppet::Type.newtype(:eos_portchannel) do
     # Validate each value is a valid timeout value
     validate do |value|
       unless value.to_i.between?(1, 100)
-        fail 'value #{value.inspect} is not between 1 and 100'
+        fail "value #{value.inspect} is not between 1 and 100"
       end
     end
   end
-
 end
