@@ -5,28 +5,22 @@ Troubleshooting
 
 .. contents:: :local:
 
-Server: Error: ... cannot load such file -- rbeapi/client
----------------------------------------------------------
+Introduction
+------------
 
-If you see the following error on the master::
+The Puppet-EOS module is developed by Arista EOS+ CS and supported by the Arista EOS+ community. Support for the module as well as using Puppet with Arista EOS nodes is provided on a best effort basis by the Arista EOS+ CS team and the community. Support for the puppet-enterprise agent extension is provided by PuppetLabs.
 
-  Server: Error: Could not autoload puppet/provider/eos_vlan/default: cannot load such file -- rbeapi/client
+For customers looking for a premium level of support, please contact your local Arista account team or email `eosplus@arista.com <mailto://eosplus@arista.com>`_ for assistance.
 
-Install the rbeapi rubygem on the server::
+Submitting Issues
+-----------------
 
-  sudo gem install rbeapi
+The Arista EOS+ CS development team uses `Github Issues <https://github.com/arista-eosplus/puppet-eos/issues>`_ to track discovered bugs and enhancement request to the Puppet-EOS module.
 
-Server: Error: ... provider 'eos': undefined method `api' for nil:NilClass`
----------------------------------------------------------------------------
+For defect issues, please provide as much relevant data as possible as to what is causing the issue, if and how it is reproducible, the version of EOS and Puppet being run.
 
-If you try to apply a class or nmanifest and receive the following error::
+For enhancement requests, please provide a brief description of the enhancement request, a use case, and the version of EOS to be supported.
 
-  Server: Error: Could not prefetch eos_vlan provider 'eos': undefined method `api' for nil:NilClass`
+The issue tracker is monitored by Arista EOS+ CS and issues submitted are categorized and scheduled for inclusion in upcoming Puppet-EOS versions.
 
-The eos provider requires a connection to an EOS device and cannot be applied on an OS that does not support Arista eAPI except in development mode.
-
-Either ensure this manifest/class only gets applied to EOS devices or redirect eAPI communications on this system to a real or virtual EOS device::
-
-  export RBEAPI_CONF=/path/to/my/.eapi.conf
-  export RBEAPI_CONNECTION=<connection-name>
 
