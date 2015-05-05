@@ -1,7 +1,9 @@
 Types
 =====
 
-.. contents:: :local:
+.. contents::
+   :local:
+   :depth: 2
 
 Getting to know the Types
 -------------------------
@@ -32,6 +34,4 @@ Display the current state of a type:
     vlan_name => 'ztp_bootstrap',
   }
 
-eos_vlan
---------
-
+.. include:: typedoc.rst
