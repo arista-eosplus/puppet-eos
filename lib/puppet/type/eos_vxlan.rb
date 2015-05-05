@@ -147,25 +147,4 @@ Puppet::Type.newtype(:eos_vxlan) do
       end
     end
   end
-
-  newproperty(:flood_list, array_matching: :all) do
-    desc <<-EOS
-      This parameter mantains the default VXLAN flood list for all
-      VNIs that do not have an explicit flood list configured.  The
-      flood list supports forwarding broadcast, unicast, and multicast
-      traffic for head-end replication.
-
-      The flood list value is configured as an Array of IP addresses.
-
-        flood => ['1.1.1.1', '2.2.2.2']
-
-      The default flood_list value is []
-    EOS
-
-    validate do |value|
-      unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be an IP address"
-      end
-    end
-  end
 end
