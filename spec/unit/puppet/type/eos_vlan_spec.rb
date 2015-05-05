@@ -81,7 +81,6 @@ describe Puppet::Type.type(:eos_vlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [['tg1', 'tg2']]
+    include_examples 'accepts values without munging', [%w(tg1 tg2)]
   end
-
 end

@@ -64,5 +64,4 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
-
 end

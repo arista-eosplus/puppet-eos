@@ -31,7 +31,6 @@
 #
 
 Puppet::Type.newtype(:eos_mlag_interface) do
-
   @doc = <<-EOS
     This type manages MLAG interfaces on the node used to establish
     a valid MLAG with a peer switch.  The mlag_id parameter is required
@@ -57,7 +56,6 @@ Puppet::Type.newtype(:eos_mlag_interface) do
       end
     end
   end
-
 
   # Properties (state management)
 

@@ -40,7 +40,6 @@ module PuppetX
     ##
     # EapiProviderMixin module
     module EapiProviderMixin
-
       def prefetch(resources)
         provider_hash = instances.each_with_object({}) do |provider, hsh|
           hsh[provider.name] = provider
@@ -76,7 +75,6 @@ module PuppetX
       #
       # @param [Array] :req The set of required option keys
       def validate(req, opts = {})
-        errors = false
         missing = req.reject { |k| opts[k] }
         errors = !missing.empty?
         msg = "Invalid options #{opts.inspect} missing: #{missing.join(', ')}"

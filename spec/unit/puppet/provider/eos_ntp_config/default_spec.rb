@@ -60,7 +60,6 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(ntp) }
 
     describe '.instances' do
@@ -91,8 +90,10 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
     describe '.prefetch' do
       let(:resources) do
         {
-          'settings' => Puppet::Type.type(:eos_ntp_config).new(name: 'settings'),
-          'alternative' => Puppet::Type.type(:eos_ntp_config).new(name: 'alternative')
+          'settings' => Puppet::Type.type(:eos_ntp_config)
+            .new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_ntp_config)
+            .new(name: 'alternative')
         }
       end
 
@@ -108,7 +109,8 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
         subject
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
-        expect(resources['settings'].provider.source_interface).to eq 'Loopback0'
+        expect(resources['settings'].provider.source_interface).to \
+          eq 'Loopback0'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -121,7 +123,6 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

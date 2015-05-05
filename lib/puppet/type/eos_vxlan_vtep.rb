@@ -55,7 +55,7 @@ Puppet::Type.newtype(:eos_vxlan_vtep) do
       begin
         IPAddr.new value
       rescue ArgumentError => exc
-        fail "value #{value.inspect} is invalid, #{exc.message}"
+        raise "value #{value.inspect} is invalid, #{exc.message}"
       end
     end
   end

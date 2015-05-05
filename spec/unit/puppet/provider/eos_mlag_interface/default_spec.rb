@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -62,7 +61,6 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(mlag) }
 
     describe '.instances' do
@@ -74,13 +72,15 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
         expect(subject.size).to eq 1
       end
 
-      it "has an instance for interface Port-Channel1" do
+      it 'has an instance for interface Port-Channel1' do
         instance = subject.find { |p| p.name == 'Port-Channel1' }
         expect(instance).to be_a described_class
       end
 
       context "eos_mlag_interface { 'Port-Channel1': }" do
-        subject { described_class.instances.find { |p| p.name == 'Port-Channel1' } }
+        subject do
+          described_class.instances.find { |p| p.name == 'Port-Channel1' }
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
@@ -124,7 +124,6 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

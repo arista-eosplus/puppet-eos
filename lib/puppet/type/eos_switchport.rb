@@ -57,8 +57,8 @@ Puppet::Type.newtype(:eos_switchport) do
 
     validate do |value|
       unless value =~ /^[Et|Po]/
-        fail "value #{value.inspect} is invalid, must be of type "\
-             "Ethernet or Port-Channel"
+        fail 'value #{value.inspect} is invalid, must be of type ' \
+             'Ethernet or Port-Channel'
       end
     end
   end
@@ -147,5 +147,4 @@ Puppet::Type.newtype(:eos_switchport) do
       end
     end
   end
-
 end

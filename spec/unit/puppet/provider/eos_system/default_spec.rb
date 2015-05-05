@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_system).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -60,7 +59,6 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(system) }
 
     describe '.instances' do
@@ -90,7 +88,8 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       let :resources do
         {
           'settings' => Puppet::Type.type(:eos_system).new(name: 'settings'),
-          'alternative' => Puppet::Type.type(:eos_system).new(name: 'alternative')
+          'alternative' => Puppet::Type.type(:eos_system)
+            .new(name: 'alternative')
         }
       end
 
@@ -119,7 +118,6 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#hostname=(value)' do
       it 'updates hostname with value=foo' do
         expect(api).to receive(:set_hostname).with(value: 'foo')

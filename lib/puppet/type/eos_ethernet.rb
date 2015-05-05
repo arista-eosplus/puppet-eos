@@ -98,5 +98,4 @@ Puppet::Type.newtype(:eos_ethernet) do
     EOS
     newvalues(:on, :off)
   end
-
 end

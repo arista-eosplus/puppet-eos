@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -67,7 +66,6 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(portchannels) }
 
     describe '.instances' do
@@ -79,13 +77,15 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         expect(subject.size).to eq 1
       end
 
-      it "has an instance for Port-Channel1" do
+      it 'has an instance for Port-Channel1' do
         instance = subject.find { |p| p.name == 'Port-Channel1' }
         expect(instance).to be_a described_class
       end
 
       context "eos_portchannel { 'Port-Channel1': }" do
-        subject { described_class.instances.find { |p| p.name == 'Port-Channel1' } }
+        subject do
+          described_class.instances.find { |p| p.name == 'Port-Channel1' }
+        end
 
         include_examples 'provider resource methods',
                          ensure: :present,
@@ -125,7 +125,8 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
         expect(resources['Port-Channel1'].provider.name).to eq 'Port-Channel1'
         expect(resources['Port-Channel1'].provider.exists?).to be_truthy
         expect(resources['Port-Channel1'].provider.lacp_mode).to eq :active
-        expect(resources['Port-Channel1'].provider.members).to eq %w(Ethernet1 Ethernet2)
+        expect(resources['Port-Channel1'].provider.members).to \
+          eq %w(Ethernet1 Ethernet2)
         expect(resources['Port-Channel1'].provider.minimum_links).to eq '2'
         expect(resources['Port-Channel1'].provider.lacp_fallback).to eq :static
         expect(resources['Port-Channel1'].provider.lacp_timeout).to eq '100'
@@ -145,7 +146,6 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -168,11 +168,11 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       before do
         expect(api).to receive(:create).with(name)
         allow(api).to receive_messages(
-          :set_lacp_mode => true,
-          :set_members => true,
-          :set_minimum_links => true,
-          :set_lacp_fallback => true,
-          :set_lacp_timeout => true
+          set_lacp_mode: true,
+          set_members: true,
+          set_minimum_links: true,
+          set_lacp_fallback: true,
+          set_lacp_timeout: true
         )
       end
 
@@ -239,19 +239,20 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
     describe '#minimum_links=(val)' do
       it 'updates minimum_links on the provider' do
-        expect(api).to receive(:set_minimum_links).with(resource[:name], value: 4)
+        expect(api).to receive(:set_minimum_links)
+          .with(resource[:name], value: 4)
         provider.minimum_links = 4
         expect(provider.minimum_links).to eq 4
       end
     end
 
     describe '#lacp_fallback=(val)' do
-
       %w(static individual).each do |value|
         let(:value) { value }
 
         it 'updates lacp_fallback on the provider' do
-          expect(api).to receive(:set_lacp_fallback).with(resource[:name], value: value)
+          expect(api).to receive(:set_lacp_fallback)
+            .with(resource[:name], value: value)
           provider.lacp_fallback = value
           expect(provider.lacp_fallback).to eq value
         end
@@ -260,7 +261,8 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
 
     describe '#lacp_timeout=(val)' do
       it 'updates lacp_timeout on the provider' do
-        expect(api).to receive(:set_lacp_timeout).with(resource[:name], value: 900)
+        expect(api).to receive(:set_lacp_timeout)
+          .with(resource[:name], value: 900)
         provider.lacp_timeout = 900
         expect(provider.lacp_timeout).to eq 900
       end

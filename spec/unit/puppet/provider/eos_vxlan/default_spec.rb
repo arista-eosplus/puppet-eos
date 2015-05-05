@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -68,7 +67,6 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(vxlan) }
 
     describe '.instances' do
@@ -80,7 +78,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it "has an instance for interface Vxlan1" do
+      it 'has an instance for interface Vxlan1' do
         instance = subject.find { |p| p.name == 'Vxlan1' }
         expect(instance).to be_a described_class
       end
@@ -97,7 +95,6 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
                          udp_port: 4789,
                          flood_list: ['1.1.1.1', '2.2.2.2']
       end
-
     end
 
     describe '.prefetch' do
@@ -121,7 +118,8 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
         expect(resources['Vxlan1'].provider.description).to eq('test interface')
         expect(resources['Vxlan1'].provider.enable).to eq :true
         expect(resources['Vxlan1'].provider.source_interface).to eq 'Loopback0'
-        expect(resources['Vxlan1'].provider.multicast_group).to eq '239.10.10.10'
+        expect(resources['Vxlan1'].provider.multicast_group).to \
+          eq '239.10.10.10'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -135,19 +133,18 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#create' do
       let(:name) { 'Vxlan1' }
 
       before do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
-          :set_shutdown => true,
-          :set_description => true,
-          :set_source_interface => true,
-          :set_multicast_group => true,
-          :set_udp_port => true,
-          :set_flood_list => true
+          set_shutdown: true,
+          set_description: true,
+          set_source_interface: true,
+          set_multicast_group: true,
+          set_udp_port: true,
+          set_flood_list: true
         )
       end
 
@@ -199,11 +196,11 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-     %w(true false).each do |val|
+      %w(true false).each do |val|
         let(:value) { !val }
         let(:name) { 'Vxlan1' }
 
-        it "updates enable in the provider" do
+        it 'updates enable in the provider' do
           expect(api).to receive(:set_shutdown).with(name, value: !val)
           provider.enable = val
           expect(provider.enable).to eq(val)
