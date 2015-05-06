@@ -36,7 +36,6 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_vxlan).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -72,11 +71,6 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
     @property_hash[:udp_port] = val
   end
 
-  def flood_list=(val)
-    node.api('interfaces').set_flood_list(resource[:name], value: val)
-    @property_hash[:flood_list] = val
-  end
-
   def enable=(val)
     node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
     @property_hash[:enable] = val
@@ -97,7 +91,6 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
     self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
     self.udp_port = resource[:udp_port] if resource[:udp_port]
-    self.flood_list = resource[:flood_list] if resource[:flood_list]
     self.source_interface = resource[:source_interface] \
                             if resource[:source_interface]
     self.multicast_group = resource[:multicast_group] \

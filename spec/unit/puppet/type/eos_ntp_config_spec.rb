@@ -55,5 +55,4 @@ describe Puppet::Type.type(:eos_ntp_config) do
                      %w(Management1 Ethernet42/1)
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

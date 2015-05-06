@@ -85,5 +85,4 @@ describe Puppet::Type.type(:eos_switchport) do
     include_examples '#doc Documentation'
     include_examples 'vlan id value'
   end
-
 end

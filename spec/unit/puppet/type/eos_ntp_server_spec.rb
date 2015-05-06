@@ -48,5 +48,4 @@ describe Puppet::Type.type(:eos_ntp_server) do
     include_examples 'accepts values without munging',
                      %w(foo.arista.net 10.10.10.10)
   end
-
 end

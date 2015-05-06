@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -66,7 +65,6 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ethernet) }
 
     describe '.instances' do
@@ -78,7 +76,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it "has an instance for interface Ethernet1" do
+      it 'has an instance for interface Ethernet1' do
         instance = subject.find { |p| p.name == 'Ethernet1' }
         expect(instance).to be_a described_class
       end
@@ -93,7 +91,6 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
                          flowcontrol_send: :on,
                          flowcontrol_receive: :on
       end
-
     end
 
     describe '.prefetch' do
@@ -118,7 +115,8 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['Ethernet1'].provider.description).to eq('test interface')
+        expect(resources['Ethernet1'].provider.description).to \
+          eq('test interface')
         expect(resources['Ethernet1'].provider.enable).to eq :true
         expect(resources['Ethernet1'].provider.flowcontrol_send).to eq(:on)
         expect(resources['Ethernet1'].provider.flowcontrol_receive).to eq(:on)
@@ -129,23 +127,23 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
         expect(resources['Ethernet2'].provider.description).to eq(:absent)
         expect(resources['Ethernet2'].provider.enable).to eq(:absent)
         expect(resources['Ethernet2'].provider.flowcontrol_send).to eq(:absent)
-        expect(resources['Ethernet2'].provider.flowcontrol_receive).to eq(:absent)
+        expect(resources['Ethernet2'].provider.flowcontrol_receive).to \
+          eq(:absent)
       end
     end
   end
 
   context 'resource (instance) methods' do
-
     describe '#create' do
       let(:name) { 'Ethernet1' }
 
       before do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
-          :set_shutdown => true,
-          :set_description => true,
-          :set_flowcontrol_send => true,
-          :set_flowcontrol_receive => true
+          set_shutdown: true,
+          set_description: true,
+          set_flowcontrol_send: true,
+          set_flowcontrol_receive: true
         )
       end
 
@@ -168,7 +166,6 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
         provider.create
         expect(provider.flowcontrol_receive).to eq(:on)
       end
-
     end
 
     describe '#destroy' do
@@ -188,11 +185,11 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-     %w(true false).each do |val|
+      %w(true false).each do |val|
         let(:value) { !val }
         let(:name) { 'Ethernet1' }
 
-        it "updates enable in the provider" do
+        it 'updates enable in the provider' do
           expect(api).to receive(:set_shutdown).with(name, value: !val)
           provider.enable = val
           expect(provider.enable).to eq(val)
@@ -205,7 +202,8 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
 
       %w(:on :off).each do |val|
         it 'updates flowcontrol_send on the provider' do
-          expect(api).to receive(:set_flowcontrol_send).with(name, value: val.to_s)
+          expect(api).to receive(:set_flowcontrol_send)
+            .with(name, value: val.to_s)
           provider.flowcontrol_send = val
           expect(provider.flowcontrol_send).to eq(val)
         end
@@ -217,7 +215,8 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
 
       %w(:on :off).each do |val|
         it 'updates flowcontrol_receive on the provider' do
-          expect(api).to receive(:set_flowcontrol_receive).with(name, value: val.to_s)
+          expect(api).to receive(:set_flowcontrol_receive)
+            .with(name, value: val.to_s)
           provider.flowcontrol_receive = val
           expect(provider.flowcontrol_receive).to eq(val)
         end

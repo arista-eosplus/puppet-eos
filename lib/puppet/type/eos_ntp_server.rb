@@ -49,5 +49,4 @@ Puppet::Type.newtype(:eos_ntp_server) do
       domain name of the desired NTP server.
     EOS
   end
-
 end

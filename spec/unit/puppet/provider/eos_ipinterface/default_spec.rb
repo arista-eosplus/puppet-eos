@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -59,12 +58,12 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
   end
 
   before :each do
-    allow(described_class.node).to receive(:api).with('ipinterfaces').and_return(api)
+    allow(described_class.node).to receive(:api).with('ipinterfaces')
+      .and_return(api)
     allow(provider.node).to receive(:api).with('ipinterfaces').and_return(api)
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ipinterfaces) }
 
     describe '.instances' do
@@ -92,7 +91,6 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          mtu: '1500',
                          exists?: true
       end
-
     end
 
     describe '.prefetch' do
@@ -120,7 +118,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
         expect(resources['Ethernet1'].provider.address).to eq '1.2.3.4/5'
         expect(resources['Ethernet1'].provider.mtu).to eq '1500'
-        expect(resources['Ethernet1'].provider.helper_addresses).to eq %w(5.6.7.8 9.10.11.12)
+        expect(resources['Ethernet1'].provider.helper_addresses).to \
+          eq %w(5.6.7.8 9.10.11.12)
         expect(resources['Ethernet1'].provider.exists?).to be_truthy
       end
 
@@ -136,7 +135,6 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -159,9 +157,9 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       before do
         expect(api).to receive(:create).with(name)
         allow(api).to receive_messages(
-          :set_address => true,
-          :set_mtu => true,
-          :set_helper_addresses => true
+          set_address: true,
+          set_mtu: true,
+          set_helper_addresses: true
         )
       end
 

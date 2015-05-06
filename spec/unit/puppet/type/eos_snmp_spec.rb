@@ -84,5 +84,4 @@ describe Puppet::Type.type(:eos_snmp) do
     include_examples 'accepts values without munging', 'Ethernet1'
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

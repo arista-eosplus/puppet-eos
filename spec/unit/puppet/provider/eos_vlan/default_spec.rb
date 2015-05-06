@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_vlan).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -65,7 +64,6 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(vlans) }
 
     describe '.instances' do
@@ -99,7 +97,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       let :resources do
         {
           '1' => Puppet::Type.type(:eos_vlan).new(vlanid: '1'),
-          '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2'),
+          '2' => Puppet::Type.type(:eos_vlan).new(vlanid: '2')
         }
       end
 
@@ -135,7 +133,6 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -157,9 +154,9 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
 
       before do
         allow(api).to receive_messages(
-          :set_state => true,
-          :set_name => true,
-          :set_trunk_group => true
+          set_state: true,
+          set_name: true,
+          set_trunk_group: true
         )
         expect(api).to receive(:create).with(resource[:name])
       end

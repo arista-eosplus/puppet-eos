@@ -94,18 +94,7 @@ describe Puppet::Type.type(:eos_vxlan) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [1024, 65535]
-    include_examples 'rejects values', [[1], { foo: :bar }, 1023, 65536, 'foo']
+    include_examples 'accepts values without munging', [1024, 65_535]
+    include_examples 'rejects values', [[1], { foo: :bar }, 1023, 65_536, 'foo']
   end
-
-  describe 'flood_list' do
-    let(:attribute) { :flood_list }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [['1.1.1.1', '2.2.2.2']]
-    include_examples 'rejects values', [[1], { foo: :bar }, 1023, 65536, 'foo']
-  end
-
 end

@@ -31,8 +31,9 @@
 #
 # encoding: utf-8
 
-Puppet::Type.newtype(:eos_mlag) do
+require 'puppet_x/eos/utils/helpers'
 
+Puppet::Type.newtype(:eos_mlag) do
   @doc = <<-EOS
     This type manages the global MLAG instance on EOS nodes.  It
     provides configuration for global MLAG configuration parameters.
@@ -78,7 +79,7 @@ Puppet::Type.newtype(:eos_mlag) do
     EOS
 
     validate do |value|
-      unless value =~/^Vlan\d+$/
+      unless value =~ /^Vlan\d+$/
         fail "value #{value.inspect} is invalid, must be a VLAN SVI"
       end
     end
@@ -92,9 +93,6 @@ Puppet::Type.newtype(:eos_mlag) do
 
       The specified value must be a valid IP address
     EOS
-
-    IPADDR_REGEXP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}
-                      (?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/x
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
@@ -116,7 +114,7 @@ Puppet::Type.newtype(:eos_mlag) do
     validate do |value|
       unless value =~ /^[Et|Po].+/
         fail "value #{value.inspect} is invalid, must be a valid " \
-             "Ethernet or Port-Channel interface identifier"
+             'Ethernet or Port-Channel interface identifier'
       end
     end
   end
@@ -132,5 +130,4 @@ Puppet::Type.newtype(:eos_mlag) do
 
     newvalues(:true, :false)
   end
-
 end

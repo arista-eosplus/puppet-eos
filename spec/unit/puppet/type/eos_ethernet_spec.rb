@@ -84,5 +84,4 @@ describe Puppet::Type.type(:eos_ethernet) do
     include_examples 'accepts values', [:on, :off]
     include_examples 'rejected parameter values'
   end
-
 end

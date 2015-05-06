@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_snmp).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -65,7 +64,6 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(snmp) }
 
     describe '.instances' do
@@ -123,10 +121,12 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
         subject
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
-        expect(resources['settings'].provider.contact).to eq 'network operations'
+        expect(resources['settings'].provider.contact).to \
+          eq 'network operations'
         expect(resources['settings'].provider.location).to eq 'data center'
         expect(resources['settings'].provider.chassis_id).to eq '1234567890'
-        expect(resources['settings'].provider.source_interface).to eq 'Loopback0'
+        expect(resources['settings'].provider.source_interface).to \
+          eq 'Loopback0'
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -142,7 +142,6 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
