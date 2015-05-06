@@ -81,11 +81,11 @@ eos_vlan { '100':
 
 ## Usage
 
-See the [Documentation](http://puppet-eos.readthedocs.org/en/latest/)
+See the [Documentation](http://puppet-eos.readthedocs.org/en/master/)
 
 ## Reference
 
-See the [Type reverence](http://puppet-eos.readthedocs.org/en/latest/types.html) in the documentation
+See the [Type reference](http://puppet-eos.readthedocs.org/en/master/types.html) in the documentation
 
 ## Limitations
 * Puppet 3.6 or later
@@ -168,7 +168,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Release Notes
 
-See the [Release Notes](http://puppet-eos.readthedocs.org/en/latest/release-notes.html)
+See the [Release Notes](http://puppet-eos.readthedocs.org/en/master/release-notes.html)
 in the official documentation.
 
 
