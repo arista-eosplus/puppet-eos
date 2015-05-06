@@ -1,0 +1,11 @@
+---
+:global:
+  :domain_id: MLAG-Domain
+  :local_interface: Vlan4094
+  :peer_address: 1.1.1.1
+  :peer_link: Port-Channel1
+  :shutdown: false
+:interfaces:
+  "Port-Channel1":
+    :mlag_id: 1
+

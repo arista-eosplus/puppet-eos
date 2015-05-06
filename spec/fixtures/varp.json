@@ -1,0 +1,11 @@
+{
+    "mac_address": "aa:bb:cc:dd:ee:ff",
+    "interfaces": {
+        "Vlan1234": {
+            "addresses": [
+                "1.1.1.1",
+                "2.2.2.2"
+            ]
+        }
+    }
+}
