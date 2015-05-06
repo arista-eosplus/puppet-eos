@@ -60,11 +60,9 @@ copyright = u'2015, Arista Networks - EOS+ Consulting Services'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# awk -F"['']" -e '/version/ {print $2}' ../Modulefile
-#
 import re
-p = re.compile("version '(.*)'")
-with open("../Modulefile") as f:
+p = re.compile("version\": \"(.*)\"")
+with open("../metadata.json") as f:
     data = f.read()
     ver = p.search(data)
     if ver:
