@@ -32,20 +32,60 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_stp_interface) do
-  @doc = 'Manage logical STP interfaces'
-
-  ensurable
+  @doc = <<-EOS
+    Manage Spanning Tree Protocol interface configuration.
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the STP interface'
+    @doc = <<-EOS
+      The name for the STP interface.
+    EOS
   end
 
   # Properties (state management)
 
   newproperty(:portfast) do
-    desc 'Specifies the portfast state of the interface'
-    newvalues(:enable, :disable)
+    @doc = <<-EOS
+      The portfast property programs an STP port to immediately enter
+      forwarding state when they establish a link. PortFast ports
+      are included in spanning tree topology calculations and can
+      enter blocking state. Valid portfast values:
+
+      * true - Enable portfast for the interface
+      * false - Disable portfast for the interface (default value)
+    EOS
+    newvalues(:true, :false)
+  end
+
+  newproperty(:portfast_type) do
+    @doc = <<-EOS
+      Specifies the STP portfast mode type for the interface. A port
+      with edge type connect to hosts and transition to the forwarding
+      state when the link is established. An edge port that receives a
+      BPDU becomes a normal port. A port with network type connect only
+      to switches or bridges and support bridge assurance. Network ports
+      that connect to hosts or other edge devices transition ot the
+      blocking state. Valid portfast mode types:
+
+      * edge - Set STP port mode type to edge.
+      * network - Set STP port mode type to network.
+      * normal - Set STP port mode type to normal (default value)
+    EOS
+    newvalues(:edge, :network, :normal)
+  end
+
+  newproperty(:bpduguard) do
+    @doc = <<-EOS
+      Enable or disable the BPDU guard on a port. A BPDU guard-enabled
+      port is disabled when it receives a BPDU packet. Disabled ports
+      differ from blocked ports in that they are re-enabled only
+      through manual intervention. Valid BPDU guard values:
+
+      * true - Enable the BPDU guard for the interface
+      * false - Disable the BPDU guard for the interface (default value)
+    EOS
+    newvalues(:true, :false)
   end
 end
