@@ -37,8 +37,6 @@ describe Puppet::Type.type(:eos_stp_interface) do
   let(:catalog) { Puppet::Resource::Catalog.new }
   let(:type) { described_class.new(name: 'Ethernet12', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'Ethernet12'
-
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
@@ -53,7 +51,27 @@ describe Puppet::Type.type(:eos_stp_interface) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:enable, :disable]
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+  end
+
+  describe 'portfast_type' do
+    let(:attribute) { :portfast_type }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values', [:edge, :network, :normal]
+    include_examples 'rejected parameter values'
+  end
+
+  describe 'bpduguard' do
+    let(:attribute) { :bpduguard }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
 end

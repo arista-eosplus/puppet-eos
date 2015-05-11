@@ -33,7 +33,6 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_stp_interface).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -44,31 +43,31 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = eapi.Stp.interfaces.getall
-    result.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
-      provider_hash[:portfast] = attrs['portfast']
+    result = node.api('stp').get
+    result[:interfaces].map do |(name, attrs)|
+      provider_hash = { name: name }
+      provider_hash[:portfast] = attrs[:portfast].to_s.to_sym
+      provider_hash[:portfast_type] = attrs[:portfast_type].to_sym
+      provider_hash[:bpduguard] = attrs[:bpduguard].to_s.to_sym
       new(provider_hash)
     end
   end
 
   def portfast=(val)
-    eapi.Stp.interfaces.set_portfast(resource['name'], value: val)
+    value = val == :true
+    node.api('stp').interfaces.set_portfast(resource['name'], value: value)
     @property_hash[:portfast] = val
   end
 
-  def exists?
-    @property_hash[:ensure] == :present
+  def portfast_type=(val)
+    value = val.to_s
+    node.api('stp').interfaces.set_portfast_type(resource['name'], value: value)
+    @property_hash[:portfast_type] = val
   end
 
-  def create
-    eapi.Stp.interfaces.create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
-    self.portfast = resource[:portfast] if resource[:portfast]
-  end
-
-  def destroy
-    eapi.Stp.interfaces.delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+  def bpduguard=(val)
+    value = val == :true
+    node.api('stp').interfaces.set_bpduguard(resource['name'], value: value)
+    @property_hash[:bpduguard] = val
   end
 end
