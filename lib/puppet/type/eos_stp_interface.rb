@@ -40,7 +40,10 @@ Puppet::Type.newtype(:eos_stp_interface) do
 
   newparam(:name) do
     @doc = <<-EOS
-      The name for the STP interface.
+      The name parameter specifies the full interface identifier of
+      the Arista EOS interface to manage.  This value must correspond
+      to a valid interface identifier in EOS and must be either an
+      Ethernet or Port Channel interface.
     EOS
   end
 
