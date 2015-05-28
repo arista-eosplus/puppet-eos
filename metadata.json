@@ -13,8 +13,6 @@
       "operatingsystemrelease":[ "4.13.7M", "4.14" ]
     }
   ],
-  "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
-  ]
+  "tags": ["network", "netdev", "arista", "eos"]
 }
 
