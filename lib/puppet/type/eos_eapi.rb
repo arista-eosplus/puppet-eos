@@ -72,5 +72,4 @@ Puppet::Type.newtype(:eos_eapi) do
     desc 'Enable or disable EAPI for the specified protocol.'
     newvalues(:true, :false)
   end
-
 end

@@ -56,5 +56,4 @@ Puppet::Type.newtype(:eos_ospf_area) do
       end
     end
   end
-
 end

@@ -56,5 +56,4 @@ Puppet::Type.newtype(:eos_daemon) do
       end
     end
   end
-
 end

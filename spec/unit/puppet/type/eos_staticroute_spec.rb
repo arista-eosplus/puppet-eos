@@ -59,5 +59,4 @@ describe Puppet::Type.type(:eos_staticroute) do
     include_examples 'accepts values without munging', %w(Server Room)
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

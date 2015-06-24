@@ -32,7 +32,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp).provider(:eos) do
-
   let :resource do
     resource_hash = {
       name: 'settings',
@@ -58,7 +57,6 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(varp) }
 
     describe '.instances' do
@@ -106,7 +104,8 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
         subject
         expect(resources['settings'].provider.name).to eq 'settings'
         expect(resources['settings'].provider.exists?).to be_truthy
-        expect(resources['settings'].provider.mac_address).to eq 'aa:bb:cc:dd:ee:ff'
+        expect(resources['settings'].provider.mac_address)
+          .to eq 'aa:bb:cc:dd:ee:ff'
       end
 
       it 'does not set the provider instance of the unmanged resource' do
@@ -119,7 +118,6 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -138,7 +136,8 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
 
     describe '#mac_address=(value)' do
       it 'updates mac_address with value "11:22:33:44:55:66"' do
-        expect(api).to receive(:set_mac_address).with(value: '11:22:33:44:55:66')
+        expect(api).to receive(:set_mac_address)
+          .with(value: '11:22:33:44:55:66')
         provider.mac_address = '11:22:33:44:55:66'
         expect(provider.mac_address).to eq('11:22:33:44:55:66')
       end

@@ -74,5 +74,4 @@ describe Puppet::Type.type(:eos_eapi) do
     include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
-
 end

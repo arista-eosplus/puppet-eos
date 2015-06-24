@@ -64,5 +64,4 @@ describe Puppet::Type.type(:eos_command) do
     include_examples 'array of strings value'
     include_examples 'rejects values', [0, [1], { two: :three }]
   end
-
 end

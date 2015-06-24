@@ -66,5 +66,4 @@ describe Puppet::Type.type(:eos_lacp_interface) do
     include_examples 'numeric parameter', min: 0, max: 65_535
     include_examples 'rejected parameter values'
   end
-
 end

@@ -62,5 +62,4 @@ Puppet::Type.newtype(:eos_prefixlist) do
       end
     end
   end
-
 end

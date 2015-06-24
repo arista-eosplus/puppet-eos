@@ -33,7 +33,6 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_eapi).provide(:eos) do
-
   commands cli: 'FastCli'
 
   # Create methods that set the @property_hash for the #flush method

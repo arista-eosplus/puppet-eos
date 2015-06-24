@@ -69,5 +69,4 @@ Puppet::Type.newtype(:eos_mst_instance) do
       end
     end
   end
-
 end

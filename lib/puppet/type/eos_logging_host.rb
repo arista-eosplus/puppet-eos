@@ -43,7 +43,5 @@ Puppet::Type.newtype(:eos_logging_host) do
     desc 'The resource name for the logging host should be the hostname in
       either IP format or FQDN format of the destination host.'
   end
-
   # Properties (state management)
-
 end

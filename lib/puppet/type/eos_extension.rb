@@ -66,5 +66,4 @@ Puppet::Type.newtype(:eos_extension) do
     desc 'Uses the force keyword when installing extensions'
     newvalues(:true, :false)
   end
-
 end

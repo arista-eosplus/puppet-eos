@@ -57,5 +57,4 @@ describe Puppet::Type.type(:eos_ospf_instance) do
                      %w(0.0.0.0 255.255.255.255)
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

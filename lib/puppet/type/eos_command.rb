@@ -59,5 +59,4 @@ Puppet::Type.newtype(:eos_command) do
       end
     end
   end
-
 end

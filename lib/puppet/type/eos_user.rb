@@ -66,5 +66,4 @@ Puppet::Type.newtype(:eos_user) do
     desc 'When to update the password'
     newvalues(:always, :on_create)
   end
-
 end

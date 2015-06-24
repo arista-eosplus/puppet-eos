@@ -32,7 +32,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_extension).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -65,7 +64,6 @@ describe Puppet::Type.type(:eos_extension).provider(:eos) do
   end
 
   context 'class methods' do
-
     describe '.instances' do
       subject { described_class.instances }
 

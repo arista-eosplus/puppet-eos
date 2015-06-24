@@ -77,5 +77,4 @@ describe Puppet::Type.type(:eos_user) do
     include_examples 'accepts values', [:always, :on_create]
     include_examples 'rejected parameter values'
   end
-
 end

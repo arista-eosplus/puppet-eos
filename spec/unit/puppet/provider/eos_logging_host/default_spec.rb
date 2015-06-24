@@ -34,7 +34,6 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -60,7 +59,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(logging) }
 
     describe '.instances' do
@@ -89,8 +87,10 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host) .new(name: '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host) .new(name: '5.6.7.8')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
+            .new(name: '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
+            .new(name: '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -116,7 +116,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

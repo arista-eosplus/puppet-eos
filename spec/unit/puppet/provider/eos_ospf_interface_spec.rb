@@ -32,7 +32,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -63,7 +62,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(ospf) }
 
     describe '.instances' do
@@ -88,14 +86,15 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
                          name: 'Ethernet1',
                          network_type: :point_to_point
       end
-
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_ospf_interface).new(name: 'Ethernet1'),
-          'Ethernet2' => Puppet::Type.type(:eos_ospf_interface).new(name: 'Ethernet2')
+          'Ethernet1' => Puppet::Type.type(:eos_ospf_interface)
+            .new(name: 'Ethernet1'),
+          'Ethernet2' => Puppet::Type.type(:eos_ospf_interface)
+            .new(name: 'Ethernet2')
         }
       end
 
@@ -111,7 +110,8 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
         subject
         expect(resources['Ethernet1'].provider.name).to eq 'Ethernet1'
         expect(resources['Ethernet1'].provider.exists?).to be_truthy
-        expect(resources['Ethernet1'].provider.network_type).to eq :point_to_point
+        expect(resources['Ethernet1'].provider.network_type)
+          .to eq :point_to_point
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -124,7 +124,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -142,11 +141,10 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
     end
 
     describe '#create' do
-
       before :each do
         expect(interfaces).to receive(:create).with(resource[:name])
         allow(interfaces).to receive_messages(
-          :set_network_type => true
+          set_network_type: true
         )
       end
 
@@ -166,7 +164,7 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
         expect(interfaces).to receive(:delete).with(resource[:name])
         provider.destroy
         expect(provider.ensure).to eq(:absent)
-        end
+      end
     end
 
     describe '#network_type=(val)' do
