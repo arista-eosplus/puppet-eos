@@ -1,0 +1,20 @@
+---
+'test1':
+  10: { !ruby/sym acltype: 'standard',
+        !ruby/sym action: 'permit',
+        !ruby/sym srcaddr: 'host 1.2.3.4',
+        !ruby/sym log: true
+      }
+  20: { !ruby/sym acltype: 'standard',
+        !ruby/sym srcaddr: '11.12.0.0',
+        !ruby/sym srcprefixlen: '255.255.0.0'
+      }
+'test2':
+  10: { !ruby/sym acltype: 'standard',
+        !ruby/sym action: 'deny',
+        !ruby/sym srcaddr: '1.2.3.0',
+        !ruby/sym srcprefixlen: 8
+      }
+  20: { !ruby/sym acltype: 'standard',
+        !ruby/sym srcaddr: 'any'
+      }
