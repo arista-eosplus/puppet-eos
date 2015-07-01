@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2015, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -64,5 +64,4 @@ describe Puppet::Type.type(:eos_command) do
     include_examples 'array of strings value'
     include_examples 'rejects values', [0, [1], { two: :three }]
   end
-
 end
