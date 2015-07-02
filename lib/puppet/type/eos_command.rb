@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2015, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,36 @@
 # encoding: utf-8
 
 Puppet::Type.newtype(:eos_command) do
-  @doc = 'Execute commands in enable or config mode'
+  @doc = <<-EOS
+    Execute commands on the EOS node. Commands can be either priviledged
+    mode (enable) commands or configuration commands.
+  EOS
 
   # Parameters
 
   newparam(:name) do
-    desc 'The resource name for the commands instance'
+    desc <<-EOS
+      The resource name for the command instance.
+    EOS
   end
 
   # Properties (state management)
 
   newproperty(:mode) do
-    desc 'Mode to execute the commands in'
+    desc <<-EOS
+      Specifies the command mode to execute the commands in. If this
+      value is config then the command list is executed in config mode.
+      If the value is enable, then the command list is executed in
+      privileged (enable) mode. The default is enable mode.
+    EOS
     newvalues(:enable, :config)
   end
 
   newproperty(:commands, array_matching: :all) do
-    desc 'Array of commands to execute'
+    desc <<-EOS
+      Array of commands to execute on the node. Mutliple commands can be
+      sent to the node as a comma delimited set of values.
+    EOS
 
     validate do |value|
       case value

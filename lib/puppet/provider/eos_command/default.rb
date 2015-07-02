@@ -42,14 +42,20 @@ Puppet::Type.type(:eos_command).provide(:eos) do
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
+  def self.instances
+    []
+  end
+
   def initialize(resource = {})
     super(resource)
     @property_flush = {}
   end
 
   def flush
-    commands = resource[:commands]
-    commands.insert(0, 'configure') if resource[:mode] == :config
-    eapi.enable(commands)
+    if resource[:mode] == :config
+      node.config(resource[:commands])
+    else
+      node.enable(resource[:commands])
+    end
   end
 end
