@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2015, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,11 +33,11 @@
 
 require 'spec_helper'
 
-describe Puppet::Type.type(:eos_access_list) do
+describe Puppet::Type.type(:eos_acl_entry) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: 'eng', catalog: catalog) }
+  let(:type) { described_class.new(name: 'test:10', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: 'eng'
+  it_behaves_like 'an ensurable type', name: 'test:10'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -45,26 +45,59 @@ describe Puppet::Type.type(:eos_access_list) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(mkt)
+    include_examples 'accepts values without munging', %w(eng:20)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'acl_type' do
-    let(:attribute) { :acl_type }
+  describe 'acltype' do
+    let(:attribute) { :acltype }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values', [:standard, :extended]
-    include_examples 'rejected parameter values'
+    include_examples 'rejects values', [[1], { two: :three }]
   end
 
-  describe 'entries' do
-    let(:attribute) { :entries }
+  describe 'action' do
+    let(:attribute) { :action }
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'array of strings value'
+    include_examples 'accepts values', [:permit, :deny]
+    include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'srcaddr' do
+    let(:attribute) { :srcaddr }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', ['1.2.3.0', 'any',
+                                                        'host 9.8.7.6']
+    include_examples 'rejects values', ['1.2', '255.255.255.256', 'bogus',
+                                        'host', 'host 1.2.3']
+  end
+
+  describe 'srcprefixlen' do
+    let(:attribute) { :srcprefixlen }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'numeric parameter', min: 0, max: 32
+    include_examples 'rejects values', [-1, 33]
+  end
+
+  describe 'log' do
+    let(:attribute) { :log }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
   end
 end
