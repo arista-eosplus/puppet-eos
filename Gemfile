@@ -31,8 +31,13 @@ group :development, :test do
   gem 'pry',                     require: false
   gem 'pry-doc',                 require: false
   gem 'simplecov',               require: false
+  gem 'simplecov-json',          require: false
+  gem 'simplecov-rcov',          require: false
   gem 'puppetlabs_spec_helper'
   gem 'puppet-lint'
+  gem 'metadata-json-lint',      require: false
+  gem 'ci_reporter'
+  gem 'ci_reporter_rspec'
 end
 
 ENV['GEM_PUPPET_VERSION'] ||= ENV['PUPPET_GEM_VERSION']

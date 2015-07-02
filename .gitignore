@@ -34,3 +34,8 @@ Gemfile.lock
 .rvmrc
 
 .DS_Store
+
+# CI files
+results
+spec/fixtures/manifests/*
+spec/fixtures/modules/*

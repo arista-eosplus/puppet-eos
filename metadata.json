@@ -7,6 +7,8 @@
   "source": "https://github.com/arista-eosplus/puppet-eos",
   "project_page": "http://puppet-eos.readthedocs.org/",
   "issues_url": "https://github.com/arista-eosplus/puppet-eos/issues",
+  "dependencies": [
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem":"AristaEOS",
