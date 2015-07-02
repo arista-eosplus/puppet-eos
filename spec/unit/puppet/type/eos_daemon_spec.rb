@@ -56,5 +56,4 @@ describe Puppet::Type.type(:eos_daemon) do
     include_examples 'accepts values without munging', %w(/etc/rsyslogd)
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

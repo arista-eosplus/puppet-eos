@@ -67,5 +67,4 @@ Puppet::Type.newtype(:eos_access_list) do
       end
     end
   end
-
 end

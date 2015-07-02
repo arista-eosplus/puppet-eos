@@ -67,5 +67,4 @@ describe Puppet::Type.type(:eos_access_list) do
     include_examples '#doc Documentation'
     include_examples 'array of strings value'
   end
-
 end

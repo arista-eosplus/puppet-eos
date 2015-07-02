@@ -54,5 +54,4 @@ Puppet::Type.newtype(:eos_ospf_interface) do
     desc 'Specifies the network type'
     newvalues(:point_to_point, :broadcast)
   end
-
 end

@@ -58,5 +58,4 @@ describe Puppet::Type.type(:eos_mst_instance) do
     include_examples 'accepts values without munging', %w(0 20480 45056 61440)
     include_examples 'rejects values', [100, 65_536, 'string', { two: :three }]
   end
-
 end

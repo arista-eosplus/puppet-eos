@@ -33,7 +33,6 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_varp).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 

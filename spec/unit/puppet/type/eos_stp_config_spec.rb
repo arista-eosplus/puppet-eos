@@ -54,5 +54,4 @@ describe Puppet::Type.type(:eos_stp_config) do
     include_examples 'accepts values', [:mstp, :none]
     include_examples 'rejected parameter values'
   end
-
 end

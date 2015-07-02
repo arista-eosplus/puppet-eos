@@ -32,7 +32,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -61,7 +60,6 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
@@ -86,7 +84,6 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
                          name: '1',
                          router_id: '1.1.1.1'
       end
-
     end
 
     describe '.prefetch' do
@@ -122,7 +119,6 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -140,11 +136,10 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     end
 
     describe '#create' do
-
       before :each do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
-          :set_router_id => true
+          set_router_id: true
         )
       end
 
@@ -164,7 +159,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
         expect(api).to receive(:delete).with(resource[:name])
         provider.destroy
         expect(provider.ensure).to eq(:absent)
-        end
+      end
     end
 
     describe '#router_id=(val)' do

@@ -54,5 +54,4 @@ describe Puppet::Type.type(:eos_vrrp) do
     include_examples 'accepts values without munging', %w(001c.7300.0099)
     include_examples 'rejects values', [[1], { two: :three }]
   end
-
 end

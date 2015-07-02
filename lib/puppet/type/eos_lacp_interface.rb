@@ -60,5 +60,4 @@ Puppet::Type.newtype(:eos_lacp_interface) do
       end
     end
   end
-
 end

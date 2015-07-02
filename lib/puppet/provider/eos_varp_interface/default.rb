@@ -33,7 +33,6 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_varp_interface).provide(:eos) do
-
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -49,7 +48,7 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
       provider_hash = { name: name, ensure: :present }
       provider_hash[:addresses] = attrs['addresses']
       arry << new(provider_hash)
-      end
+    end
   end
 
   def addresses=(val)

@@ -46,5 +46,4 @@ describe Puppet::Type.type(:eos_logging_host) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
   end
-
 end

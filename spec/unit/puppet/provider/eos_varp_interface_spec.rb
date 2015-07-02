@@ -32,7 +32,6 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
-
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
@@ -63,7 +62,6 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:get).and_return(varp) }
 
     describe '.instances' do
@@ -75,7 +73,7 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
         expect(subject.size).to eq 1
       end
 
-      it "has an instance for interface Vlan1234" do
+      it 'has an instance for interface Vlan1234' do
         instance = subject.find { |p| p.name == 'Vlan1234' }
         expect(instance).to be_a described_class
       end
@@ -93,7 +91,8 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'Vlan1234' => Puppet::Type.type(:eos_varp_interface).new(name: 'Vlan1234'),
+          'Vlan1234' => Puppet::Type.type(:eos_varp_interface)
+            .new(name: 'Vlan1234'),
           'Vlan1' => Puppet::Type.type(:eos_varp_interface).new(name: 'Vlan1')
         }
       end
@@ -110,7 +109,8 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
         subject
         expect(resources['Vlan1234'].provider.name).to eq('Vlan1234')
         expect(resources['Vlan1234'].provider.exists?).to be_truthy
-        expect(resources['Vlan1234'].provider.addresses).to eq(['1.1.1.1', '2.2.2.2'])
+        expect(resources['Vlan1234'].provider.addresses)
+          .to eq(['1.1.1.1', '2.2.2.2'])
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -123,7 +123,6 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -141,11 +140,10 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
     end
 
     describe '#create' do
-
       before :each do
         expect(interfaces).to receive(:create).with(resource[:name])
         allow(interfaces).to receive_messages(
-          :set_addresses => true
+          set_addresses: true
         )
       end
 
@@ -173,7 +171,8 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
       let(:addresses) { %w(1.1.1.1 2.2.2.2) }
 
       it 'updates addresses in the provider' do
-        expect(interfaces).to receive(:set_addresses).with(name, value: addresses)
+        expect(interfaces).to receive(:set_addresses)
+          .with(name, value: addresses)
         provider.addresses = addresses
         expect(provider.addresses).to eq addresses
       end

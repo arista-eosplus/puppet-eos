@@ -58,5 +58,4 @@ describe Puppet::Type.type(:eos_ospf_interface) do
     include_examples 'accepts values', [:point_to_point, :broadcast]
     include_examples 'rejected parameter values'
   end
-
 end

@@ -62,5 +62,4 @@ Puppet::Type.newtype(:eos_staticroute) do
       end
     end
   end
-
 end
