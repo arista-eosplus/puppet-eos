@@ -6,19 +6,19 @@ require 'ci/reporter/rake/rspec'
 PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.ignore_paths = ['spec/**/*.pp', 'pkg/**/*.pp']
 
-desc "Prep CI RSpec tests"
+desc 'Prep CI RSpec tests'
 task :ci_prep do
-    require 'rubygems'
-    begin
-        gem 'ci_reporter'
-        require 'ci/reporter/rake/rspec'
-        ENV['CI_REPORTS'] = 'results'
-    rescue LoadError
-       puts 'Missing ci_reporter gem. You must have the ci_reporter gem installed to run the CI spec tests'
-    end
+  require 'rubygems'
+  begin
+    gem 'ci_reporter'
+    require 'ci/reporter/rake/rspec'
+    ENV['CI_REPORTS'] = 'results'
+  rescue LoadError
+    puts 'Missing ci_reporter gem. You must have the ci_reporter gem installed to run the CI spec tests'
+  end
 end
 
-desc "Run the CI RSpec tests"
+desc 'Run the CI RSpec tests'
 task :ci_spec => [:ci_prep, 'ci:setup:rspec', :spec]
 
 desc 'Validate manifests, templates, and ruby files'
