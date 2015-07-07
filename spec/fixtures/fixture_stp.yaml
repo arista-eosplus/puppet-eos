@@ -1,0 +1,11 @@
+---
+:mode: mstp
+:interfaces:
+  Ethernet1:
+    :portfast: true
+    :portfast_type: network
+    :bpduguard: true
+  Ethernet2:
+    :portfast: true
+    :portfast_type: normal
+    :bpduguard: false

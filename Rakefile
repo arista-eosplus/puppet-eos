@@ -2,8 +2,25 @@ require 'bundler/gem_tasks'
 require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
+require 'ci/reporter/rake/rspec'
 PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.ignore_paths = ['spec/**/*.pp', 'pkg/**/*.pp']
+
+desc 'Prep CI RSpec tests'
+task :ci_prep do
+  require 'rubygems'
+  begin
+    gem 'ci_reporter'
+    require 'ci/reporter/rake/rspec'
+    ENV['CI_REPORTS'] = 'results'
+  rescue LoadError
+    puts 'Missing ci_reporter gem. You must have the ci_reporter gem installed'\
+         ' to run the CI spec tests'
+  end
+end
+
+desc 'Run the CI RSpec tests'
+task ci_spec: [:ci_prep, 'ci:setup:rspec', :spec]
 
 desc 'Validate manifests, templates, and ruby files'
 task :validate do
@@ -18,12 +35,12 @@ task :validate do
   end
 end
 
-desc "Generate Getting Started Guide HTML"
+desc 'Generate Getting Started Guide HTML'
 task :guide do
-    system "make -C guide html"
+  system 'make -C guide html'
 end
 
-desc "Clean Getting Started docs"
+desc 'Clean Getting Started docs'
 task :guide_clean do
-    system "make -C guide clean"
+  system 'make -C guide clean'
 end

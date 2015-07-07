@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Eos::VERSION
   spec.authors       = ['Peter Sprygada', 'John Corbin']
   spec.email         = ['sprygada@arista.com', 'jcorbin@arista.com']
-  spec.description   = %q{Arista EOS provides Puppet modules to configure EOS devices}
+  spec.description   = %q{Arista EOS Puppet modules to configure EOS devices}
   spec.summary       = %q{Type and provider implementation for Arista EOS devices}
-  spec.homepage      = 'https://github.com/arista-eosplus/swisscom'
+  spec.homepage      = 'https://github.com/arista-eosplus/puppet-eos'
   spec.license       = 'BSD-3'
 
   spec.files         = `git ls-files -z`.split("\x0")
