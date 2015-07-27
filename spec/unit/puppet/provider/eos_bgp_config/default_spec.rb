@@ -37,6 +37,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
+      name: '64600',
       bgp_as: '64600',
       router_id: '192.168.254.1',
       enable: true,
@@ -120,18 +121,28 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
     end
   end
 
+  context 'resource exists method' do
+    describe '#exists?' do
+      subject { provider.exists? }
+
+      context 'when the resource does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(api).to receive(:get).and_return(bgp_config)
+          described_class.instances.first
+        end
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
+
   context 'resource (instance) methods' do
     before do
       expect(api).to receive(:create).with(resource[:name])
       provider.create
-    end
-
-    describe '#exists?' do
-      subject { provider.exists? }
-
-      context 'when the resource exists on the system' do
-        it { is_expected.to be_truthy }
-      end
     end
 
     describe '#create' do

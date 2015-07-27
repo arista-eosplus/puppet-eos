@@ -40,20 +40,11 @@ describe Puppet::Type.type(:eos_bgp_neighbor) do
   it_behaves_like 'an ensurable type', name: '172.16.10.1'
 
   describe 'name' do
-    let(:attribute) { :name }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'parameter'
-    include_examples '#doc Documentation'
+    include_examples 'name is the namevar'
   end
 
   describe 'peer_group' do
-    let(:attribute) { :peer_group }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', 'edge'
+    include_examples 'string', attribute: :peer_group
   end
 
   describe 'remote_as' do
@@ -62,9 +53,15 @@ describe Puppet::Type.type(:eos_bgp_neighbor) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', min: 1, max: 65_535
     include_examples 'rejects values', [0, 65_536]
     include_examples 'rejected parameter values'
+
+    [100, '100'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'"  do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
   end
 
   describe 'send_community' do
@@ -88,30 +85,15 @@ describe Puppet::Type.type(:eos_bgp_neighbor) do
   end
 
   describe 'route_map_in' do
-    let(:attribute) { :route_map_in }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', 'edge-in'
+    include_examples 'string', attribute: :route_map_in
   end
 
   describe 'route_map_out' do
-    let(:attribute) { :route_map_out }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', 'edge-out'
+    include_examples 'string', attribute: :route_map_out
   end
 
   describe 'description' do
-    let(:attribute) { :description }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', 'BGP neighbors'
+    include_examples 'string', attribute: :description
   end
 
   describe 'enable' do

@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_bgp_config) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '65535', catalog: catalog) }
+  let(:type) { described_class.new(name: 65_535, catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: '65535'
+  it_behaves_like 'an ensurable type', name: 65_535
 
   describe 'bgp_as' do
     let(:attribute) { :bgp_as }
@@ -45,9 +45,15 @@ describe Puppet::Type.type(:eos_bgp_config) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 65535)
-    include_examples 'rejects values', %w(0 65536)
+    include_examples 'rejects values', [0, 65_536]
     include_examples 'rejected parameter values'
+
+    [100, '100'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'"  do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
   end
 
   describe 'enable' do
@@ -57,7 +63,6 @@ describe Puppet::Type.type(:eos_bgp_config) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'boolean value'
-    include_examples 'rejected parameter values'
   end
 
   describe 'router_id' do

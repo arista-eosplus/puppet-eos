@@ -38,13 +38,12 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
   let(:resource) do
     resource_hash = {
       name: 'Edge',
-      peer_group: '',
-      send_community: 'enable',
       enable: :true,
-      description: '',
-      next_hop_self: 'disable',
-      route_map_in: '',
-      route_map_out: '',
+      send_community: :enable,
+      description: 'a description',
+      next_hop_self: :disable,
+      route_map_in: 'map in',
+      route_map_out: 'map out',
       ensure: :present,
       provider: described_class.name
     }
@@ -54,6 +53,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
   let(:provider) { resource.provider }
 
   let(:api) { double('bgp_config') }
+  let(:neighbors) { double('bgp.neighbors') }
 
   def bgp_config
     bgp_config = Fixtures[:bgp_config]
@@ -63,11 +63,13 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
   before :each do
     allow(described_class.node).to receive(:api).with('bgp').and_return(api)
-    allow(provider.node).to receive(:api).with('bgp').and_return(api)
+    allow(api).to receive(:neighbors).and_return(neighbors)
   end
 
   context 'class methods' do
-    before { allow(api).to receive(:get).and_return(bgp_config) }
+    before do
+      allow(neighbors).to receive(:getall).and_return(bgp_config[:neighbors])
+    end
 
     describe '.instances' do
       subject { described_class.instances }
@@ -78,6 +80,12 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
         expect(subject.size).to eq(3)
       end
 
+      %w(Edge 192.168.255.1 192.168.255.3).each do |name|
+        it "has an instance for neighbor #{name}" do
+          instance = subject.find { |p| p.name == name }
+          expect(instance).to be_a described_class
+        end
+      end
       it 'has an instance Edge' do
         instance = subject.find { |p| p.name == 'Edge' }
         expect(instance).to be_a described_class
@@ -88,13 +96,12 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
         include_examples 'provider resource methods',
                          name: 'Edge',
-                         peer_group: '',
-                         send_community: 'enable',
+                         send_community: :enable,
                          enable: :true,
-                         description: '',
-                         next_hop_self: 'disable',
-                         route_map_in: '',
-                         route_map_out: ''
+                         description: 'a description',
+                         next_hop_self: :disable,
+                         route_map_in: 'map in',
+                         route_map_out: 'map out'
       end
     end
 
@@ -124,13 +131,13 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
       it 'sets the provider instance of the managed resource Edge' do
         subject
         expect(resources['Edge'].provider.name).to eq('Edge')
-        expect(resources['Edge'].provider.peer_group).to be_empty
+        expect(resources['Edge'].provider.peer_group).to eq(:absent)
         expect(resources['Edge'].provider.remote_as).to eq(:absent)
-        expect(resources['Edge'].provider.send_community).to eq('enable')
-        expect(resources['Edge'].provider.next_hop_self).to eq('disable')
-        expect(resources['Edge'].provider.route_map_in).to be_empty
-        expect(resources['Edge'].provider.route_map_out).to be_empty
-        expect(resources['Edge'].provider.description).to be_empty
+        expect(resources['Edge'].provider.send_community).to eq(:enable)
+        expect(resources['Edge'].provider.next_hop_self).to eq(:disable)
+        expect(resources['Edge'].provider.route_map_in).to eq('map in')
+        expect(resources['Edge'].provider.route_map_out).to eq('map out')
+        expect(resources['Edge'].provider.description).to eq('a description')
         expect(resources['Edge'].provider.enable).to eq(:true)
       end
 
@@ -149,18 +156,42 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
     end
   end
 
-  context 'resource (instance) methods' do
-    before do
-      expect(api).to receive(:create).with('Edge')
-      provider.create
-    end
-
+  context 'resource exists method' do
     describe '#exists?' do
       subject { provider.exists? }
 
+      context 'when the resource does not exist on the system' do
+        it { is_expected.to be_falsey }
+      end
+
       context 'when the resource exists on the system' do
+        let(:provider) do
+          allow(neighbors).to receive(:getall)
+            .and_return(bgp_config[:neighbors])
+          described_class.instances.first
+        end
         it { is_expected.to be_truthy }
       end
+    end
+  end
+
+  context 'resource (instance) methods' do
+    before do
+      allow(provider.node).to receive(:api).with('bgp').and_return(api)
+      allow(api).to receive(:neighbors).and_return(neighbors)
+      expect(neighbors).to receive(:create).with('Edge')
+      expect(neighbors).to receive(:set_send_community).with('Edge',
+                                                             enable: true)
+      expect(neighbors).to receive(:set_next_hop_self).with('Edge',
+                                                            enable: false)
+      expect(neighbors).to receive(:set_route_map_in).with('Edge',
+                                                           value: 'map in')
+      expect(neighbors).to receive(:set_route_map_out).with('Edge',
+                                                            value: 'map out')
+      expect(neighbors).to receive(:set_description)
+        .with('Edge', value: 'a description')
+      expect(neighbors).to receive(:set_shutdown).once
+      provider.create
     end
 
     describe '#create' do
@@ -171,7 +202,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#peer_group=(value)' do
       it 'sets peer_group on the resource' do
-        expect(api).to receive(:set_peer_group).with('Edge', value: 'TOR')
+        expect(neighbors).to receive(:set_peer_group).with('Edge', value: 'TOR')
         provider.peer_group = 'TOR'
         expect(provider.peer_group).to eq('TOR')
       end
@@ -179,7 +210,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#remote_as=(value)' do
       it 'sets remote_as on the resource' do
-        expect(api).to receive(:set_remote_as).with('Edge', value: '1000')
+        expect(neighbors).to receive(:set_remote_as).with('Edge', value: '1000')
         provider.remote_as = '1000'
         expect(provider.remote_as).to eq('1000')
       end
@@ -187,7 +218,8 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#send_community=(value)' do
       it 'sets send_community on the resource' do
-        expect(api).to receive(:set_send_community).with('Edge', enable: true)
+        expect(neighbors).to receive(:set_send_community).with('Edge',
+                                                               enable: true)
         provider.send_community = :enable
         expect(provider.send_community).to eq(:enable)
       end
@@ -195,7 +227,8 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#next_hop_self=(value)' do
       it 'sets next_hop_self on the resource' do
-        expect(api).to receive(:set_next_hop_self).with('Edge', enable: true)
+        expect(neighbors).to receive(:set_next_hop_self).with('Edge',
+                                                              enable: true)
         provider.next_hop_self = :enable
         expect(provider.next_hop_self).to eq(:enable)
       end
@@ -203,7 +236,8 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#route_map_in=(value)' do
       it 'sets route_map_in on the resource' do
-        expect(api).to receive(:set_route_map_in).with('Edge', value: 'in_map')
+        expect(neighbors).to receive(:set_route_map_in).with('Edge',
+                                                             value: 'in_map')
         provider.route_map_in = 'in_map'
         expect(provider.route_map_in).to eq('in_map')
       end
@@ -211,7 +245,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#route_map_out=(value)' do
       it 'sets route_map_out on the resource' do
-        expect(api).to receive(:set_route_map_out)
+        expect(neighbors).to receive(:set_route_map_out)
           .with('Edge', value: 'out_map')
         provider.route_map_out = 'out_map'
         expect(provider.route_map_out).to eq('out_map')
@@ -220,7 +254,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#description=(value)' do
       it 'sets description on the resource' do
-        expect(api).to receive(:set_description)
+        expect(neighbors).to receive(:set_description)
           .with('Edge', value: 'a description')
         provider.description = 'a description'
         expect(provider.description).to eq('a description')
@@ -229,7 +263,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
 
     describe '#enable=(value)' do
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with('Edge', enable: :true)
+        expect(neighbors).to receive(:set_shutdown).once
         provider.enable = :true
         expect(provider.enable).to eq(:true)
       end
@@ -238,7 +272,7 @@ describe Puppet::Type.type(:eos_bgp_neighbor).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:delete)
+        expect(neighbors).to receive(:delete)
         provider.destroy
         expect(provider.ensure).to eq(:absent)
       end

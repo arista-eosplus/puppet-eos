@@ -49,63 +49,65 @@ Puppet::Type.type(:eos_bgp_neighbor).provide(:eos) do
     entries = node.api('bgp').neighbors.getall
     entries.each_with_object([]) do |(neigh_name, attrs), arry|
       provider_hash = { name: neigh_name, ensure: :present }
-      provider_hash[:peer_group] = attrs[:peer_group]
-      provider_hash[:remote_as] = attrs[:remote_as]
-      provider_hash[:send_community] = attrs[:send_community]
-      provider_hash[:next_hop_self] = attrs[:next_hop_self]
-      provider_hash[:route_map_in] = attrs[:route_map_in]
-      provider_hash[:route_map_out] = attrs[:route_map_out]
-      provider_hash[:description] = attrs[:description]
-      provider_hash[:enable] = attrs[:enable] ? :true : :false
+      provider_hash[:peer_group] = attrs[:peer_group] if attrs[:peer_group]
+      provider_hash[:remote_as] = attrs[:remote_as] if attrs[:remote_as]
+      provider_hash[:send_community] = \
+        attrs[:send_community] ? :enable : :disable
+      provider_hash[:next_hop_self] = \
+        attrs[:next_hop_self] ? :enable : :disable
+      if attrs[:route_map_in]
+        provider_hash[:route_map_in] = attrs[:route_map_in]
+      end
+      if attrs[:route_map_out]
+        provider_hash[:route_map_out] = attrs[:route_map_out]
+      end
+      provider_hash[:description] = attrs[:description] if attrs[:description]
+      provider_hash[:enable] = attrs[:shutdown] ? :false : :true
+      Puppet.debug("#{provider_hash}")
       arry << new(provider_hash)
     end
   end
 
   def peer_group=(value)
-    node.api('bgp').neighbors
-      .set_peer_group(@property_hash[:name], value: value)
+    node.api('bgp').neighbors.set_peer_group(resource[:name], value: value)
     @property_hash[:peer_group] = value
   end
 
   def remote_as=(value)
-    node.api('bgp').neighbors.set_remote_as(@property_hash[:name], value: value)
+    node.api('bgp').neighbors.set_remote_as(resource[:name], value: value)
     @property_hash[:remote_as] = value
   end
 
   def send_community=(value)
     val = value == :enable ? true : false
-    node.api('bgp').neighbors
-      .set_send_community(@property_hash[:name], enable: val)
+    node.api('bgp').neighbors.set_send_community(resource[:name], enable: val)
     @property_hash[:send_community] = value
   end
 
   def next_hop_self=(value)
     val = value == :enable ? true : false
-    node.api('bgp').neighbors
-      .set_next_hop_self(@property_hash[:name], enable: val)
+    node.api('bgp').neighbors.set_next_hop_self(resource[:name], enable: val)
     @property_hash[:next_hop_self] = value
   end
 
   def route_map_in=(value)
-    node.api('bgp').neighbors
-      .set_route_map_in(@property_hash[:name], value: value)
+    node.api('bgp').neighbors.set_route_map_in(resource[:name], value: value)
     @property_hash[:route_map_in] = value
   end
 
   def route_map_out=(value)
-    node.api('bgp').neighbors
-      .set_route_map_out(@property_hash[:name], value: value)
+    node.api('bgp').neighbors.set_route_map_out(resource[:name], value: value)
     @property_hash[:route_map_out] = value
   end
 
   def description=(value)
-    node.api('bgp').neighbors
-      .set_description(@property_hash[:name], value: value)
+    node.api('bgp').neighbors.set_description(resource[:name], value: value)
     @property_hash[:description] = value
   end
 
   def enable=(value)
-    node.api('bgp').neighbors.set_shutdown(@property_hash[:name], enable: value)
+    val = value == :true ? true : false
+    node.api('bgp').neighbors.set_shutdown(resource[:name], enable: val)
     @property_hash[:enable] = value
   end
 
@@ -116,6 +118,15 @@ Puppet::Type.type(:eos_bgp_neighbor).provide(:eos) do
   def create
     node.api('bgp').neighbors.create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
+
+    self.peer_group = resource[:peer_group] if resource[:peer_group]
+    self.remote_as = resource[:remote_as] if resource[:remote_as]
+    self.send_community = resource[:send_community] if resource[:send_community]
+    self.next_hop_self = resource[:next_hop_self] if resource[:next_hop_self]
+    self.route_map_in = resource[:route_map_in] if resource[:route_map_in]
+    self.route_map_out = resource[:route_map_out] if resource[:route_map_out]
+    self.description = resource[:description] if resource[:description]
+    self.enable = resource[:enable] if resource[:enable]
   end
 
   def destroy

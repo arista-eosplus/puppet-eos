@@ -38,7 +38,6 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
   let(:resource) do
     resource_hash = {
       name: '192.168.254.1/32',
-      route_map: '',
       ensure: :present,
       provider: described_class.name
     }
@@ -68,8 +67,8 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has one entry' do
-        expect(subject.size).to eq(1)
+      it 'has three entries' do
+        expect(subject.size).to eq(3)
       end
 
       it 'has an instance 192.168.254.1/32' do
@@ -83,8 +82,7 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
         end
 
         include_examples 'provider resource methods',
-                         name: '192.168.254.1/32',
-                         route_map: ''
+                         name: '192.168.254.1/32'
       end
     end
 
@@ -110,7 +108,7 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
         subject
         expect(resources['192.168.254.1/32'].provider.name)
           .to eq('192.168.254.1/32')
-        expect(resources['192.168.254.1/32'].provider.route_map).to be_empty
+        expect(resources['192.168.254.1/32'].provider.route_map).to eq(:absent)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -139,7 +137,7 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
 
     describe '#create' do
       it 'sets ensure on the resource' do
-        expect(api).to receive(:add_network).with('192.168.254.1', 32, '')
+        expect(api).to receive(:add_network).with('192.168.254.1', 32, nil)
         provider.create
         provider.flush
         expect(provider.ensure).to eq(:present)
@@ -159,7 +157,7 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:remove_network).with('192.168.254.1', 32, '')
+        expect(api).to receive(:remove_network).with('192.168.254.1', 32, nil)
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)

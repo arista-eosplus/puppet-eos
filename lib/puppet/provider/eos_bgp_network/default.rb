@@ -47,11 +47,14 @@ Puppet::Type.type(:eos_bgp_network).provide(:eos) do
 
   def self.instances
     bgp = node.api('bgp').get
-    attrs = bgp[:networks]
-    name = namevar(attrs[:prefix], attrs[:masklen])
-    provider_hash = { name: name, ensure: :present }
-    provider_hash[:route_map] = attrs[:route_map] if attrs[:route_map]
-    [new(provider_hash)]
+    return [] if bgp.empty?
+    networks = bgp[:networks]
+    networks.each_with_object([]) do |attrs, arry|
+      name = namevar(attrs[:prefix], attrs[:masklen])
+      provider_hash = { name: name, ensure: :present }
+      provider_hash[:route_map] = attrs[:route_map] if attrs[:route_map]
+      arry << new(provider_hash)
+    end
   end
 
   def initialize(resource = {})

@@ -40,6 +40,17 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
 
   ensurable
 
+  def munge_boolean(value)
+    case value
+    when true, 'true', :true, 'yes', 'on'
+      :true
+    when false, 'false', :false, 'no', 'off'
+      :false
+    else
+      fail('munge_boolean only takes booleans')
+    end
+  end
+
   # Parameters
 
   newparam(:name) do
@@ -47,6 +58,12 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       The name of the BGP neighbor to manage.  This value can be either
       an IPv4 address or string (in the case of managing a peer group).
     EOS
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   # Properties (state management)
@@ -56,15 +73,27 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       The name of the peer-group value to associate with the neighbor.  This
       argument is only valid if the neighbor is an IPv4 address.
     EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   newproperty(:remote_as) do
     desc <<-EOS
       Configures the BGP neighbors remote-as value.  Valid AS values are
-      in the range of 1 to 65535.
+      in the range of 1 to 65535. The value is an Integer.
     EOS
 
-    munge { |value| Integer(value) }
+    # Make sure we have a string for the AS
+    munge do |value|
+      Integer(value).to_s
+    end
 
     validate do |value|
       unless value.to_i.between?(1, 65_535)
@@ -96,6 +125,15 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       Configures the BGP neigbhors route-map in value.  The value specifies
       the name of the route-map.
     EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   newproperty(:route_map_out) do
@@ -103,6 +141,15 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       Configures the BGP neigbhors route-map out value.  The value specifies
       the name of the route-map.
     EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   newproperty(:description) do
@@ -111,6 +158,15 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       an arbitrary description to add to the neighbor statement in the
       nodes running-configuration.
     EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   newproperty(:enable, boolean: true) do
@@ -120,6 +176,11 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       administartively enabled and if enable is False then
       the BGP neighbor process is administratively disabled.
     EOS
-    newvalues(:true, :false)
+
+    newvalues(:true, :yes, :on, :false, :no, :off)
+
+    munge do |value|
+      @resource.munge_boolean(value)
+    end
   end
 end

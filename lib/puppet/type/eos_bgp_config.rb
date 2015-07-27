@@ -40,14 +40,30 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   ensurable
 
+  def munge_boolean(value)
+    case value
+    when true, 'true', :true, 'yes', 'on'
+      :true
+    when false, 'false', :false, 'no', 'off'
+      :false
+    else
+      fail('munge_boolean only takes booleans')
+    end
+  end
+
   # Parameters
 
   newparam(:bgp_as, namevar: true) do
     desc <<-EOS
       The BGP autonomous system number to be configured for the
       local BGP routing instance.  The value must be in the valid
-      BGP AS range of 1 to 65535.
+      BGP AS range of 1 to 65535.  The value is a String.
     EOS
+
+    # Make sure we have a string for the AS since it is the namevar.
+    munge do |value|
+      Integer(value).to_s
+    end
 
     validate do |value|
       unless value.to_i.between?(1, 65_535)
@@ -58,14 +74,19 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   # Properties (state management)
 
-  newproperty(:enable) do
+  newproperty(:enable, boolean: true) do
     desc <<-EOS
       Configures the administrative state for the global BGP routing
       process. If enable is True then the BGP routing process is
       administartively enabled and if enable is False then
       the BGP routing process is administratively disabled.
     EOS
-    newvalues(:true, :false)
+
+    newvalues(:true, :yes, :on, :false, :no, :off)
+
+    munge do |value|
+      @resource.munge_boolean(value)
+    end
   end
 
   newproperty(:router_id) do

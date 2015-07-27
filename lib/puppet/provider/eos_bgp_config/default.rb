@@ -47,9 +47,10 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
   def self.instances
     attrs = node.api('bgp').get
+    return [] if attrs.empty?
     name = attrs[:bgp_as]
     provider_hash = { name: name, bgp_as: name, ensure: :present }
-    provider_hash[:enable] = attrs[:enable] ? :true : :false
+    provider_hash[:enable] = attrs[:shutdown] ? :false : :true
     provider_hash[:router_id] = attrs[:router_id] if attrs[:router_id]
     [new(provider_hash)]
   end
@@ -70,12 +71,12 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
   def create
     node.api('bgp').create(resource[:name])
-    @property_hash = { name: resource[:name], bgp_as: resource[:name],
+    @property_hash = { name: resource[:name], bgp_as: resource[:bgp_as],
                        ensure: :present }
   end
 
   def destroy
     node.api('bgp').delete
-    @property_hash = { bgp_as: resource[:name], ensure: :absent }
+    @property_hash = { name: resource[:name], ensure: :absent }
   end
 end

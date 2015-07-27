@@ -73,5 +73,14 @@ Puppet::Type.newtype(:eos_bgp_network) do
       Configures the BGP route-map name to apply to the network statement
       when configured.  Note this module does not create the route-map.
     EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+        validate_features_per_value(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 end
