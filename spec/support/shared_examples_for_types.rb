@@ -76,6 +76,18 @@ RSpec.shared_examples 'boolean value' do
     end
   end
 
+  ['yes', :yes, 'on', :on].each do |val|
+    it "accepts #{val.inspect}" do
+      type[attribute] = :true
+    end
+  end
+
+  ['no', :no, 'off', :off].each do |val|
+    it "accepts #{val.inspect}" do
+      type[attribute] = :false
+    end
+  end
+
   [1, -1, { foo: 1 }, [1], 'baz', nil].each do |val|
     it "rejects #{val.inspect} with Puppet::Error" do
       expect { type[attribute] = val }.to raise_error Puppet::Error
