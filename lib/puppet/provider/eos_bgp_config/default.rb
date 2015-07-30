@@ -73,6 +73,9 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     node.api('bgp').create(resource[:name])
     @property_hash = { name: resource[:name], bgp_as: resource[:bgp_as],
                        ensure: :present }
+
+    self.enable = resource[:enable] if resource[:enable]
+    self.router_id = resource[:router_id] if resource[:router_id]
   end
 
   def destroy
