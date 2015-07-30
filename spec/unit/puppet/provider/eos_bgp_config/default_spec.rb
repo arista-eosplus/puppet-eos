@@ -142,6 +142,8 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
   context 'resource (instance) methods' do
     before do
       expect(api).to receive(:create).with(resource[:name])
+      expect(api).to receive(:set_shutdown).with(enable: :true)
+      expect(api).to receive(:set_router_id).with(value: '192.168.254.1')
       provider.create
     end
 
