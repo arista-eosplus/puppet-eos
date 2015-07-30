@@ -68,6 +68,11 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
 
   # Properties (state management)
 
+  def name_ip?
+    # Return true if name parameter is an IPv4 address
+    self[:name] =~ IPADDR_REGEXP ? true : false
+  end
+
   newproperty(:peer_group) do
     desc <<-EOS
       The name of the peer-group value to associate with the neighbor.  This
@@ -80,6 +85,9 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
         super(value)
         validate_features_per_value(value)
       else fail "value #{value.inspect} is invalid, must be a String."
+      end
+      unless @resource.name_ip?
+        fail 'peer_group cannot be set unless the neighbor is an IPv4 address'
       end
     end
   end
