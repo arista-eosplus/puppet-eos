@@ -31,27 +31,53 @@
 #
 # encoding: utf-8
 
+require 'puppet_x/eos/utils/helpers'
+
 Puppet::Type.newtype(:eos_staticroute) do
-  @doc = 'Configure static route settings'
+  @doc = <<-EOS
+    Configure static route settings
+
+    Example:
+
+        eos_static_route { '192.168.99.0/24/10.0.0.1': }
+
+        eos_static_route { '192.168.99.0/24/10.0.0.1': 
+          ensure => absent,
+        }
+
+        eos_static_route { '192.168.10.0/24/Ethernet1':
+          route_name => 'Edge10',
+          distance   => 3,
+        }
+  EOS
 
   ensurable
 
   # Parameters
 
-  newparam(:name) do
-    desc 'The destination network prefix'
+  newparam(:name, namevar: true) do
+    @doc = <<-EOS
+      A composite string consisting of <prefix>/<masklen>/<next_hop>. (namevar)
+
+      prefix    - IP destination subnet prefix
+      masklen   - Number of mask bits to apply to the destination
+      next_hop - Next_hop IP address or interface name
+    EOS
 
     validate do |value|
       if value.is_a? String then super(value)
       else fail "value #{value.inspect} is invalid, must be a String."
       end
+      fail "value #{value.inspect} must contain a slash (/)" unless value =~ /\//
     end
   end
 
   # Properties (state management)
 
   newproperty(:route_name) do
-    desc 'The name assigned to the static route'
+    @doc = <<-EOS
+      The name assigned to the static route
+    EOS
 
     validate do |value|
       case value
@@ -59,6 +85,34 @@ Puppet::Type.newtype(:eos_staticroute) do
         super(value)
         validate_features_per_value(value)
       else fail "value #{value.inspect} is invalid, must be a string."
+      end
+    end
+  end
+
+  newproperty(:distance) do
+    @doc = <<-EOS
+      Administrative distance (1-255) of the route
+    EOS
+
+    newvalues(1..255)
+
+    validate do |value|
+      unless value.to_i.between?(1, 255)
+        fail "value #{value.inspect} is invalid, must be an integer from 1-255."
+      end
+    end
+  end
+
+  newproperty(:tag) do
+    @doc = <<-EOS
+      Route tag (1-255)
+    EOS
+
+    newvalues(1..255)
+
+    validate do |value|
+      unless value.to_i.between?(1, 255)
+        fail "value #{value.inspect} is invalid, must be an integer from 1-255."
       end
     end
   end

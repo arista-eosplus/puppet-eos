@@ -35,9 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_staticroute) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '1.2.3.0', catalog: catalog) }
+  let(:type) { described_class.new(name: '1.2.3.0/24/2.2.2.2', catalog: catalog) }
 
-  it_behaves_like 'an ensurable type', name: '1.2.3.0'
+  it_behaves_like 'an ensurable type', name: '1.2.3.0/24/2.2.2.2'
 
   describe 'name' do
     let(:attribute) { :name }
@@ -50,6 +50,16 @@ describe Puppet::Type.type(:eos_staticroute) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
+  describe 'distance' do
+    let(:attribute) { :distance }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(1 255)
+    include_examples 'rejects values', [[0], { two: :three }]
+  end
+
   describe 'route_name' do
     let(:attribute) { :route_name }
     subject { described_class.attrclass(attribute) }
@@ -58,5 +68,15 @@ describe Puppet::Type.type(:eos_staticroute) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(Server Room)
     include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'tag' do
+    let(:attribute) { :tag }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(1 255)
+    include_examples 'rejects values', [[0], { two: :three }]
   end
 end

@@ -1,0 +1,22 @@
+--- 
+1.2.3.4/32/Null0: 
+  ? !ruby/symbol distance
+  : "3"
+  ? !ruby/symbol name
+  : Edge10
+  ? !ruby/symbol tag
+  : "4"
+192.0.3.0/24/192.0.3.1: 
+  ? !ruby/symbol distance
+  : "1"
+  ? !ruby/symbol name
+  : dummy2
+  ? !ruby/symbol tag
+  : "0"
+192.0.5.0/24/Ethernet1: 
+  ? !ruby/symbol distance
+  : "1"
+  ? !ruby/symbol name
+  : dummy2
+  ? !ruby/symbol tag
+  : "0"
