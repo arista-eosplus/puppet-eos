@@ -48,8 +48,6 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
   def self.instances
     routes = node.api('staticroutes').getall
     routes.map do |dest, attrs|
-      #name = dest
-      #name = namevar(dest, attrs[:next_hop])
       provider_hash = { name: dest, ensure: :present }
       provider_hash[:route_name] = attrs[:name] if attrs[:name]
       provider_hash[:distance] = attrs[:distance] if attrs[:distance]
@@ -57,20 +55,13 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
       new(provider_hash)
     end
 
-      #   {
-      #     <route>: {
-      #       "next_hop": <string>,
-      #       "name": <string, nil>
-      #     }
-      #   }
-    #   pry(main)> node.api('staticroute').getall
+    #   pry(main)> node.api('staticroutes').getall
     #   => {
-    #        "192.0.2.0/24"=>{
-    #            "next_hop"=>"Ethernet7",
+    #        "192.0.2.0/24/Ethernet7"=>{
     #            "name"=>"dummy1"
     #        },
-    #        "192.0.3.0/24"=>{
-    #            "next_hop"=>"192.0.3.1",
+    #        "192.0.3.0/24/192.0.3.1"=>{
+    #            "distance"=>"4",
     #            "name"=>"dummy2"
     #        }
     #      }
@@ -130,8 +121,4 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
     end
     @property_hash = desired_state
   end
-
-  #def self.namevar(dest, next_hop)
-  #  "#{dest}/#{next_hop}"
-  #end
 end

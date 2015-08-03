@@ -35,7 +35,10 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_staticroute) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(name: '1.2.3.0/24/2.2.2.2', catalog: catalog) }
+  let(:type) do
+    described_class.new(name: '1.2.3.0/24/2.2.2.2',
+                        catalog: catalog)
+  end
 
   it_behaves_like 'an ensurable type', name: '1.2.3.0/24/2.2.2.2'
 

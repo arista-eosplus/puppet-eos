@@ -41,7 +41,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
         eos_static_route { '192.168.99.0/24/10.0.0.1': }
 
-        eos_static_route { '192.168.99.0/24/10.0.0.1': 
+        eos_static_route { '192.168.99.0/24/10.0.0.1':
           ensure => absent,
         }
 
@@ -68,7 +68,8 @@ Puppet::Type.newtype(:eos_staticroute) do
       if value.is_a? String then super(value)
       else fail "value #{value.inspect} is invalid, must be a String."
       end
-      fail "value #{value.inspect} must contain a slash (/)" unless value =~ /\//
+      fail "value #{value.inspect} must contain a slash (/)" \
+        unless value =~ %r{/}
     end
   end
 
