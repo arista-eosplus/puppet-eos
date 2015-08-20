@@ -71,7 +71,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has two entries' do
+      it 'has three entries' do
         expect(subject.size).to eq(3)
       end
 
@@ -83,7 +83,9 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
       end
 
       context 'eos_staticroute { 1.2.3.4/32/Null0: }' do
-        subject { described_class.instances.find { |p| p.name == '1.2.3.4/32/Null0' } }
+        subject do
+          described_class.instances.find { |p| p.name == '1.2.3.4/32/Null0' }
+        end
 
         include_examples 'provider resource methods',
                          name: '1.2.3.4/32/Null0',

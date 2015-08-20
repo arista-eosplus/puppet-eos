@@ -47,24 +47,27 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
 
   def self.instances
     routes = node.api('staticroutes').getall
-    routes.map do |dest, attrs|
-      provider_hash = { name: dest, ensure: :present }
+    return [] if routes.empty?
+    routes.each_with_object([]) do |attrs, arry|
+      name = namevar(attrs[:destination], attrs[:nexthop])
+      provider_hash = { name: name, ensure: :present }
       provider_hash[:route_name] = attrs[:name] if attrs[:name]
       provider_hash[:distance] = attrs[:distance] if attrs[:distance]
       provider_hash[:tag] = attrs[:tag] if attrs[:tag]
-      new(provider_hash)
+      arry << new(provider_hash)
     end
 
     #   pry(main)> node.api('staticroutes').getall
-    #   => {
-    #        "192.0.2.0/24/Ethernet7"=>{
-    #            "name"=>"dummy1"
-    #        },
-    #        "192.0.3.0/24/192.0.3.1"=>{
-    #            "distance"=>"4",
-    #            "name"=>"dummy2"
-    #        }
-    #      }
+    #   => [{:destination=>"1.2.3.4/32",
+    #     :nexthop=>"Null0",
+    #     :distance=>"32",
+    #     :tag=>"3",
+    #     :name=>"fred"},
+    #    {:destination=>"192.0.3.0/24",
+    #     :nexthop=>"192.0.3.1",
+    #     :distance=>"1",
+    #     :tag=>"0",
+    #     :name=>"dummy2"}]
   end
 
   def initialize(resource = {})
@@ -120,5 +123,9 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
       api.delete(dest, next_hop)
     end
     @property_hash = desired_state
+  end
+
+  def self.namevar(destination, nexthop)
+    "#{destination}/#{nexthop}"
   end
 end
