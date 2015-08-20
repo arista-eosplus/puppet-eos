@@ -56,7 +56,8 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
   end
 
   def enable=(val)
-    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
+    value = val == :true ? true : false
+    node.api('interfaces').set_shutdown(resource[:name], enable: value)
     @property_hash[:enable] = val
   end
 
