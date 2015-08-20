@@ -61,7 +61,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
       prefix    - IP destination subnet prefix
       masklen   - Number of mask bits to apply to the destination
-      next_hop - Next_hop IP address or interface name
+      next_hop  - Next_hop IP address or interface name
     EOS
 
     validate do |value|
@@ -92,7 +92,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
   newproperty(:distance) do
     @doc = <<-EOS
-      Administrative distance (1-255) of the route
+      Administrative distance of the route
     EOS
 
     newvalues(1..255)
@@ -106,7 +106,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
   newproperty(:tag) do
     @doc = <<-EOS
-      Route tag (1-255)
+      Route tag
     EOS
 
     newvalues(1..255)
