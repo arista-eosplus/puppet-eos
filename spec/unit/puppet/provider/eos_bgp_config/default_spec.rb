@@ -40,7 +40,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
       name: '64600',
       bgp_as: '64600',
       router_id: '192.168.254.1',
-      enable: true,
+      enable: :true,
       ensure: :present,
       provider: described_class.name
     }
@@ -142,6 +142,8 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
   context 'resource (instance) methods' do
     before do
       expect(api).to receive(:create).with(resource[:name])
+      expect(api).to receive(:set_shutdown).with(enable: true)
+      expect(api).to receive(:set_router_id).with(value: '192.168.254.1')
       provider.create
     end
 
@@ -153,7 +155,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
 
     describe '#enable=(value)' do
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(enable: :true)
+        expect(api).to receive(:set_shutdown).with(enable: true)
         provider.enable = :true
         expect(provider.enable).to eq(:true)
       end

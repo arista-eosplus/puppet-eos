@@ -44,7 +44,19 @@ describe Puppet::Type.type(:eos_bgp_neighbor) do
   end
 
   describe 'peer_group' do
-    include_examples 'string', attribute: :peer_group
+    include_examples 'string', name: '172.16.10.1', attribute: :peer_group
+  end
+
+  describe 'peer_group to fail' do
+    # If name is not an IPv4 address then you cannot set the peer group
+    let(:catalog) { Puppet::Resource::Catalog.new }
+    let(:type) { described_class.new(name: 'Marketing', catalog: catalog) }
+    subject { described_class.attrclass(:peer_group) }
+
+    it 'rejects setting peer group' do
+      expect { type[:peer_group] = 'BGP_edge' }
+        .to raise_error Puppet::ResourceError, /neighbor is an IPv4 address/
+    end
   end
 
   describe 'remote_as' do

@@ -56,7 +56,8 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def enable=(value)
-    node.api('bgp').set_shutdown(enable: value)
+    val = value == :true ? true : false
+    node.api('bgp').set_shutdown(enable: val)
     @property_hash[:enable] = value
   end
 
@@ -71,8 +72,11 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
   def create
     node.api('bgp').create(resource[:name])
-    @property_hash = { name: resource[:name], bgp_as: resource[:bgp_as],
+    @property_hash = { name: resource[:name], bgp_as: resource[:name],
                        ensure: :present }
+
+    self.enable = resource[:enable] if resource[:enable]
+    self.router_id = resource[:router_id] if resource[:router_id]
   end
 
   def destroy
