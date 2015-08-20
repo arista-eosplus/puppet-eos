@@ -76,7 +76,8 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def enable=(val)
-    node.api('mlag').set_shutdown(value: val == :false)
+    value = val == :true ? true : false
+    node.api('mlag').set_shutdown(enable: value)
     @property_hash[:enable] = val
   end
 

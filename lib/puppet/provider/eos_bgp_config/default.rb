@@ -56,7 +56,8 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def enable=(value)
-    node.api('bgp').set_shutdown(enable: value)
+    val = value == :true ? true : false
+    node.api('bgp').set_shutdown(enable: val)
     @property_hash[:enable] = value
   end
 

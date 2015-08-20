@@ -185,12 +185,11 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-      %w(true false).each do |val|
-        let(:value) { !val }
+      %w(true, false).each do |val|
         let(:name) { 'Ethernet1' }
 
         it 'updates enable in the provider' do
-          expect(api).to receive(:set_shutdown).with(name, value: !val)
+          expect(api).to receive(:set_shutdown).with(name, enable: !val)
           provider.enable = val
           expect(provider.enable).to eq(val)
         end

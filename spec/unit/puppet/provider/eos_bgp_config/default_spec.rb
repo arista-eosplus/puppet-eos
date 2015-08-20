@@ -153,7 +153,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
 
     describe '#enable=(value)' do
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(enable: :true)
+        expect(api).to receive(:set_shutdown).with(enable: true)
         provider.enable = :true
         expect(provider.enable).to eq(:true)
       end
