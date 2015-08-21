@@ -59,18 +59,12 @@ describe Puppet::Type.type(:eos_staticroute) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(1 255)
-    include_examples 'rejects values', [[0], { two: :three }]
+    include_examples 'numeric parameter', min: 1, max: 255
+    include_examples 'rejects values', [0, 256]
   end
 
   describe 'route_name' do
-    let(:attribute) { :route_name }
-    subject { described_class.attrclass(attribute) }
-
-    include_examples 'property'
-    include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(Server Room)
-    include_examples 'rejects values', [[1], { two: :three }]
+    include_examples 'string', attribute: :route_name
   end
 
   describe 'tag' do

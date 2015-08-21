@@ -68,8 +68,6 @@ Puppet::Type.newtype(:eos_staticroute) do
       if value.is_a? String then super(value)
       else fail "value #{value.inspect} is invalid, must be a String."
       end
-      fail "value #{value.inspect} must contain a slash (/)" \
-        unless value =~ %r{/}
     end
   end
 
@@ -81,11 +79,8 @@ Puppet::Type.newtype(:eos_staticroute) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -96,6 +91,8 @@ Puppet::Type.newtype(:eos_staticroute) do
     EOS
 
     newvalues(1..255)
+
+    munge { |value| Integer(value) }
 
     validate do |value|
       unless value.to_i.between?(1, 255)
