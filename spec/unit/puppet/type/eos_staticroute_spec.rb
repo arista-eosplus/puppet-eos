@@ -73,8 +73,6 @@ describe Puppet::Type.type(:eos_staticroute) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    #include_examples 'numeric parameter', min: 0, max: 255
-    #include_examples 'rejects values', [-1, 256]
     include_examples 'accepts values without munging', %w(0 255)
     include_examples 'rejects values', [[-1], { two: :three }]
   end
