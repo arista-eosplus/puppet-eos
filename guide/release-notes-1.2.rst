@@ -7,6 +7,8 @@ Release 1.2 - August 2015
 
 See `GitHub issues <https://github.com/arista-eosplus/puppet-eos/issues>`_ for the current state of any known issues.
 
+.. note:: puppet-eos 1.2.0 requires a minumum rbeapi version of 0.3.0.  Prior versions of puppet-eos will only work with rbeapi 0.2.0 or lower.
+
 New Types
 ---------
 
@@ -20,8 +22,6 @@ Enhancements
 
 Resolved Issues
 ---------------
-
-* eos_interface did not properly control shutdown/enable state
 
 Known Issues
 ------------
