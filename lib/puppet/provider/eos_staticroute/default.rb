@@ -30,37 +30,30 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 require 'puppet/type'
-require 'puppet_x/eos/provider'
+require 'pathname'
 
-Puppet::Type.type(:eos_static_route).provide(:eos) do
+module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
+require File.join module_lib, 'puppet_x/eos/provider'
+
+Puppet::Type.type(:eos_staticroute).provide(:eos) do
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
   # Mix in the api as instance methods
   include PuppetX::Eos::EapiProviderMixin
+
   # Mix in the api as class methods
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    resp = eapi.enable('show running-config section ip route', format: 'text')
-    result = resp.first['output']
-
-    result.split(/\n/).map do |entry|
-      parts = entry.split
-      provider_hash = { name: parts[2], ensure: :present }
-      provider_hash[:next_hop] = parts[3]
-      provider_hash[:route_name] = ''
-      new(provider_hash)
-    end
-  end
-
-  def self.prefetch(resources)
-    provider_hash = instances.each_with_object({}) do |provider, hsh|
-      hsh[provider.name] = provider
-    end
-
-    resources.each_pair do |name, resource|
-      resource.provider = provider_hash[name] if provider_hash[name]
+    routes = node.api('staticroutes').getall
+    routes.each_with_object([]) do |attrs, arry|
+      name = namevar(attrs[:destination], attrs[:nexthop])
+      provider_hash = { name: name, ensure: :present }
+      provider_hash[:route_name] = attrs[:name] if attrs[:name]
+      provider_hash[:distance] = attrs[:distance] if attrs[:distance]
+      provider_hash[:tag] = attrs[:tag] if attrs[:tag]
+      arry << new(provider_hash)
     end
   end
 
@@ -77,35 +70,49 @@ Puppet::Type.type(:eos_static_route).provide(:eos) do
     @property_flush[:route_name] = val
   end
 
+  def distance=(val)
+    @property_flush[:distance] = val
+  end
+
+  def tag=(val)
+    @property_flush[:tag] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
 
   def create
-    prefix = resource[:name]
-    next_hop = resource[:next_hop]
-    eapi.config(["ip route #{prefix} #{next_hop}"])
-    @property_hash = { name: prefix, ensure: :present }
-    self.next_hop = resource[:next_hop] if resource[:next_hop]
-    self.route_name = resource[:route_name] if resource[:route_name]
+    @property_flush = resource.to_hash
   end
 
   def destroy
-    prefix = resource[:name]
-    eapi.config(["no ip route #{prefix}"])
-    @property_hash = { name: prefix, ensure: :absent }
+    @property_flush = resource.to_hash
   end
 
   def flush
-    flush_next_hop
-    @property_hash = resource.to_hash
+    desired_state = @property_hash.merge!(@property_flush)
+    # Extract the destination and next_hop from the name
+    comp = desired_state[:name].split('/')
+    dest = "#{comp[0]}/#{comp[1]}"
+    next_hop = comp[2]
+
+    opts = {}
+    opts[:distance] = desired_state[:distance]
+    opts[:route_name] = desired_state[:route_name]
+    opts[:tag] = desired_state[:tag]
+
+    api = node.api('staticroutes')
+    case desired_state[:ensure]
+    when :present
+      api.create(dest, next_hop, opts)
+    when :absent
+      api.delete(dest, next_hop)
+    end
+    @property_hash = desired_state
   end
 
-  def flush_next_hop
-    prefix = resource[:name]
-    next_hop = resource[:next_hop]
-    new_next_hop = @property_flush[:next_hop]
-    eapi.config(["no ip route #{prefix} #{next_hop}",
-                 "ip route #{prefix} #{new_next_hop}"])
+  def self.namevar(destination, nexthop)
+    "#{destination}/#{nexthop}"
   end
 end
