@@ -87,10 +87,8 @@ Puppet::Type.newtype(:eos_staticroute) do
 
   newproperty(:distance) do
     @doc = <<-EOS
-      Administrative distance of the route
+      Administrative distance of the route.  Valid values are 1-255.
     EOS
-
-    newvalues(1..255)
 
     munge { |value| Integer(value) }
 
@@ -103,14 +101,14 @@ Puppet::Type.newtype(:eos_staticroute) do
 
   newproperty(:tag) do
     @doc = <<-EOS
-      Route tag
+      Route tag (0-255)
     EOS
 
-    newvalues(1..255)
+    #munge { |value| Integer(value) }
 
     validate do |value|
-      unless value.to_i.between?(1, 255)
-        fail "value #{value.inspect} is invalid, must be an integer from 1-255."
+      unless value.to_i.between?(0, 255)
+        fail "value #{value.inspect} is invalid, must be an integer from 0-255."
       end
     end
   end
