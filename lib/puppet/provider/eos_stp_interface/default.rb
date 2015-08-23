@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
 
   def self.instances
     result = node.api('stp').get
+    return [] if result.empty?
     result[:interfaces].map do |(name, attrs)|
       provider_hash = { name: name }
       provider_hash[:portfast] = attrs[:portfast].to_s.to_sym

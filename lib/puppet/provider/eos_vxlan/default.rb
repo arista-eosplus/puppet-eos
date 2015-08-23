@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
+    return [] if interfaces.empty?
     interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'vxlan'
       provider_hash = { name: name, ensure: :present }

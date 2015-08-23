@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
 
   def self.instances
     result = node.api('varp').get
+    return [] if result.empty?
     provider_hash = { name: 'settings',
                       ensure: :present,
                       mac_address: result['mac_address'] }

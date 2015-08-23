@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_vxlan_vlan).provide(:eos) do
 
   def self.instances
     resources = node.api('interfaces').get('Vxlan1')
+    return [] if resources.empty?
     resources[:vlans].map do |(vlan, attrs)|
       provider_hash = { name: vlan, ensure: :present, vni: attrs[:vni] }
       new(provider_hash)

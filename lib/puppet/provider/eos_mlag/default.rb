@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   def self.instances
     api = node.api('mlag').get
+    return [] if api.empty?
     result = api[:global]
     provider_hash = { name: 'settings',  ensure: :present }
     provider_hash.merge!(result)

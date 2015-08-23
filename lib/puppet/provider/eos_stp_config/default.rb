@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_stp_config).provide(:eos) do
 
   def self.instances
     stp = node.api('stp').get
+    return [] if stp.empty?
     provider_hash = { name: 'settings',
                       ensure: :present,
                       mode: stp['mode'].to_sym }
