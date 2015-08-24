@@ -16,7 +16,7 @@ task :ci_prep do
   rescue LoadError
     puts 'Missing ci_reporter gem. You must have the ci_reporter gem ' \
          'installed to run the CI spec tests'
-    end
+  end
 end
 
 desc 'Run the CI RSpec tests'
