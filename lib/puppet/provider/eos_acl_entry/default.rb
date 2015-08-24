@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_acl_entry).provide(:eos) do
 
   def self.instances
     acls = node.api('acl').getall
-    return [] if acls.empty?
+    return [] if !acls || acls.empty?
     acls.each_with_object([]) do |(name, entries), arry|
       entries.each_with_object([]) do |(seqno, attrs), _hsh|
         provider_hash = { name: namevar(name, seqno), ensure: :present }

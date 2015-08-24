@@ -52,7 +52,7 @@ Puppet::Type.type(:eos_ntp_config).provide(:eos) do
 
   def self.instances
     result = node.api('ntp').get
-    return [] if result.empty?
+    return [] if !result || result.empty?
     provider_hash = { name: 'settings', ensure: :present,
                       source_interface: result[:source_interface] }
     [new(provider_hash)]

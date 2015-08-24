@@ -44,7 +44,7 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def self.instances
     result = node.api('logging').get
-    return [] if result.empty?
+    return [] if !result || result.empty?
     result[:hosts].map do |host|
       provider_hash = { name: host, ensure: :present }
       new(provider_hash)

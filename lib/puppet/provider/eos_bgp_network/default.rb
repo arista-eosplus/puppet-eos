@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_bgp_network).provide(:eos) do
 
   def self.instances
     bgp = node.api('bgp').get
-    return [] if bgp.empty?
+    return [] if !bgp || bgp.empty?
     networks = bgp[:networks]
     networks.each_with_object([]) do |attrs, arry|
       name = namevar(attrs[:prefix], attrs[:masklen])

@@ -44,7 +44,7 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
 
   def self.instances
     ospf = node.api('ospf').getall
-    return [] if ospf.empty?
+    return [] if !ospf || ospf.empty?
     ospf.each_with_object([]) do |(name, attrs), arry|
       if name != 'interfaces'
         provider_hash = { name: name, ensure: :present }

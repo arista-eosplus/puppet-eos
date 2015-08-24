@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_bgp_neighbor).provide(:eos) do
 
   def self.instances
     entries = node.api('bgp').neighbors.getall
-    return [] if entries.empty?
+    return [] if !entries || entries.empty?
     entries.each_with_object([]) do |(neigh_name, attrs), arry|
       provider_hash = { name: neigh_name, ensure: :present }
       provider_hash[:peer_group] = attrs[:peer_group] if attrs[:peer_group]

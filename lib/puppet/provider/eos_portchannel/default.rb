@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
-    return [] if interfaces.empty?
+    return [] if !interfaces || interfaces.empty?
     interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'portchannel'
       provider_hash = { name: name, ensure: :present }

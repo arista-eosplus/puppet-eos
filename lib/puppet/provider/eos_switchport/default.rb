@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
 
   def self.instances
     switchports = node.api('switchports').getall
-    return [] if switchports.empty?
+    return [] if !switchports || switchports.empty?
     switchports.map do |(name, attrs)|
       provider_hash = { name: name, ensure: :present }
       provider_hash.merge!(attrs)
