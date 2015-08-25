@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_ntp_server).provide(:eos) do
 
   def self.instances
     ntp = node.api('ntp').get
+    return [] if !ntp || ntp.empty?
     ntp[:servers].map do |(name, _)|
       provider_hash = { name: name, ensure: :present }
       new(provider_hash)

@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
+    return [] if !interfaces || interfaces.empty?
     interfaces.map do |(name, attrs)|
       provider_hash = { name: name, ensure: :present }
       provider_hash.merge!(attrs)

@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_system).provide(:eos) do
 
   def self.instances
     result = node.api('system').get
+    return [] if !result || result.empty?
     provider_hash = { name: 'settings', ensure: :present,
                       hostname: result[:hostname] }
     [new(provider_hash)]

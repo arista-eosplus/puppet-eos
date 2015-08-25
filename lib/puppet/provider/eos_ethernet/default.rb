@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
+    return [] if !interfaces || interfaces.empty?
     interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'ethernet'
       provider_hash = { name: name }

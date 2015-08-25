@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
 
   def self.instances
     routes = node.api('staticroutes').getall
+    return [] if !routes || routes.empty?
     routes.each_with_object([]) do |attrs, arry|
       name = namevar(attrs[:destination], attrs[:nexthop])
       provider_hash = { name: name, ensure: :present }

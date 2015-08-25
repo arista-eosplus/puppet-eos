@@ -104,6 +104,8 @@ Puppet::Type.newtype(:eos_staticroute) do
       Route tag (0-255)
     EOS
 
+    munge { |value| Integer(value) }
+
     validate do |value|
       unless value.to_i.between?(0, 255)
         fail "value #{value.inspect} is invalid, must be an integer from 0-255."
