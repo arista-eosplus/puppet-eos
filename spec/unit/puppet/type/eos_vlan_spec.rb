@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_vlan) do
     include_examples 'rejects values', [{ two: :three }, 'abc']
 
     [100, '100'].each do |val|
-      it "validates #{val.inspect} as isomorphic to '100'"  do
+      it "validates #{val.inspect} as isomorphic to '100'" do
         type[attribute] = val
         expect(type[attribute]).to eq(val.to_s)
       end

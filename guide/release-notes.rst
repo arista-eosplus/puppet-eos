@@ -5,6 +5,7 @@ Release Notes
     :maxdepth: 2
     :titlesonly:
 
+    release-notes-1.2
     release-notes-1.1
     release-notes-1.0
 

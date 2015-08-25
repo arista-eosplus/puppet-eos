@@ -27,15 +27,20 @@ Sample minimal configuration on a switch includes basic IP connectivity, hostnam
   ip route 0.0.0.0/0 192.2.2.1
   !
 
-  ! If EOS version is 4.14.5 or higher, use unix-sockets
-  !
+From EOS 4.15.5 and up, it is recommended configure EOS to use unix-sockets for eAPI:
+
+.. code-block:: console
+
   management api http-commands
      no protocol https
      protocol unix-socket
      no shutdown
   !
 
-  ! If EOS version is below 4.14.5
+In EOS versions below 4.15.5, it is recommended to configure EOS to use https for eAPI.  This also requires the creation of a ``flash:eapi.conf`` in which to store user credentials to login to eAPI:
+
+.. code-block:: console
+
   username eapi privilege 15 secret icanttellyou
   !
   management api http-commands
@@ -56,15 +61,15 @@ Example ``flash:eapi.conf``:
   password: password
   enablepwd: itsasecret
 
-Install the puppet agent from `PuppetLabs`_::
+Install the puppet agent from `PuppetLabs`_ (`previous releases`_)::
 
-  Arista#copy http://myserver/puppet-enterprise-3.7.2-eos-4-i386.swix extensions:
-  Arista#extension puppet-enterprise-3.7.2-eos-4-i386.swix
+  Arista#copy http://myserver/puppet-enterprise-3.8.2-eos-4-i386.swix extensions:
+  Arista#extension puppet-enterprise-3.8.2-eos-4-i386.swix
 
 Install the `rbeapi extension`_::
 
-  Arista#copy http://myserver/rbeapi-0.1.0.swix extensions:
-  Arista#extension rbeapi-0.1.0.swix
+  Arista#copy http://myserver/rbeapi-0.3.0.swix extensions:
+  Arista#extension rbeapi-0.3.0.swix
 
 Save the installed extensions::
 
@@ -180,5 +185,6 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. _`Github: puppet-eos`: https://github.com/arista-eosplus/puppet-eos
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
 .. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
+.. _`previous releases`: https://puppetlabs.com/misc/pe-files/previous-releases
 .. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi
 

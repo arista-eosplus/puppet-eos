@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_bgp_config) do
     include_examples 'rejected parameter values'
 
     [100, '100'].each do |val|
-      it "validates #{val.inspect} as isomorphic to '100'"  do
+      it "validates #{val.inspect} as isomorphic to '100'" do
         type[attribute] = val
         expect(type[attribute]).to eq(val.to_s)
       end
