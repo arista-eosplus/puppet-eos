@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
   def self.instances
     attrs = node.api('bgp').get
-    return [] if attrs.empty?
+    return [] if !attrs || attrs.empty?
     name = attrs[:bgp_as]
     provider_hash = { name: name, bgp_as: name, ensure: :present }
     provider_hash[:enable] = attrs[:shutdown] ? :false : :true

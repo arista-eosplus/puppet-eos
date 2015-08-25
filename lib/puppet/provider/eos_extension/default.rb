@@ -43,7 +43,9 @@ Puppet::Type.type(:eos_extension).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    eapi.Extension.getall[0]['extensions'].map do |name, _hsh|
+    exts = eapi.Extension.getall
+    return [] if !exts || exts.empty?
+    exts[0]['extensions'].map do |name, _hsh|
       provider_hash = { name: name, ensure: :present }
       value = eapi.Extension.autoload?(name) ? :true : :false
       provider_hash[:autoload] = value

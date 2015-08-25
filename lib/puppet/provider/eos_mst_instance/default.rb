@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_mst_instance).provide(:eos) do
 
   def self.instances
     result = eapi.Stp.instances.getall
+    return [] if !result || result.empty?
     result.map do |name, attrs|
       provider_hash = { name: name, ensure: :present }
       provider_hash[:priority] = attrs['priority']

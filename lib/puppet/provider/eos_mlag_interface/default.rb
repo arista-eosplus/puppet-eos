@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_mlag_interface).provide(:eos) do
 
   def self.instances
     mlag = node.api('mlag').get
+    return [] if !mlag || mlag.empty?
     mlag[:interfaces].map do |(name, attrs)|
       provider_hash = { name: name, ensure: :present,
                         mlag_id: attrs[:mlag_id] }

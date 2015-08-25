@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
 
   def self.instances
     result = node.api('varp').get
+    return [] if !result || result.empty?
     result['interfaces'].each_with_object([]) do |(name, attrs), arry|
       provider_hash = { name: name, ensure: :present }
       provider_hash[:addresses] = attrs['addresses']
