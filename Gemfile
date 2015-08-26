@@ -25,7 +25,7 @@ end
 group :development, :test do
   gem 'yard'
   gem 'redcarpet', '~> 3.1.2'
-  gem 'rake', '~> 10.1.0',       require: false
+  gem 'rake', '~> 10.1.0', require: false
   gem 'rspec', '~> 3.0.0'
   gem 'rspec-mocks', '~> 3.0.0'
   gem 'pry',                     require: false
@@ -35,7 +35,7 @@ group :development, :test do
   gem 'simplecov-rcov',          require: false
   gem 'puppetlabs_spec_helper'
   gem 'puppet-lint'
-  gem 'metadata-json-lint',      require: false
+  gem 'metadata-json-lint', require: false
   gem 'ci_reporter'
   gem 'ci_reporter_rspec'
 end

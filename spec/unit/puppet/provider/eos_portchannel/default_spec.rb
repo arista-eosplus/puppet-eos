@@ -215,6 +215,21 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       end
     end
 
+    describe '#enable=(val)' do
+      let(:name) { resource[:name] }
+      it 'updates enable with value :true' do
+        expect(api).to receive(:set_shutdown).with(name, enable: true)
+        provider.enable = :true
+        expect(provider.enable).to eq(:true)
+      end
+
+      it 'updates enable with the value :false' do
+        expect(api).to receive(:set_shutdown).with(name, enable: false)
+        provider.enable = :false
+        expect(provider.enable).to eq(:false)
+      end
+    end
+
     describe '#lacp_mode=(val)' do
       let(:name) { resource[:name] }
       %w(active passive on).each do |value|
@@ -256,6 +271,17 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
           provider.lacp_fallback = value
           expect(provider.lacp_fallback).to eq value
         end
+      end
+    end
+
+    describe '#lacp_fallback=(disabled)' do
+      let(:value) { 'disabled' }
+
+      it 'updates lacp_fallback on the provider' do
+        expect(api).to receive(:set_lacp_fallback)
+          .with(resource[:name], enable: false)
+        provider.lacp_fallback = value
+        expect(provider.lacp_fallback).to eq value
       end
     end
 

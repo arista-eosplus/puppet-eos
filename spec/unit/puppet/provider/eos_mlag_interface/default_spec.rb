@@ -155,7 +155,7 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
       let(:name) { resource[:name] }
 
       it 'sets ensure to :absent' do
-        expect(api).to receive(:set_mlag_id).with(name)
+        expect(api).to receive(:set_mlag_id).with(name, enable: false)
         resource[:ensure] = :absent
         provider.destroy
         provider.flush

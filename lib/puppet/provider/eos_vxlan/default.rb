@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
+    return [] if !interfaces || interfaces.empty?
     interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'vxlan'
       provider_hash = { name: name, ensure: :present }
@@ -72,7 +73,8 @@ Puppet::Type.type(:eos_vxlan).provide(:eos) do
   end
 
   def enable=(val)
-    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
+    value = val == :true ? true : false
+    node.api('interfaces').set_shutdown(resource[:name], enable: value)
     @property_hash[:enable] = val
   end
 

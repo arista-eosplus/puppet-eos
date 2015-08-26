@@ -188,13 +188,13 @@ describe Puppet::Type.type(:eos_mlag).provider(:eos) do
 
     describe '#enable=(val)' do
       it 'updates enable with value :true' do
-        expect(api).to receive(:set_shutdown).with(value: false)
+        expect(api).to receive(:set_shutdown).with(enable: true)
         provider.enable = :true
         expect(provider.enable).to eq(:true)
       end
 
       it 'updates enable with the value :false' do
-        expect(api).to receive(:set_shutdown).with(value: true)
+        expect(api).to receive(:set_shutdown).with(enable: false)
         provider.enable = :false
         expect(provider.enable).to eq(:false)
       end

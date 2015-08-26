@@ -47,7 +47,7 @@ Puppet::Type.type(:eos_vxlan_vtep).provide(:eos) do
 
   def self.instances
     resources = node.api('interfaces').get('Vxlan1')
-    return [] unless resources
+    return [] if !resources || resources.empty?
     resources[:flood_list].map do |name|
       provider_hash = { name: name, ensure: :present }
       new(provider_hash)

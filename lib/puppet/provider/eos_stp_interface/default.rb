@@ -44,6 +44,7 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
 
   def self.instances
     result = node.api('stp').get
+    return [] if !result || result.empty?
     result[:interfaces].map do |(name, attrs)|
       provider_hash = { name: name }
       provider_hash[:portfast] = attrs[:portfast].to_s.to_sym
@@ -55,7 +56,7 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
 
   def portfast=(val)
     value = val == :true
-    node.api('stp').interfaces.set_portfast(resource['name'], value: value)
+    node.api('stp').interfaces.set_portfast(resource['name'], enable: value)
     @property_hash[:portfast] = val
   end
 
@@ -67,7 +68,7 @@ Puppet::Type.type(:eos_stp_interface).provide(:eos) do
 
   def bpduguard=(val)
     value = val == :true
-    node.api('stp').interfaces.set_bpduguard(resource['name'], value: value)
+    node.api('stp').interfaces.set_bpduguard(resource['name'], enable: value)
     @property_hash[:bpduguard] = val
   end
 end

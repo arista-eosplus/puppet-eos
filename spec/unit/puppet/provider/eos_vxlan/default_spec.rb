@@ -193,7 +193,7 @@ describe Puppet::Type.type(:eos_vxlan).provider(:eos) do
         let(:name) { 'Vxlan1' }
 
         it 'updates enable in the provider' do
-          expect(api).to receive(:set_shutdown).with(name, value: !val)
+          expect(api).to receive(:set_shutdown).with(name, enable: !val)
           provider.enable = val
           expect(provider.enable).to eq(val)
         end

@@ -1,0 +1,45 @@
+---
+{
+  !ruby/sym bgp_as: '64600',
+  !ruby/sym router_id: '192.168.254.1',
+  !ruby/sym shutdown: false,
+  !ruby/sym networks: [
+    {
+      !ruby/sym prefix: '192.168.254.1',
+      !ruby/sym masklen: 32
+    },
+    {
+      !ruby/sym prefix: '192.168.254.2',
+      !ruby/sym masklen: 32,
+      !ruby/sym route_map: 'rmap'
+    },
+    {
+      !ruby/sym prefix: '192.168.254.3',
+      !ruby/sym masklen: 32
+    },
+  ],
+  !ruby/sym neighbors: {
+    'Edge': {
+      !ruby/sym shutdown: false,
+      !ruby/sym send_community: true,
+      !ruby/sym description: 'a description',
+      !ruby/sym next_hop_self: false,
+      !ruby/sym route_map_in: 'map in',
+      !ruby/sym route_map_out: 'map out'
+    },
+    '192.168.255.1': {
+      !ruby/sym shutdown: false,
+      !ruby/sym peer_group: 'Edge',
+      !ruby/sym remote_as: '65000',
+      !ruby/sym send_community: true,
+      !ruby/sym next_hop_self: true
+    },
+    '192.168.255.3': {
+      !ruby/sym shutdown: false,
+      !ruby/sym peer_group: 'Edge',
+      !ruby/sym remote_as: '65001',
+      !ruby/sym send_community: true,
+      !ruby/sym next_hop_self: true
+    }
+  }
+}

@@ -47,8 +47,9 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
 
   def self.instances
     api = node.api('mlag').get
+    return [] if !api || api.empty?
     result = api[:global]
-    provider_hash = { name: 'settings',  ensure: :present }
+    provider_hash = { name: 'settings', ensure: :present }
     provider_hash.merge!(result)
     enable = result[:shutdown] ? :false : :true
     provider_hash[:enable] = enable
@@ -76,7 +77,8 @@ Puppet::Type.type(:eos_mlag).provide(:eos) do
   end
 
   def enable=(val)
-    node.api('mlag').set_shutdown(value: val == :false)
+    value = val == :true ? true : false
+    node.api('mlag').set_shutdown(enable: value)
     @property_hash[:enable] = val
   end
 

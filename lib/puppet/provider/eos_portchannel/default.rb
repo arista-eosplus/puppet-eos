@@ -47,6 +47,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
 
   def self.instances
     interfaces = node.api('interfaces').getall
+    return [] if !interfaces || interfaces.empty?
     interfaces.each_with_object([]) do |(name, attrs), arry|
       next unless attrs[:type] == 'portchannel'
       provider_hash = { name: name, ensure: :present }
@@ -60,7 +61,8 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def enable=(val)
-    node.api('interfaces').set_shutdown(resource[:name], value: val == :false)
+    value = val == :true ? true : false
+    node.api('interfaces').set_shutdown(resource[:name], enable: value)
     @property_hash[:enable] = val
   end
 
@@ -85,7 +87,11 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   end
 
   def lacp_fallback=(val)
-    node.api('interfaces').set_lacp_fallback(resource[:name], value: val.to_s)
+    if val.to_s.eql? 'disabled'
+      node.api('interfaces').set_lacp_fallback(resource[:name], enable: false)
+    else
+      node.api('interfaces').set_lacp_fallback(resource[:name], value: val.to_s)
+    end
     @property_hash[:lacp_fallback] = val
   end
 
