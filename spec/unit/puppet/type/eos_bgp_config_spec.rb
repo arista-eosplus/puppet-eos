@@ -75,4 +75,24 @@ describe Puppet::Type.type(:eos_bgp_config) do
     include_examples 'rejects values', ['1.2', '255.255.255.256', 'host',
                                         'host 1.2.3']
   end
+
+  describe 'maximum_paths' do
+    let(:attribute) { :maximum_paths }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1, 128]
+    include_examples 'rejects values', [0, 129]
+  end
+
+  describe 'maximum_ecmp_paths' do
+    let(:attribute) { :maximum_ecmp_paths }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1, 128]
+    include_examples 'rejects values', [0, 129]
+  end
 end

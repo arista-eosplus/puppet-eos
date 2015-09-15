@@ -74,6 +74,11 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   # Properties (state management)
 
+  def greater_or_equal_to_maximum_paths?
+    # Return true if maximum_ecmp_paths is valid
+    self[:maximum_paths].to_i <= self[:maximum_ecmp_paths].to_i ? true : false
+  end
+
   newproperty(:enable, boolean: true) do
     desc <<-EOS
       Configures the administrative state for the global BGP routing
@@ -98,6 +103,35 @@ Puppet::Type.newtype(:eos_bgp_config) do
     validate do |value|
       unless value =~ IPADDR_REGEXP
         fail "value #{value.inspect} is invalid, must be a IP address"
+      end
+    end
+  end
+
+  newproperty(:maximum_paths, integer: true) do
+    desc <<-EOS
+      Maximum number of equal cost paths. This value should be less than
+      or equal to maximum_ecmp_paths.
+    EOS
+
+    validate do |value|
+      unless value.to_i.between?(1, 128)
+        fail "value #{value.inspect} is not between 1 and 128"
+      end
+    end
+  end
+
+  newproperty(:maximum_ecmp_paths, integer: true) do
+    desc <<-EOS
+      Maximum number of installed ECMP routes. This value should be
+      greater than or equal to maximum_paths.
+    EOS
+
+    validate do |value|
+      unless value.to_i.between?(1, 128)
+        fail "value #{value.inspect} is not between 1 and 128"
+      end
+      unless @resource.greater_or_equal_to_maximum_paths?
+        fail "value #{value.inspect} is not greater or equal to maximum-paths"
       end
     end
   end
