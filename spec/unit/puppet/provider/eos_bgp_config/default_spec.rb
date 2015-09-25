@@ -143,7 +143,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
     describe '#create' do
       it 'sets ensure on the resource' do
         expect(api).to receive(:create).with(resource[:name],
-                                             enable: :true,
+                                             enable: true,
                                              router_id: '192.168.254.1')
         provider.create
         provider.enable = :true
@@ -157,7 +157,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
 
     describe '#enable=(value)' do
       it 'sets enable on the resource' do
-        expect(api).to receive(:create).with(resource[:name], enable: :false)
+        expect(api).to receive(:create).with(resource[:name], enable: false)
         provider.create
         provider.enable = :false
         provider.flush
