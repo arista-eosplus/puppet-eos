@@ -52,6 +52,8 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     provider_hash = { name: name, bgp_as: name, ensure: :present }
     provider_hash[:enable] = attrs[:shutdown] ? :false : :true
     provider_hash[:router_id] = attrs[:router_id] if attrs[:router_id]
+    provider_hash[:maximum_paths] = attrs[:maximum_paths] if attrs[:maximum_paths]
+    provider_hash[:maximum_ecmp_paths] = attrs[:maximum_ecmp_paths] if attrs[:maximum_ecmp_paths]
     [new(provider_hash)]
   end
 
@@ -66,6 +68,16 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     @property_hash[:router_id] = value
   end
 
+  def maximum_paths=(value)
+    node.api('bgp').set_maximum_paths(value: value)
+    @property_hash[:maximum_paths] = value
+  end
+
+  def maximum_ecmp_paths=(value)
+    node.api('bgp').set_maximum_ecmp_paths(value: value)
+    @property_hash[:maximum_ecmp_paths] = value
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
@@ -77,6 +89,8 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
     self.enable = resource[:enable] if resource[:enable]
     self.router_id = resource[:router_id] if resource[:router_id]
+    self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
+    self.maximum_paths = resource[:maximum_ecmp_paths] if resource[:maximum_ecmp_paths]
   end
 
   def destroy

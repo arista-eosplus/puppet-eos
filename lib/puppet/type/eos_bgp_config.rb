@@ -74,9 +74,13 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   # Properties (state management)
 
-  def greater_or_equal_to_maximum_paths?
-    # Return true if maximum_ecmp_paths is valid
-    self[:maximum_paths].to_i <= self[:maximum_ecmp_paths].to_i ? true : false
+  def validate_within_range(value)
+    # Return true if maximum_ecmp_paths is within valid range
+    if value.to_i >= self[:maximum_paths].to_i
+      return true
+    else
+      return false
+    end
   end
 
   newproperty(:enable, boolean: true) do
@@ -107,7 +111,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
     end
   end
 
-  newproperty(:maximum_paths, integer: true) do
+  newproperty(:maximum_paths) do
     desc <<-EOS
       Maximum number of equal cost paths. This value should be less than
       or equal to maximum_ecmp_paths.
@@ -120,7 +124,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
     end
   end
 
-  newproperty(:maximum_ecmp_paths, integer: true) do
+  newproperty(:maximum_ecmp_paths) do
     desc <<-EOS
       Maximum number of installed ECMP routes. This value should be
       greater than or equal to maximum_paths.
@@ -130,7 +134,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
       unless value.to_i.between?(1, 128)
         fail "value #{value.inspect} is not between 1 and 128"
       end
-      unless @resource.greater_or_equal_to_maximum_paths?
+      unless @resource.validate_within_range(value)
         fail "value #{value.inspect} is not greater or equal to maximum-paths"
       end
     end
