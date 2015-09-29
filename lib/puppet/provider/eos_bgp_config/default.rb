@@ -71,13 +71,11 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def maximum_paths=(value)
-    node.api('bgp').set_maximum_paths(value: value)
-    @property_hash[:maximum_paths] = value
+    @property_flush[:maximum_paths] = value
   end
 
   def maximum_ecmp_paths=(value)
-    node.api('bgp').set_maximum_ecmp_paths(value: value)
-    @property_hash[:maximum_ecmp_paths] = value
+    @property_flush[:maximum_ecmp_paths] = value
   end
 
   def exists?

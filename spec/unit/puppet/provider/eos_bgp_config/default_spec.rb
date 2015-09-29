@@ -188,17 +188,23 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
 
     describe '#maximum_paths=(value)' do
       it 'sets maximum number of equal cost paths' do
-        expect(api).to receive(:maximum_paths).with(value: 1)
+        expect(api).to receive(:create).with(resource[:name],
+                                             maximum_paths: 1)
+        provider.create
         provider.maximum_paths = 1
+        provider.flush
         expect(provider.maximum_paths).to eq(1)
       end
     end
 
     describe '#maximum_ecmp_paths=(value)' do
       it 'sets maximum number of equal cost paths' do
-        expect(api).to receive(:maximum_ecmp_paths).with(value: 128)
+        expect(api).to receive(:create).with(resource[:name],
+                                             maximum_ecmp_paths: 128)
+        provider.create
         provider.maximum_ecmp_paths = 128
-        expect(provider.maximum_paths).to eq(128)
+        provider.flush
+        expect(provider.maximum_ecmp_paths).to eq(128)
       end
     end
 
