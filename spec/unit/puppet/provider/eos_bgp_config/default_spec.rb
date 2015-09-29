@@ -140,31 +140,38 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-    before do
-      expect(api).to receive(:create).with(resource[:name])
-      expect(api).to receive(:set_shutdown).with(enable: true)
-      expect(api).to receive(:set_router_id).with(value: '192.168.254.1')
-      provider.create
-    end
-
     describe '#create' do
       it 'sets ensure on the resource' do
+        expect(api).to receive(:create).with(resource[:name],
+                                             enable: true,
+                                             router_id: '192.168.254.1')
+        provider.create
+        provider.enable = :true
+        provider.router_id = '192.168.254.1'
+        provider.flush
         expect(provider.ensure).to eq(:present)
+        expect(provider.enable).to eq(:true)
+        expect(provider.router_id).to eq('192.168.254.1')
       end
     end
 
     describe '#enable=(value)' do
       it 'sets enable on the resource' do
-        expect(api).to receive(:set_shutdown).with(enable: true)
-        provider.enable = :true
-        expect(provider.enable).to eq(:true)
+        expect(api).to receive(:create).with(resource[:name], enable: false)
+        provider.create
+        provider.enable = :false
+        provider.flush
+        expect(provider.enable).to eq(:false)
       end
     end
 
     describe '#router_id=(value)' do
       it 'sets router_id on the resource' do
-        expect(api).to receive(:set_router_id).with(value: '1.2.3.4')
+        expect(api).to receive(:create).with(resource[:name],
+                                             router_id: '1.2.3.4')
+        provider.create
         provider.router_id = '1.2.3.4'
+        provider.flush
         expect(provider.router_id).to eq('1.2.3.4')
       end
     end
@@ -174,6 +181,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
         resource[:ensure] = :absent
         expect(api).to receive(:delete)
         provider.destroy
+        provider.flush
         expect(provider.ensure).to eq(:absent)
       end
     end
