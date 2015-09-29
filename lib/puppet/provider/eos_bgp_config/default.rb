@@ -88,18 +88,17 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     when :present
       # The :enable attribute stores :true or :false (i.e. symbols)
       # The rbeapi library expects a boolean value. Modify the :enable
-      # value and then restore after the call.
+      # value passed into the create call to store a boolean value.
       if @property_flush.key?(:enable)
-        saved_enable = @property_flush[:enable]
-        @property_flush[:enable] = (saved_enable == :true ? true : false)
+        enable = @property_flush[:enable]
+        @property_flush[:enable] = (enable == :true ? true : false)
       end
 
       api.create(resource[:name], @property_flush)
-
-      @property_flush[:enable] = saved_enable if @property_flush.key?(:enable)
     when :absent
       api.delete
     end
     @property_hash = desired_state
+    @property_flush = {}
   end
 end
