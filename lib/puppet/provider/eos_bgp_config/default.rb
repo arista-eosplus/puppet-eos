@@ -57,15 +57,17 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     [new(provider_hash)]
   end
 
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
   def enable=(value)
-    val = value == :true ? true : false
-    node.api('bgp').set_shutdown(enable: val)
-    @property_hash[:enable] = value
+    @property_flush[:enable] = value
   end
 
   def router_id=(value)
-    node.api('bgp').set_router_id(value: value)
-    @property_hash[:router_id] = value
+    @property_flush[:router_id] = value
   end
 
   def maximum_paths=(value)
@@ -83,18 +85,32 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def create
-    node.api('bgp').create(resource[:name])
-    @property_hash = { name: resource[:name], bgp_as: resource[:name],
-                       ensure: :present }
-
-    self.enable = resource[:enable] if resource[:enable]
-    self.router_id = resource[:router_id] if resource[:router_id]
-    self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
-    self.maximum_paths = resource[:maximum_ecmp_paths] if resource[:maximum_ecmp_paths]
+    @property_hash[:ensure] = :present
   end
 
   def destroy
-    node.api('bgp').delete
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_hash[:ensure] = :absent
+  end
+
+  def flush
+    api = node.api('bgp')
+    desired_state = @property_hash.merge!(@property_flush)
+
+    case desired_state[:ensure]
+    when :present
+      # The :enable attribute stores :true or :false (i.e. symbols)
+      # The rbeapi library expects a boolean value. Modify the :enable
+      # value passed into the create call to store a boolean value.
+      if @property_flush.key?(:enable)
+        enable = @property_flush[:enable]
+        @property_flush[:enable] = (enable == :true ? true : false)
+      end
+
+      api.create(resource[:name], @property_flush)
+    when :absent
+      api.delete
+    end
+    @property_hash = desired_state
+    @property_flush = {}
   end
 end
