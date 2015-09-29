@@ -95,4 +95,30 @@ describe Puppet::Type.type(:eos_bgp_config) do
     include_examples 'accepts values without munging', [1, 128]
     include_examples 'rejects values', [0, 129]
   end
+
+  describe 'maximum_ecmp_paths validation' do
+    let(:catalog) { Puppet::Resource::Catalog.new }
+    let(:type) { described_class.new(name: 65_534, catalog: catalog) }
+    let(:attribute) { :maximum_ecmp_paths }
+    subject { described_class.attrclass(attribute) }
+
+    it 'rejects setting' do
+      # Fail when you try to set maximum_ecmp_paths to a number less than 
+      # maximum_paths
+      for i in 1..4
+        type[:maximum_paths] = 5
+        expect { type[:maximum_ecmp_paths] = i }
+          .to raise_error Puppet::ResourceError, 
+            /value #{i} is not greater or equal to maximum-paths/
+      end
+    end
+
+    it 'accepts setting' do
+      # Accepts values equal or greater to maximum_paths
+      for i in 5..10
+        type[:maximum_paths] = 5
+        expect { type[:maximum_ecmp_paths] = i }.not_to raise_error
+      end
+    end 
+  end
 end
