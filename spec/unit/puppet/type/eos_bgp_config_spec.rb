@@ -103,22 +103,22 @@ describe Puppet::Type.type(:eos_bgp_config) do
     subject { described_class.attrclass(attribute) }
 
     it 'rejects setting' do
-      # Fail when you try to set maximum_ecmp_paths to a number less than 
+      # Fail when you try to set maximum_ecmp_paths to a number less than
       # maximum_paths
-      for i in 1..4
+      (1..4).each do |i|
         type[:maximum_paths] = 5
         expect { type[:maximum_ecmp_paths] = i }
-          .to raise_error Puppet::ResourceError, 
-            /value #{i} is not greater or equal to maximum-paths/
+          .to raise_error Puppet::ResourceError,
+                          /value #{i} is not greater or equal to maximum-paths/
       end
     end
 
     it 'accepts setting' do
       # Accepts values equal or greater to maximum_paths
-      for i in 5..10
+      (5..10).each do |i|
         type[:maximum_paths] = 5
         expect { type[:maximum_ecmp_paths] = i }.not_to raise_error
       end
-    end 
+    end
   end
 end

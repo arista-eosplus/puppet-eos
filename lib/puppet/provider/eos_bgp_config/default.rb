@@ -52,8 +52,12 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     provider_hash = { name: name, bgp_as: name, ensure: :present }
     provider_hash[:enable] = attrs[:shutdown] ? :false : :true
     provider_hash[:router_id] = attrs[:router_id] if attrs[:router_id]
-    provider_hash[:maximum_paths] = attrs[:maximum_paths] if attrs[:maximum_paths]
-    provider_hash[:maximum_ecmp_paths] = attrs[:maximum_ecmp_paths] if attrs[:maximum_ecmp_paths]
+    if attrs[:maximum_paths]
+      provider_hash[:maximum_paths] = attrs[:maximum_paths]
+    end
+    if attrs[:maximum_ecmp_paths]
+      provider_hash[:maximum_ecmp_paths] = attrs[:maximum_ecmp_paths]
+    end
     [new(provider_hash)]
   end
 
