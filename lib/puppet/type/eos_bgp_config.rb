@@ -100,7 +100,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   newproperty(:router_id) do
     desc <<-EOS
-      Configures the BGP routing process router-id value.  The router
+      Configures the BGP routing process router-id value. The router
       id must be in the form of A.B.C.D
     EOS
 

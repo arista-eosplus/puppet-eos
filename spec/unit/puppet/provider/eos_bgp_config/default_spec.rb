@@ -154,14 +154,20 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
       it 'sets ensure on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              enable: true,
-                                             router_id: '192.168.254.1')
+                                             router_id: '192.168.254.1',
+                                             maximum_paths: 1,
+                                             maximum_ecmp_paths: 128)
         provider.create
         provider.enable = :true
         provider.router_id = '192.168.254.1'
+        provider.maximum_paths = 1
+        provider.maximum_ecmp_paths = 128
         provider.flush
         expect(provider.ensure).to eq(:present)
         expect(provider.enable).to eq(:true)
         expect(provider.router_id).to eq('192.168.254.1')
+        expect(provider.maximum_paths).to eq(1)
+        expect(provider.maximum_ecmp_paths).to eq(128)
       end
     end
 
