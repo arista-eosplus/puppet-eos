@@ -2,8 +2,8 @@
 {
   !ruby/sym bgp_as: '64600',
   !ruby/sym router_id: '192.168.254.1',
-  !ruby/sym maximum_paths: 1,
-  !ruby/sym maximum_ecmp_paths: 128,
+  !ruby/sym maximum_paths: 3,
+  !ruby/sym maximum_ecmp_paths: 56,
   !ruby/sym shutdown: false,
   !ruby/sym networks: [
     {

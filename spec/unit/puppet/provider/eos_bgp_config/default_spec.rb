@@ -40,8 +40,8 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
       name: '64600',
       bgp_as: '64600',
       router_id: '192.168.254.1',
-      maximum_paths: 1,
-      maximum_ecmp_paths: 128,
+      maximum_paths: 3,
+      maximum_ecmp_paths: 56,
       enable: :true,
       ensure: :present,
       provider: described_class.name
@@ -88,8 +88,8 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
                          bgp_as: '64600',
                          enable: :true,
                          router_id: '192.168.254.1',
-                         maximum_paths: 1,
-                         maximum_ecmp_paths: 128
+                         maximum_paths: 3,
+                         maximum_ecmp_paths: 56
       end
     end
 
@@ -117,8 +117,8 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
         expect(resources['64600'].provider.bgp_as).to eq('64600')
         expect(resources['64600'].provider.enable).to eq(:true)
         expect(resources['64600'].provider.router_id).to eq('192.168.254.1')
-        expect(resources['64600'].provider.maximum_paths).to eq(1)
-        expect(resources['64600'].provider.maximum_ecmp_paths).to eq(128)
+        expect(resources['64600'].provider.maximum_paths).to eq(3)
+        expect(resources['64600'].provider.maximum_ecmp_paths).to eq(56)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -155,19 +155,19 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
         expect(api).to receive(:create).with(resource[:name],
                                              enable: true,
                                              router_id: '192.168.254.1',
-                                             maximum_paths: 1,
-                                             maximum_ecmp_paths: 128)
+                                             maximum_paths: 3,
+                                             maximum_ecmp_paths: 56)
         provider.create
         provider.enable = :true
         provider.router_id = '192.168.254.1'
-        provider.maximum_paths = 1
-        provider.maximum_ecmp_paths = 128
+        provider.maximum_paths = 3
+        provider.maximum_ecmp_paths = 56
         provider.flush
         expect(provider.ensure).to eq(:present)
         expect(provider.enable).to eq(:true)
         expect(provider.router_id).to eq('192.168.254.1')
-        expect(provider.maximum_paths).to eq(1)
-        expect(provider.maximum_ecmp_paths).to eq(128)
+        expect(provider.maximum_paths).to eq(3)
+        expect(provider.maximum_ecmp_paths).to eq(56)
       end
     end
 
@@ -195,22 +195,24 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
     describe '#maximum_paths=(value)' do
       it 'sets maximum number of equal cost paths' do
         expect(api).to receive(:create).with(resource[:name],
-                                             maximum_paths: 1)
+                                             maximum_paths: 3)
         provider.create
-        provider.maximum_paths = 1
+        provider.maximum_paths = 3
         provider.flush
-        expect(provider.maximum_paths).to eq(1)
+        expect(provider.maximum_paths).to eq(3)
       end
     end
 
     describe '#maximum_ecmp_paths=(value)' do
       it 'sets maximum number of equal cost paths' do
         expect(api).to receive(:create).with(resource[:name],
-                                             maximum_ecmp_paths: 128)
+                                             maximum_paths: 3,
+                                             maximum_ecmp_paths: 56)
         provider.create
-        provider.maximum_ecmp_paths = 128
+        provider.maximum_paths = 3
+        provider.maximum_ecmp_paths = 56
         provider.flush
-        expect(provider.maximum_ecmp_paths).to eq(128)
+        expect(provider.maximum_ecmp_paths).to eq(56)
       end
     end
 

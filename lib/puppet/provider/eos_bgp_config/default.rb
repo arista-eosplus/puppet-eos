@@ -107,7 +107,11 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
         enable = @property_flush[:enable]
         @property_flush[:enable] = (enable == :true ? true : false)
       end
-
+      maximum_ecmp_paths = @property_flush.key?(:maximum_ecmp_paths)
+      maximum_paths = @property_flush.key?(:maximum_paths)
+      if maximum_ecmp_paths && !maximum_paths
+        @property_flush[:maximum_paths] = desired_state[:maximum_paths]
+      end
       api.create(resource[:name], @property_flush)
     when :absent
       api.delete

@@ -117,6 +117,8 @@ Puppet::Type.newtype(:eos_bgp_config) do
       or equal to maximum_ecmp_paths.
     EOS
 
+    munge { |value| Integer(value) }
+
     validate do |value|
       unless value.to_i.between?(1, 128)
         fail "value #{value.inspect} is not between 1 and 128"
@@ -129,6 +131,8 @@ Puppet::Type.newtype(:eos_bgp_config) do
       Maximum number of installed ECMP routes. This value should be
       greater than or equal to maximum_paths.
     EOS
+
+    munge { |value| Integer(value) }
 
     validate do |value|
       unless value.to_i.between?(1, 128)
