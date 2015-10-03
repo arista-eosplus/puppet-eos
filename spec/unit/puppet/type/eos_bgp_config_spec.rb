@@ -82,7 +82,7 @@ describe Puppet::Type.type(:eos_bgp_config) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [3, 56]
+    include_examples 'accepts values without munging', [1, 128]
     include_examples 'rejects values', [0, 129]
   end
 
@@ -92,7 +92,7 @@ describe Puppet::Type.type(:eos_bgp_config) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [3, 56]
+    include_examples 'accepts values without munging', [1, 128]
     include_examples 'rejects values', [0, 129]
   end
 
