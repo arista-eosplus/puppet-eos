@@ -87,11 +87,11 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def create
-    @property_hash[:ensure] = :present
+    @property_flush = resource.to_hash
   end
 
   def destroy
-    @property_hash[:ensure] = :absent
+    @property_flush = resource.to_hash
   end
 
   def flush
@@ -109,7 +109,8 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
       end
       maximum_ecmp_paths = @property_flush.key?(:maximum_ecmp_paths)
       maximum_paths = @property_flush.key?(:maximum_paths)
-      if maximum_ecmp_paths && !maximum_paths
+      desired_maximum = desired_state.key?(:maximum_paths)
+      if maximum_ecmp_paths && !maximum_paths && desired_maximum
         @property_flush[:maximum_paths] = desired_state[:maximum_paths]
       end
       api.create(resource[:name], @property_flush)
