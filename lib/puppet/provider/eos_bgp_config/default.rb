@@ -96,9 +96,9 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
 
   def flush
     api = node.api('bgp')
-    desired_state = @property_hash.merge!(@property_flush)
+    @property_hash.merge!(@property_flush)
 
-    case desired_state[:ensure]
+    case @property_hash[:ensure]
     when :present
       # The :enable attribute stores :true or :false (i.e. symbols)
       # The rbeapi library expects a boolean value. Modify the :enable
@@ -108,16 +108,14 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
         @property_flush[:enable] = (enable == :true ? true : false)
       end
       maximum_ecmp_paths = @property_flush.key?(:maximum_ecmp_paths)
-      maximum_paths = @property_flush.key?(:maximum_paths)
-      desired_maximum = desired_state.key?(:maximum_paths)
-      if maximum_ecmp_paths && !maximum_paths && desired_maximum
-        @property_flush[:maximum_paths] = desired_state[:maximum_paths]
+      desired_maximum = @property_hash.key?(:maximum_paths)
+      if maximum_ecmp_paths && desired_maximum
+        @property_flush[:maximum_paths] = @property_hash[:maximum_paths]
       end
       api.create(resource[:name], @property_flush)
     when :absent
       api.delete
     end
-    @property_hash = desired_state
     @property_flush = {}
   end
 end
