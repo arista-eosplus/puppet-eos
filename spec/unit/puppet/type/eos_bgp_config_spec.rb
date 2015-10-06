@@ -75,4 +75,50 @@ describe Puppet::Type.type(:eos_bgp_config) do
     include_examples 'rejects values', ['1.2', '255.255.255.256', 'host',
                                         'host 1.2.3']
   end
+
+  describe 'maximum_paths' do
+    let(:attribute) { :maximum_paths }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1, 128]
+    include_examples 'rejects values', [0, 129]
+  end
+
+  describe 'maximum_ecmp_paths' do
+    let(:attribute) { :maximum_ecmp_paths }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1, 128]
+    include_examples 'rejects values', [0, 129]
+  end
+
+  describe 'maximum_ecmp_paths validation' do
+    let(:catalog) { Puppet::Resource::Catalog.new }
+    let(:type) { described_class.new(name: 65_534, catalog: catalog) }
+    let(:attribute) { :maximum_ecmp_paths }
+    subject { described_class.attrclass(attribute) }
+
+    it 'rejects setting' do
+      # Fail when you try to set maximum_ecmp_paths to a number less than
+      # maximum_paths
+      (1..4).each do |i|
+        type[:maximum_paths] = 5
+        expect { type[:maximum_ecmp_paths] = i }
+          .to raise_error Puppet::ResourceError,
+                          /value #{i} is not greater or equal to maximum-paths/
+      end
+    end
+
+    it 'accepts setting' do
+      # Accepts values equal or greater to maximum_paths
+      (5..10).each do |i|
+        type[:maximum_paths] = 5
+        expect { type[:maximum_ecmp_paths] = i }.not_to raise_error
+      end
+    end
+  end
 end

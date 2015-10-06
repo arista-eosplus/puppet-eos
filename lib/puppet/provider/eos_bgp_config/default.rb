@@ -52,6 +52,12 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     provider_hash = { name: name, bgp_as: name, ensure: :present }
     provider_hash[:enable] = attrs[:shutdown] ? :false : :true
     provider_hash[:router_id] = attrs[:router_id] if attrs[:router_id]
+    if attrs[:maximum_paths]
+      provider_hash[:maximum_paths] = attrs[:maximum_paths]
+    end
+    if attrs[:maximum_ecmp_paths]
+      provider_hash[:maximum_ecmp_paths] = attrs[:maximum_ecmp_paths]
+    end
     [new(provider_hash)]
   end
 
@@ -68,23 +74,31 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     @property_flush[:router_id] = value
   end
 
+  def maximum_paths=(value)
+    @property_flush[:maximum_paths] = value
+  end
+
+  def maximum_ecmp_paths=(value)
+    @property_flush[:maximum_ecmp_paths] = value
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
 
   def create
-    @property_hash[:ensure] = :present
+    @property_flush = resource.to_hash
   end
 
   def destroy
-    @property_hash[:ensure] = :absent
+    @property_flush = resource.to_hash
   end
 
   def flush
     api = node.api('bgp')
-    desired_state = @property_hash.merge!(@property_flush)
+    @property_hash.merge!(@property_flush)
 
-    case desired_state[:ensure]
+    case @property_hash[:ensure]
     when :present
       # The :enable attribute stores :true or :false (i.e. symbols)
       # The rbeapi library expects a boolean value. Modify the :enable
@@ -93,12 +107,15 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
         enable = @property_flush[:enable]
         @property_flush[:enable] = (enable == :true ? true : false)
       end
-
+      maximum_ecmp_paths = @property_flush.key?(:maximum_ecmp_paths)
+      desired_maximum = @property_hash.key?(:maximum_paths)
+      if maximum_ecmp_paths && desired_maximum
+        @property_flush[:maximum_paths] = @property_hash[:maximum_paths]
+      end
       api.create(resource[:name], @property_flush)
     when :absent
       api.delete
     end
-    @property_hash = desired_state
     @property_flush = {}
   end
 end
