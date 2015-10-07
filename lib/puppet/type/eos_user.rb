@@ -111,10 +111,7 @@ Puppet::Type.newtype(:eos_user) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(resource)
-      else
+      unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
     end
@@ -128,10 +125,7 @@ Puppet::Type.newtype(:eos_user) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(resource)
-      else
+      unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
     end
@@ -160,10 +154,7 @@ Puppet::Type.newtype(:eos_user) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(resource)
-      else
+      unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
     end
