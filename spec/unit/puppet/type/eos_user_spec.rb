@@ -45,6 +45,11 @@ describe Puppet::Type.type(:eos_user) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'name is the namevar'
+  end
+
+  describe 'name' do
+    include_examples 'name is the namevar'
   end
 
   describe 'nopassword' do
@@ -53,6 +58,8 @@ describe Puppet::Type.type(:eos_user) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
   end
 
   describe 'encryption' do
@@ -62,6 +69,8 @@ describe Puppet::Type.type(:eos_user) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(md5 sha512)
+    include_examples 'rejects values',
+                     ['cleartext', :cleartext, 0, 1, 5, 'random123']
   end
 
   describe 'secret' do
@@ -70,6 +79,7 @@ describe Puppet::Type.type(:eos_user) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'string', attribute: :secret
   end
 
   describe 'role' do
@@ -78,6 +88,7 @@ describe Puppet::Type.type(:eos_user) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'string', attribute: :role
   end
 
   describe 'privilege' do
@@ -96,5 +107,6 @@ describe Puppet::Type.type(:eos_user) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'string', attribute: :sshkey
   end
 end

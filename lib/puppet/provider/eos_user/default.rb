@@ -107,6 +107,9 @@ Puppet::Type.type(:eos_user).provide(:eos) do
 
     case @property_hash[:ensure]
     when :present
+      # Create call requires either nopassword be true or
+      # a secret to be specified. This conditional ensures
+      # that the required values are present.
       if @property_hash[:secret].nil?
         @property_flush[:nopassword] = :true
         @property_hash[:nopassword] = :true

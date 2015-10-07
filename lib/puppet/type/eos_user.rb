@@ -50,6 +50,17 @@ Puppet::Type.newtype(:eos_user) do
     end
   end
 
+  def munge_encryption(value)
+    case value
+    when 'md5', :md5
+      'md5'
+    when 'sha512', :sha512
+      'sha512'
+    else
+      fail('munge_encryption only takes md5 or sha512')
+    end
+  end
+
   # Parameters
 
   newparam(:name, namevar: true) do
@@ -58,7 +69,9 @@ Puppet::Type.newtype(:eos_user) do
     EOS
 
     validate do |value|
-      fail 'value cannot be blank' if value !~ /[^[:space:]]/
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
     end
   end
 
@@ -69,7 +82,7 @@ Puppet::Type.newtype(:eos_user) do
       Create a user with no password assigned.
     EOS
 
-    newvalues(:true, :false)
+    newvalues(:true, :yes, :on, :false, :no, :off)
 
     munge do |value|
       @resource.munge_boolean(value)
@@ -84,13 +97,10 @@ Puppet::Type.newtype(:eos_user) do
       due to security concerns and idempotency.
     EOS
 
-    validate do |value|
-      case value
-      when String
-        super(resource)
-      else
-        fail "value #{value.inspect} is invalid, must be a String."
-      end
+    newvalues(:md5, 'md5', :sha512, 'sha512')
+
+    munge do |value|
+      @resource.munge_encryption(value)
     end
   end
 
