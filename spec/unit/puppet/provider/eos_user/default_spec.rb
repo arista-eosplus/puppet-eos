@@ -134,7 +134,7 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
         end
       end
 
-      it 'sets the provider instance of the managed resource 64600' do
+      it 'sets the provider instance of the managed resource Username' do
         subject
         expect(resources['Username'].provider.name).to eq(@name)
         expect(resources['Username'].provider.nopassword).to eq(@nopassword)
