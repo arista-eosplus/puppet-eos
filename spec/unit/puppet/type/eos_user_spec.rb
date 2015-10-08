@@ -48,10 +48,6 @@ describe Puppet::Type.type(:eos_user) do
     include_examples 'name is the namevar'
   end
 
-  describe 'name' do
-    include_examples 'name is the namevar'
-  end
-
   describe 'nopassword' do
     let(:attribute) { :nopassword }
     subject { described_class.attrclass(attribute) }
