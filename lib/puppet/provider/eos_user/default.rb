@@ -116,6 +116,9 @@ Puppet::Type.type(:eos_user).provide(:eos) do
       else
         @property_flush[:secret] = @property_hash[:secret]
       end
+      @property_flush.delete(:provider)
+      @property_flush.delete(:ensure)
+      @property_flush.delete(:loglevel)
       api.create(resource[:name], @property_flush)
     when :absent
       api.delete(resource[:name])

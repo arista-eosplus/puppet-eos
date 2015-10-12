@@ -180,18 +180,13 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets ensure on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: :false,
                                              secret: @secret,
                                              encryption: @encryption,
                                              role: @role,
                                              privilege: @privilege,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
-        provider.provider = :eos
-        provider.ensure = :present
         provider.nopassword = :false
         provider.secret = @secret
         provider.encryption = @encryption
@@ -199,7 +194,6 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
         provider.privilege = @privilege
         provider.sshkey = @sshkey
         provider.flush
-        expect(provider.ensure).to eq(:present)
         expect(provider.nopassword).to eq(@nopassword)
         expect(provider.secret).to eq(@secret)
         expect(provider.encryption).to eq(@encryption)
@@ -213,15 +207,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets nopassword on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: :true,
                                              secret: @secret,
                                              encryption: @encryption,
                                              role: @role,
                                              privilege: @privilege,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
         provider.nopassword = :true
         provider.flush
@@ -233,15 +224,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets secret on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: @nopassword,
                                              secret: '%$dc647eb65e6711e',
                                              encryption: @encryption,
                                              role: @role,
                                              privilege: @privilege,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
         provider.secret = '%$dc647eb65e6711e'
         provider.flush
@@ -253,15 +241,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets encryption on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: @nopassword,
                                              secret: @secret,
                                              encryption: 'sha512',
                                              role: @role,
                                              privilege: @privilege,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
         provider.encryption = 'sha512'
         provider.flush
@@ -273,15 +258,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets role on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: @nopassword,
                                              secret: @secret,
                                              encryption: @encryption,
                                              role: 'network-master',
                                              privilege: @privilege,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
         provider.role = 'network-master'
         provider.flush
@@ -293,15 +275,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets privilege on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: @nopassword,
                                              secret: @secret,
                                              encryption: @encryption,
                                              role: @role,
                                              privilege: 2,
-                                             sshkey: @sshkey,
-                                             loglevel: :notice)
+                                             sshkey: @sshkey)
         provider.create
         provider.privilege = 2
         provider.flush
@@ -313,15 +292,12 @@ describe Puppet::Type.type(:eos_user).provider(:eos) do
       it 'sets sshkey on the resource' do
         expect(api).to receive(:create).with(resource[:name],
                                              name: @name,
-                                             provider: :eos,
-                                             ensure: :present,
                                              nopassword: @nopassword,
                                              secret: @secret,
                                              encryption: @encryption,
                                              role: @role,
                                              privilege: @privilege,
-                                             sshkey: @other_key,
-                                             loglevel: :notice)
+                                             sshkey: @other_key)
         provider.create
         provider.sshkey = @other_key
         provider.flush
