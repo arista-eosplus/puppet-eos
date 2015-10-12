@@ -123,6 +123,5 @@ Puppet::Type.type(:eos_user).provide(:eos) do
     when :absent
       api.delete(resource[:name])
     end
-    @property_flush = {}
   end
 end
