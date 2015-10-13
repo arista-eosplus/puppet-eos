@@ -93,7 +93,7 @@ describe Puppet::Type.type(:eos_portchannel) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [1, 100]
-    include_examples 'rejects values', [[-1], 'string', { two: :three }, 101]
+    include_examples 'accepts values without munging', [1, 900]
+    include_examples 'rejects values', ['string', { two: :three }]
   end
 end
