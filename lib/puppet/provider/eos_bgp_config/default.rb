@@ -119,5 +119,6 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     when :absent
       api.delete
     end
+    @property_flush = {}
   end
 end
