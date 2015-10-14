@@ -39,6 +39,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
   unless ENV['RBEAPI_CONNECTION']
     confine :operatingsystem => [:AristaEOS]
   end
+  confine :feature => :rbeapi
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
