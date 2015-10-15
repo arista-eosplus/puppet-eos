@@ -27,7 +27,7 @@ Sample minimal configuration on a switch includes basic IP connectivity, hostnam
   ip route 0.0.0.0/0 192.2.2.1
   !
 
-From EOS 4.15.5 and up, it is recommended configure EOS to use unix-sockets for eAPI:
+From EOS 4.14.5 and up, it is recommended configure EOS to use unix-sockets for eAPI:
 
 .. code-block:: console
 
@@ -37,7 +37,7 @@ From EOS 4.15.5 and up, it is recommended configure EOS to use unix-sockets for 
      no shutdown
   !
 
-In EOS versions below 4.15.5, it is recommended to configure EOS to use https for eAPI.  This also requires the creation of a ``flash:eapi.conf`` in which to store user credentials to login to eAPI:
+In EOS versions below 4.14.5, it is recommended to configure EOS to use https for eAPI.  This also requires the creation of a ``flash:eapi.conf`` in which to store user credentials to login to eAPI:
 
 .. code-block:: console
 
