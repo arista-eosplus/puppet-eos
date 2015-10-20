@@ -39,13 +39,13 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     Example:
 
-        eos_static_route { '192.168.99.0/24/10.0.0.1': }
+        eos_staticroute { '192.168.99.0/24/10.0.0.1': }
 
-        eos_static_route { '192.168.99.0/24/10.0.0.1':
+        eos_staticroute { '192.168.99.0/24/10.0.0.1':
           ensure => absent,
         }
 
-        eos_static_route { '192.168.10.0/24/Ethernet1':
+        eos_staticroute { '192.168.10.0/24/Ethernet1':
           route_name => 'Edge10',
           distance   => 3,
         }
