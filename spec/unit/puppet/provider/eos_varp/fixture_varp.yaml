@@ -1,0 +1,7 @@
+---
+:name: 'settings'
+:mac_address: 'aa:bb:cc:dd:ee:ff'
+:interfaces:
+  Vlan99:
+    :name: 'Vlan99'
+    :addresses: ['1.1.1.1', '2.2.2.2']
