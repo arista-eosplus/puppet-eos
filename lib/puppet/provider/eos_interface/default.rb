@@ -40,6 +40,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     confine :operatingsystem => [:AristaEOS]
   end
   confine :feature => :rbeapi
+  confine :true => Gem.loaded_specs['rbeapi'].version >= Gem::Version.new('0.3.0')
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
