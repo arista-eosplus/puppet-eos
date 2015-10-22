@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'NetAddr'
 
 RSpec.shared_examples 'property' do
   it 'is a property' do
@@ -437,6 +438,19 @@ RSpec.shared_examples 'accepts values' do |values|
     it "munges #{val.inspect} to #{val.intern.inspect}" do
       type[attribute] = val
       expect(type[attribute]).to eq(val.intern)
+    end
+  end
+end
+
+RSpec.shared_examples 'accepts mac address values' do |values|
+  [*values].each do |val|
+    it "accepts #{val.inspect}" do
+      type[attribute] = val
+    end
+
+    it "munges #{val.inspect} to #{val.intern.inspect}" do
+      type[attribute] = val.scan(/.{1,2}/).join(':')
+      expect(type[attribute]).to eq(val.scan(/.{1,2}/).join(':'))
     end
   end
 end

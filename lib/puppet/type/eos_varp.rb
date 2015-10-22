@@ -38,6 +38,11 @@ Puppet::Type.newtype(:eos_varp) do
     Configures varp settings.
   EOS
 
+  def munge_mac_address(value)
+    addr = NetAddr::EUI.create(value)
+    return addr.address(:Delimiter => ':')
+  end
+
   # Parameters
 
   newparam(:name, namevar: true) do
@@ -58,6 +63,10 @@ Puppet::Type.newtype(:eos_varp) do
     desc <<-EOS
       Assigns a virtual MAC address to the switch.
     EOS
+
+    munge do |value|
+      @resource.munge_mac_address(value)
+    end
 
     validate do |value|
       unless value.is_a? String
