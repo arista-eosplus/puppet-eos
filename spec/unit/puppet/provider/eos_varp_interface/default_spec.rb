@@ -147,6 +147,7 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
         expect(interfaces).to receive(:set_addresses)
           .with(name, value: ['1.1.1.1', '2.2.2.2'])
         provider.create
+        provider.shared_ip = ['1.1.1.1', '2.2.2.2']
         provider.flush
         expect(provider.ensure).to eq(:present)
       end
@@ -170,7 +171,6 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
       it 'sets shared_ip to value ["1.1.1.1", "2.2.2.2"]' do
         expect(interfaces).to receive(:set_addresses)
           .with(name, value: ['1.1.1.1', '2.2.2.2'])
-
         provider.create
         provider.shared_ip = ['1.1.1.1', '2.2.2.2']
         provider.flush
