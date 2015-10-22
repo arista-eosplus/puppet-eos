@@ -34,7 +34,8 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_varp_interface) do
   @doc = <<-EOS
-    Configures varp interface settings.
+    Configures varp interface settings. Will create interface with
+    designated name if none exists when assigning shared_ip addresses. 
   EOS
 
   ensurable
