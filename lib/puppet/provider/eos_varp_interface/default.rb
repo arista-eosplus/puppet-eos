@@ -48,10 +48,11 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
   def self.instances
     result = node.api('varp').get
     return [] if !result || result.empty?
-    result[:interfaces].map do |name, attrs|
+    result[:interfaces].each_with_object([]) do |(name, attrs), arry|
+      next if attrs[:addresses].empty?
       provider_hash = { name: name, ensure: :present }
-      provider_hash[:shared_ip] = attrs[:addresses] if attrs[:addresses]
-      new(provider_hash)
+      provider_hash[:shared_ip] = attrs[:addresses]
+      arry << new(provider_hash)
     end
   end
 
@@ -69,6 +70,7 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
   end
 
   def create
+    fail('shared_ip property must be included') if resource[:shared_ip].nil?
     @property_flush = resource.to_hash
   end
 

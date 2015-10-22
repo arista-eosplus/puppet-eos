@@ -40,7 +40,7 @@ Puppet::Type.newtype(:eos_varp) do
 
   def munge_mac_address(value)
     addr = NetAddr::EUI.create(value)
-    return addr.address(:Delimiter => ':')
+    addr.address(Delimiter: ':')
   end
 
   # Parameters

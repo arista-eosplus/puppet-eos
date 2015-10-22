@@ -151,6 +151,14 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
         provider.flush
         expect(provider.ensure).to eq(:present)
       end
+
+      context 'when addresses are blank' do
+        it 'sets ensure to :present' do
+          resource[:ensure] = :present
+          resource.delete(:shared_ip)
+          expect { provider.create }.to raise_error
+        end
+      end
     end
 
     describe '#destroy' do
