@@ -81,6 +81,22 @@ module PuppetX
         fail Puppet::Error, msg if errors
       end
       private :validate
+
+      ##
+      # remove_puppet_keys deletes the :provider, :ensure, :loglevel keys
+      # from the passed in hash. This allows the provider to pass in
+      # property_flush to the rbeapi calls without having key:value pairs
+      # in the hash that are not required for the rbeapi call.
+      #
+      # @api private
+      #
+      # @param [Hash] :property_flush The providers property_flush hash.
+      def remove_puppet_keys(property_flush)
+        property_flush.delete(:provider)
+        property_flush.delete(:ensure)
+        property_flush.delete(:loglevel)
+      end
+      private :remove_puppet_keys
     end
   end
 end

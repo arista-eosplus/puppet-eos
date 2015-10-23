@@ -34,6 +34,7 @@ require 'spec_helper'
 include FixtureHelpers
 
 describe Puppet::Type.type(:eos_user).provider(:eos) do
+  # rubocop:disable Metrics/MethodLength
   def load_default_settings
     @name = 'Username'
     @nopassword = :false
