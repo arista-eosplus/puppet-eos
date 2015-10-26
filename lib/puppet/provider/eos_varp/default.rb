@@ -49,16 +49,41 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
     attrs = node.api('varp').get
     return [] if !attrs || attrs.empty?
     provider_hash = { name: 'settings', ensure: :present }
-    provider_hash.merge!(attrs)
+    provider_hash[:mac_address] = attrs[:mac_address]
     [new(provider_hash)]
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
+  def mac_address=(value)
+    @property_flush[:mac_address] = value
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
-  def mac_address=(value)
-    node.api('varp').set_mac_address(value: value)
-    @property_hash[:mac_address] = value
+  def create
+    @property_flush = resource.to_hash
+  end
+
+  def destroy
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = node.api('varp')
+    @property_hash.merge!(@property_flush)
+
+    case @property_hash[:ensure]
+    when :present
+      api.set_mac_address(value: @property_flush[:mac_address])
+    when :absent
+      api.set_mac_address(enable: false)
+    end
+    @property_flush = {}
   end
 end

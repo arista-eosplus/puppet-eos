@@ -130,11 +130,40 @@ describe Puppet::Type.type(:eos_varp).provider(:eos) do
       end
     end
 
+    describe '#create' do
+      let(:name) { resource[:name] }
+
+      it 'sets ensure to :present' do
+        expect(api).to receive(:set_mac_address)
+          .with(value: 'aa:bb:cc:dd:ee:ff')
+        provider.create
+        provider.mac_address = 'aa:bb:cc:dd:ee:ff'
+        provider.flush
+        expect(provider.ensure).to eq(:present)
+      end
+    end
+
+    describe '#destroy' do
+      let(:name) { resource[:name] }
+
+      it 'sets ensure to :absent' do
+        expect(api).to receive(:set_mac_address).with(enable: false)
+        resource[:ensure] = :absent
+        provider.destroy
+        provider.flush
+        expect(provider.ensure).to eq(:absent)
+      end
+    end
+
     describe '#mac_address=(value)' do
+      let(:name) { resource[:name] }
+
       it 'sets mac_address on the resource' do
         expect(api).to receive(:set_mac_address)
           .with(value: 'aa:bb:cc:dd:ee:ff')
+        provider.create
         provider.mac_address = 'aa:bb:cc:dd:ee:ff'
+        provider.flush
         expect(provider.mac_address).to eq('aa:bb:cc:dd:ee:ff')
       end
     end

@@ -38,6 +38,8 @@ Puppet::Type.newtype(:eos_varp) do
     Configures varp settings.
   EOS
 
+  ensurable
+
   def munge_mac_address(value)
     addr = NetAddr::EUI.create(value)
     addr.address(Delimiter: ':')
