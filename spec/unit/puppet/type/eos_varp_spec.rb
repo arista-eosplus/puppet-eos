@@ -43,7 +43,8 @@ describe Puppet::Type.type(:eos_varp) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'name is the namevar'
+    include_examples 'accepts values without munging', ['settings']
+    include_examples 'rejects values', ['randomname' 'must be settings']
   end
 
   describe 'mac_address' do

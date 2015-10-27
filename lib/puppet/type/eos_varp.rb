@@ -53,8 +53,8 @@ Puppet::Type.newtype(:eos_varp) do
     EOS
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+      unless value == 'settings'
+        fail "value #{value.inspect} is invalid, namevar must be 'settings'."
       end
     end
   end
