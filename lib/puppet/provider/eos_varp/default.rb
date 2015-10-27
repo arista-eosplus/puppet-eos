@@ -48,13 +48,13 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
   def self.instances
     attrs = node.api('varp').get
     return [] if !attrs || attrs.empty?
-    provider_hash = { name: 'settings' }
+    provider_hash = { name: 'settings',
+                      mac_address: attrs[:mac_address] }
     if attrs[:mac_address] == ''
       provider_hash[:ensure] = :absent
     else
       provider_hash[:ensure] = :present
     end
-    provider_hash[:mac_address] = attrs[:mac_address]
     [new(provider_hash)]
   end
 
