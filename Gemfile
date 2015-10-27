@@ -14,6 +14,7 @@ def location_for(place, fake_version = nil)
 end
 
 gem 'inifile'
+gem 'netaddr'
 
 group :development do
   gem 'guard'
