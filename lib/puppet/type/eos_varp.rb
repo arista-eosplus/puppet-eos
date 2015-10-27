@@ -42,11 +42,9 @@ Puppet::Type.newtype(:eos_varp) do
 
   def munge_mac_address(value)
     begin
-      NetAddr::EUI.create(value)
+      addr = NetAddr::EUI.create(value)
     rescue
       fail "value #{value.inspect} is invalid, must be a mac address."
-    else
-      addr = NetAddr::EUI.create(value)
     end
     addr.address(Delimiter: ':')
   end
