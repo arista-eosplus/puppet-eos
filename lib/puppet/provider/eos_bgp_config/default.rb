@@ -113,9 +113,6 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
         @property_flush[:maximum_paths] = @property_hash[:maximum_paths]
       end
       remove_puppet_keys(@property_flush)
-      # @property_flush.delete(:provider)
-      # @property_flush.delete(:ensure)
-      # @property_flush.delete(:loglevel)
       api.create(resource[:name], @property_flush)
     when :absent
       api.delete
