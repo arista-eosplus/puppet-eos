@@ -31,7 +31,7 @@
 #
 
 require 'puppet_x/eos/utils/helpers'
-require 'NetAddr'
+require 'netaddr'
 
 Puppet::Type.newtype(:eos_varp) do
   @doc = <<-EOS
