@@ -53,13 +53,13 @@ describe Puppet::Type.type(:eos_varp) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'rejects values', [1, :true, 'ffff:ffff:ffff',
-                                        'random$tring']
     include_examples 'accepts mac address values', ['aa:bb:cc:dd:ee:ff',
                                                     'ff:ff:ff:ff:ff:ff',
                                                     'FF:FF:FF:FF:FF:FF',
                                                     'ff-ff-ff-ff-ff-ff',
                                                     'ffff.ffff.ffff',
                                                     '00:00:11:11:22:22']
+    include_examples 'rejects values', [1, :true, 'ffff:ffff:ffff',
+                                        'random$tring']
   end
 end
