@@ -44,7 +44,7 @@ Puppet::Type.newtype(:eos_varp) do
     begin
       addr = NetAddr::EUI.create(value)
     rescue
-      fail "value #{value.inspect} is invalid, must be a mac address."
+      raise "value #{value.inspect} is invalid, must be a mac address."
     end
     addr.address(Delimiter: ':')
   end
