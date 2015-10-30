@@ -113,6 +113,7 @@ Puppet::Type.type(:eos_config).provide(:eos) do
     end
     exists
   end
+  private :config_exists?
 
   ##
   # run_cmd runs resource[:command] on the switch.
