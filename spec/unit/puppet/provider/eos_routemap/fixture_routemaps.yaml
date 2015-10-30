@@ -1,0 +1,8 @@
+---
+'test:10':
+  :name: 'test:10'
+  :description: 'A description for the route-map'
+  :action: 'permit'
+  :match_rules: ['ip address prefix-list MYLOOPBACK', 'interface Loopback0']
+  :set_rules: ['community internet 5555:5555']
+  :continue: 1
