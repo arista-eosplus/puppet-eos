@@ -48,14 +48,16 @@ Puppet::Type.type(:eos_routemap).provide(:eos) do
   def self.instances
     routemaps = node.api('routemaps').getall
     return [] if !routemaps || routemaps.empty?
-    routemaps.map do |name, attrs|
-      provider_hash = { name: name, ensure: :present }
-      provider_hash[:action] = attrs[:action] if attrs[:action]
-      provider_hash[:description] = attrs[:description] if attrs[:description]
-      provider_hash[:match] = attrs[:match_rules] if attrs[:match_rules]
-      provider_hash[:set] = attrs[:set_rules] if attrs[:set_rules]
-      provider_hash[:continue] = attrs[:continue] if attrs[:continue]
-      new(provider_hash)
+    routemaps.each_with_object([]) do |(name, entries), arry|
+      entries.each do |attrs|
+        provider_hash = { name: "#{name}:#{attrs[:seqno]}", ensure: :present }
+        provider_hash[:action] = attrs[:action]
+        provider_hash[:description] = attrs[:description] if attrs[:description]
+        provider_hash[:match] = attrs[:match] if attrs[:match]
+        provider_hash[:set] = attrs[:set] if attrs[:set]
+        provider_hash[:continue] = attrs[:continue] if attrs[:continue]
+        arry << new(provider_hash)
+      end
     end
   end
 
@@ -99,13 +101,15 @@ Puppet::Type.type(:eos_routemap).provide(:eos) do
   def flush
     api = node.api('routemaps')
     @property_hash.merge!(@property_flush)
-
+    name = resource[:name].partition(':').first
+    seqno = resource[:name].partition(':').last.to_i
+    action = @property_hash[:action] || 'permit'
     case @property_hash[:ensure]
     when :present
       remove_puppet_keys(@property_flush)
-      api.create(resource[:name], @property_flush)
+      api.create(name, action, seqno, @property_flush)
     when :absent
-      api.delete(resource[:name])
+      api.delete(name)
     end
     @property_flush = {}
   end

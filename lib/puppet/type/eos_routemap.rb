@@ -50,6 +50,18 @@ Puppet::Type.newtype(:eos_routemap) do
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
+      seqno = value.partition(':').last if value.include?(':')
+      if seqno
+        unless seqno.to_i.is_a? Integer
+          fail "value #{seqno} must be an integer."
+        end
+        unless seqno.to_i.between?(1, 65_535)
+          fail "value #{seqno} is invalid, /
+               must be an integer from 1-65535."
+        end
+      else
+        fail "value #{value.inspect} must be a composite name:seqno"
+      end
     end
   end
 

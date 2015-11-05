@@ -36,7 +36,7 @@ include FixtureHelpers
 describe Puppet::Type.type(:eos_routemap).provider(:eos) do
   def load_default_settings
     @name = 'test:10'
-    @description = 'A description for the route-map'
+    @description = 'descript'
     @action = 'permit'
     @match = ['ip address prefix-list MYLOOPBACK', 'interface Loopback0']
     @set = ['community internet 5555:5555']
@@ -87,12 +87,12 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
         expect(subject.size).to eq(1)
       end
 
-      it 'has an instance test:10' do
-        instance = subject.find { |p| p.name == @name }
+      it 'has an instance test' do
+        instance = subject.find { |p| p.name == 'test:10' }
         expect(instance).to be_a described_class
       end
 
-      context 'eos_routemap { test:10 }' do
+      context 'eos_routemap { test }' do
         subject { described_class.instances.find { |p| p.name == @name } }
       end
     end
@@ -100,8 +100,7 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'test:10' => Puppet::Type.type(:eos_routemap).new(name: @name),
-          'test:20' => Puppet::Type.type(:eos_routemap).new(name: 'test:20')
+          'test:10' => Puppet::Type.type(:eos_routemap).new(name: 'test:10')
         }
       end
 
@@ -117,23 +116,14 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
         end
       end
 
-      it 'sets the provider instance of the managed resource test:10' do
+      it 'sets the provider instance of the managed resource test' do
         subject
-        expect(resources['test:10'].provider.name).to eq(@name)
+        expect(resources['test:10'].provider.name).to eq('test:10')
         expect(resources['test:10'].provider.description).to eq(@description)
         expect(resources['test:10'].provider.action).to eq(@action)
         expect(resources['test:10'].provider.match).to eq(@match)
         expect(resources['test:10'].provider.set).to eq(@set)
         expect(resources['test:10'].provider.continue).to eq(@continue)
-      end
-
-      it 'does not set the provider instance of the unmanaged resource' do
-        subject
-        expect(resources['test:20'].provider.description).to eq(:absent)
-        expect(resources['test:20'].provider.action).to eq(:absent)
-        expect(resources['test:20'].provider.match).to eq(:absent)
-        expect(resources['test:20'].provider.set).to eq(:absent)
-        expect(resources['test:20'].provider.continue).to eq(:absent)
       end
     end
   end
@@ -160,7 +150,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
     describe '#create' do
       it 'sets ensure on the resource' do
         expect(api).to receive(:create)
-          .with(resource[:name],
+          .with('test',
+                'permit',
+                10,
                 name: @name,
                 description: @description,
                 action: @action,
@@ -180,11 +172,28 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
         expect(provider.set).to eq(@set)
         expect(provider.continue).to eq(@continue)
       end
+
+      it 'fails because name is not composite' do
+        expect(api).to receive(:create)
+          .with('test',
+                'permit',
+                10,
+                name: @name,
+                description: @description,
+                action: @action,
+                match: @match,
+                set: @set,
+                continue: @continue)
+        provider.create
+        provider.flush
+      end
     end
 
     describe '#description=(value)' do
       it 'sets description on the resource' do
-        expect(api).to receive(:create).with(resource[:name],
+        expect(api).to receive(:create).with('test',
+                                             'permit',
+                                             10,
                                              name: @name,
                                              description: @description,
                                              action: @action,
@@ -200,7 +209,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
     describe '#action=(value)' do
       it 'sets action on the resource' do
-        expect(api).to receive(:create).with(resource[:name],
+        expect(api).to receive(:create).with('test',
+                                             'permit',
+                                             10,
                                              name: @name,
                                              description: @description,
                                              action: @action,
@@ -216,7 +227,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
     describe '#match=(value)' do
       it 'sets match on the resource' do
-        expect(api).to receive(:create).with(resource[:name],
+        expect(api).to receive(:create).with('test',
+                                             'permit',
+                                             10,
                                              name: @name,
                                              description: @description,
                                              action: @action,
@@ -232,7 +245,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
     describe '#set=(value)' do
       it 'sets set on the resource' do
-        expect(api).to receive(:create).with(resource[:name],
+        expect(api).to receive(:create).with('test',
+                                             'permit',
+                                             10,
                                              name: @name,
                                              description: @description,
                                              action: @action,
@@ -248,7 +263,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
     describe '#continue=(value)' do
       it 'sets continue on the resource' do
-        expect(api).to receive(:create).with(resource[:name],
+        expect(api).to receive(:create).with('test',
+                                             'permit',
+                                             10,
                                              name: @name,
                                              description: @description,
                                              action: @action,

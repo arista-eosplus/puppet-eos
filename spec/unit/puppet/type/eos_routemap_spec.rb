@@ -45,8 +45,6 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    # include_examples 'string'
-    include_examples 'name is the namevar'
   end
 
   describe 'description' do
@@ -55,7 +53,6 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # include_examples 'string'
   end
 
   describe 'action' do
@@ -64,7 +61,6 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    # include_examples 'string'
   end
 
   describe 'match' do
@@ -72,7 +68,6 @@ describe Puppet::Type.type(:eos_routemap) do
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
-    # include_examples 'array of strings property'
   end
 
   describe 'set' do
@@ -80,7 +75,6 @@ describe Puppet::Type.type(:eos_routemap) do
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
-    # include_examples 'array of strings property'
   end
 
   describe 'continue' do
