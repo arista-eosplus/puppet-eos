@@ -45,6 +45,8 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(test:10 test1:20)
+    include_examples 'rejects values', %w(non composite0101)
   end
 
   describe 'description' do
@@ -53,6 +55,7 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'string value'
   end
 
   describe 'action' do
@@ -61,6 +64,8 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(permit deny)
+    include_examples 'rejects values', %w(anyting else0101)
   end
 
   describe 'match' do
@@ -68,6 +73,7 @@ describe Puppet::Type.type(:eos_routemap) do
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
+    include_examples 'array of strings value'
   end
 
   describe 'set' do
@@ -75,6 +81,7 @@ describe Puppet::Type.type(:eos_routemap) do
     subject { described_class.attrclass(attribute) }
 
     include_examples 'property'
+    include_examples 'array of strings value'
   end
 
   describe 'continue' do
@@ -83,5 +90,7 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [1, 16_777_215]
+    include_examples 'rejects values', [0, 16_777_216]
   end
 end

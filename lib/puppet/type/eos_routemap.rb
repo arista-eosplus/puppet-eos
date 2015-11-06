@@ -88,6 +88,9 @@ Puppet::Type.newtype(:eos_routemap) do
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
+      unless value == 'permit' || value == 'deny'
+        fail "value #{value.inspect} can only be deny or permit"
+      end
     end
   end
 
@@ -123,6 +126,9 @@ Puppet::Type.newtype(:eos_routemap) do
     munge { |value| Integer(value) }
 
     validate do |value|
+      unless value.to_i.is_a? Integer
+        fail "value #{value.inspect} is invalid, must be an Integer."
+      end
       unless value.to_i.between?(1, 16_777_215)
         fail "value #{value.inspect} is invalid, /
              must be an integer from 1-16777215."
