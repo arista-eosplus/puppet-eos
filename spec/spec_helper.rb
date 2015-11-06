@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'rbeapi'
 require 'simplecov'
 require 'simplecov-json'
 require 'simplecov-rcov'
