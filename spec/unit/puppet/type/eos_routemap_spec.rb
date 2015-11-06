@@ -42,11 +42,13 @@ describe Puppet::Type.type(:eos_routemap) do
   describe 'name' do
     let(:attribute) { :name }
     subject { described_class.attrclass(attribute) }
-
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(test:10 test1:20)
-    include_examples 'rejects values', %w(non composite0101)
+    include_examples 'accepts values without munging',
+                     %w(test:10 test:20)
+    include_examples 'rejects values', %w(test test20)
+    include_examples 'rejects non integer seqno values',
+                     %w(test:abc test:*a test:65_536)
   end
 
   describe 'description' do
@@ -74,6 +76,9 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples 'array of strings value'
+    include_examples 'accepts values without munging',
+                     [['ip address prefix-list MYLOOPBACK',
+                       'interface Loopback0']]
   end
 
   describe 'set' do
@@ -82,6 +87,8 @@ describe Puppet::Type.type(:eos_routemap) do
 
     include_examples 'property'
     include_examples 'array of strings value'
+    include_examples 'accepts values without munging',
+                     [['community internet 5555:5555']]
   end
 
   describe 'continue' do
