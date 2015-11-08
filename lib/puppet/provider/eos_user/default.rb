@@ -36,7 +36,6 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_user).provide(:eos) do
-
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
   confine true: Gem.loaded_specs['rbeapi'].version >= Gem::Version.new('0.3.0')
