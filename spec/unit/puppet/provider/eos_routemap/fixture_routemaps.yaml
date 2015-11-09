@@ -1,9 +1,16 @@
 ---
 'test':
-  -
-    :description: 'descript'
-    :action: 'permit'
-    :seqno: 10
-    :match: ['ip address prefix-list MYLOOPBACK', 'interface Loopback0']
-    :set: ['community internet 5555:5555']
-    :continue: 1
+  'permit':
+    10:
+      :description: 'descript'
+      :match: ['ip address prefix-list MYLOOPBACK', 'interface Loopback0']
+      :set: ['community internet 5555:5555']
+      :continue: 1
+    20: {}
+  'deny':
+    10: {}
+    20: {}
+'test1':
+  'permit':
+    10: {}
+    20: {}
