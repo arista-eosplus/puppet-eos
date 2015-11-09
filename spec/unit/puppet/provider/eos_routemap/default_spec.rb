@@ -117,7 +117,7 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
       end
 
       # xxx
-      # Struggling with how to test prefetch
+      # Still working on this.
       # it 'sets the provider instance of the managed resource test' do
       #   subject
       #   expect(resources['test:10'].provider.name).to eq('test:10')
