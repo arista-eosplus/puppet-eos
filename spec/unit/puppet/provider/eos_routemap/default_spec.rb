@@ -83,24 +83,40 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
       it { is_expected.to be_an Array }
 
-      it 'has one entry' do
-        expect(subject.size).to eq(6)
+      it 'has six entry' do
+        expect(subject.size).to eq(8)
       end
 
-      it 'has an instance test' do
+      it 'has an instance for test' do
         instance = subject.find { |p| p.name == 'test:10' }
         expect(instance).to be_a described_class
       end
 
       context 'eos_routemap { test }' do
         subject { described_class.instances.find { |p| p.name == @name } }
+
+        include_examples 'provider resource methods',
+                         description: 'descript',
+                         action: 'permit',
+                         match: ['ip address prefix-list MYLOOPBACK',
+                                 'interface Loopback0'],
+                         set: ['community internet 5555:5555'],
+                         continue: 1
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          'test:10' => Puppet::Type.type(:eos_routemap).new(name: 'test:10')
+          'test:10' => Puppet::Type.type(:eos_routemap).new(name: 'test:10'),
+          'test:20' => Puppet::Type.type(:eos_routemap).new(name: 'test:20'),
+          'test:30' => Puppet::Type.type(:eos_routemap).new(name: 'test:30'),
+          'test:40' => Puppet::Type.type(:eos_routemap).new(name: 'test:40'),
+          'test1:10' => Puppet::Type.type(:eos_routemap).new(name: 'test1:10'),
+          'test1:20' => Puppet::Type.type(:eos_routemap).new(name: 'test1:20'),
+          'test1:30' => Puppet::Type.type(:eos_routemap).new(name: 'test1:30'),
+          'test1:40' => Puppet::Type.type(:eos_routemap).new(name: 'test1:40'),
+          'test2:10' => Puppet::Type.type(:eos_routemap).new(name: 'test2:10')
         }
       end
 
@@ -116,17 +132,66 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
         end
       end
 
-      # xxx
-      # Still working on this.
-      # it 'sets the provider instance of the managed resource test' do
-      #   subject
-      #   expect(resources['test:10'].provider.name).to eq('test:10')
-      #   expect(resources['test:10'].provider.description).to eq(@description)
-      #   expect(resources['test:10'].provider.action).to eq(@action)
-      #   expect(resources['test:10'].provider.match).to eq(@match)
-      #   expect(resources['test:10'].provider.set).to eq(@set)
-      #   expect(resources['test:10'].provider.continue).to eq(@continue)
-      # end
+      it 'sets the provider instance of the managed resource test:10' do
+        subject
+        expect(resources['test:10'].provider.name).to eq('test:10')
+        expect(resources['test:10'].provider.description).to eq(@description)
+        expect(resources['test:10'].provider.action).to eq(@action)
+        expect(resources['test:10'].provider.match).to eq(@match)
+        expect(resources['test:10'].provider.set).to eq(@set)
+        expect(resources['test:10'].provider.continue).to eq(@continue)
+      end
+
+      it 'sets the provider instance of the managed resource test:20' do
+        subject
+        expect(resources['test:20'].provider.name).to eq('test:20')
+        expect(resources['test:20'].provider.action).to eq('permit')
+        expect(resources['test:20'].provider.description).to eq(:absent)
+        expect(resources['test:20'].provider.match).to eq(:absent)
+        expect(resources['test:20'].provider.set).to eq(:absent)
+        expect(resources['test:20'].provider.continue).to eq(:absent)
+      end
+
+      it 'sets the provider instance of the managed resource test:30' do
+        subject
+        expect(resources['test:30'].provider.name).to eq('test:30')
+        expect(resources['test:30'].provider.action).to eq('deny')
+        expect(resources['test:30'].provider.description).to eq('description')
+        expect(resources['test:30'].provider.match).to eq(:absent)
+        expect(resources['test:30'].provider.set).to eq(:absent)
+        expect(resources['test:30'].provider.continue).to eq(1)
+      end
+
+      it 'sets the provider instance of the managed resource test1:40' do
+        subject
+        expect(resources['test1:40'].provider.name).to eq('test1:40')
+        expect(resources['test1:40'].provider.action).to eq('permit')
+        expect(resources['test1:40'].provider.description).to eq(:absent)
+        expect(resources['test1:40'].provider.match).to eq(:absent)
+        expect(resources['test1:40'].provider.set)
+          .to eq(['community internet 5555:5555'])
+        expect(resources['test1:40'].provider.continue).to eq(:absent)
+      end
+
+      it 'does not set the provider instance of the unmanaged resource' do
+        subject
+        expect(resources['test2:10'].provider.name).to eq('test2:10')
+        expect(resources['test2:10'].provider.action).to eq(:absent)
+        expect(resources['test2:10'].provider.description).to eq(:absent)
+        expect(resources['test2:10'].provider.match).to eq(:absent)
+        expect(resources['test2:10'].provider.set).to eq(:absent)
+        expect(resources['test2:10'].provider.continue).to eq(:absent)
+      end
+    end
+
+    it 'fails non composite name' do
+      expect { Puppet::Type.type(:eos_routemap).new(name: 'notest') }
+        .to raise_error(Puppet::ResourceError)
+    end
+
+    it 'fails seqno integer check' do
+      expect { Puppet::Type.type(:eos_routemap).new(name: 'notest:abc') }
+        .to raise_error(Puppet::ResourceError)
     end
   end
 
@@ -150,7 +215,7 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
 
   context 'resource (instance) methods' do
     describe '#create' do
-      it 'sets ensure on the resource' do
+      it 'sets ensure on the resource with all values' do
         expect(api).to receive(:create)
           .with('test',
                 'permit',
@@ -173,21 +238,6 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
         expect(provider.match).to eq(@match)
         expect(provider.set).to eq(@set)
         expect(provider.continue).to eq(@continue)
-      end
-
-      it 'fails because name is not composite' do
-        expect(api).to receive(:create)
-          .with('test',
-                'permit',
-                10,
-                name: @name,
-                description: @description,
-                action: @action,
-                match: @match,
-                set: @set,
-                continue: @continue)
-        provider.create
-        provider.flush
       end
     end
 
