@@ -63,9 +63,9 @@ describe Puppet::Type.type(:eos_routemap).provider(:eos) do
   let(:api) { double('routemaps') }
 
   def routemaps
-    routemaps = Fixtures[:routemaps]
+    routemaps = Fixtures[:routemap]
     return routemaps if routemaps
-    fixture('routemaps', dir: File.dirname(__FILE__))
+    fixture('routemap', dir: File.dirname(__FILE__))
   end
 
   before :each do
