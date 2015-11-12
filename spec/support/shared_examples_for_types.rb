@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'NetAddr'
+require 'netaddr'
 
 RSpec.shared_examples 'property' do
   it 'is a property' do
