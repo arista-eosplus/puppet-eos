@@ -475,3 +475,11 @@ RSpec.shared_examples 'it has a string property' do |attribute|
     include_examples 'string value'
   end
 end
+
+RSpec.shared_examples 'rejects non integer seqno values' do |values|
+  [*values].each do |val|
+    it "rejects #{val.inspect}" do
+      expect { type[attribute] = val }.to raise_error Puppet::ResourceError
+    end
+  end
+end
