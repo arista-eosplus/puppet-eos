@@ -80,7 +80,8 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
 
         include_examples 'provider resource methods',
                          name: 'settings',
-                         hostname: 'localhost'
+                         hostname: 'localhost',
+                         ip_routing: true
       end
     end
 
@@ -98,6 +99,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       it 'resource providers are absent prior to calling .prefetch' do
         resources.values.each do |rsrc|
           expect(rsrc.provider.hostname).to eq(:absent)
+          expect(rsrc.provider.ip_routing).to eq(:absent)
         end
       end
 
@@ -106,6 +108,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(resources['settings'].provider.name).to eq('settings')
         expect(resources['settings'].provider.exists?).to be_truthy
         expect(resources['settings'].provider.hostname).to eq('localhost')
+        expect(resources['settings'].provider.ip_routing).to eq(true)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -113,6 +116,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(resources['alternative'].provider.name).to eq('alternative')
         expect(resources['alternative'].provider.exists?).to be_falsey
         expect(resources['alternative'].provider.hostname).to eq(:absent)
+        expect(resources['alternative'].provider.ip_routing).to eq(:absent)
       end
     end
   end
@@ -123,6 +127,20 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(api).to receive(:set_hostname).with(value: 'foo')
         provider.hostname = 'foo'
         expect(provider.hostname).to eq('foo')
+      end
+    end
+
+    describe '#ip_routing=(value)' do
+      it 'updates ip routing to :true' do
+        expect(api).to receive(:set_iprouting).with(enable: :true)
+        provider.ip_routing = :true
+        expect(provider.ip_routing).to eq(:true)
+      end
+
+      it 'updates ip routing to :false' do
+        expect(api).to receive(:set_iprouting).with(enable: :false)
+        provider.ip_routing = :false
+        expect(provider.ip_routing).to eq(:false)
       end
     end
   end
