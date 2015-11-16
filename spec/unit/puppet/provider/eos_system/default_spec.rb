@@ -39,6 +39,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
     resource_hash = {
       name: 'settings',
       hostname: 'localhost',
+      ip_routing: :true,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_system).new(resource_hash)
@@ -81,7 +82,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         include_examples 'provider resource methods',
                          name: 'settings',
                          hostname: 'localhost',
-                         ip_routing: true
+                         ip_routing: :true
       end
     end
 
@@ -108,7 +109,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(resources['settings'].provider.name).to eq('settings')
         expect(resources['settings'].provider.exists?).to be_truthy
         expect(resources['settings'].provider.hostname).to eq('localhost')
-        expect(resources['settings'].provider.ip_routing).to eq(true)
+        expect(resources['settings'].provider.ip_routing).to eq(:true)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -132,13 +133,13 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
 
     describe '#ip_routing=(value)' do
       it 'updates ip routing to :true' do
-        expect(api).to receive(:set_iprouting).with(enable: :true)
+        expect(api).to receive(:set_iprouting).with(enable: true)
         provider.ip_routing = :true
         expect(provider.ip_routing).to eq(:true)
       end
 
       it 'updates ip routing to :false' do
-        expect(api).to receive(:set_iprouting).with(enable: :false)
+        expect(api).to receive(:set_iprouting).with(enable: false)
         provider.ip_routing = :false
         expect(provider.ip_routing).to eq(:false)
       end

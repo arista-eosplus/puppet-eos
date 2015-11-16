@@ -53,8 +53,9 @@ Puppet::Type.type(:eos_system).provide(:eos) do
     result = node.api('system').get
     return [] if !result || result.empty?
     provider_hash = { name: 'settings', ensure: :present,
-                      hostname: result[:hostname],
-                      ip_routing: result[:iprouting] }
+                      hostname: result[:hostname] }
+    ip_routing = result[:iprouting] == true ? :true : :false
+    provider_hash[:ip_routing] = ip_routing
     [new(provider_hash)]
   end
 
@@ -68,7 +69,8 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   end
 
   def ip_routing=(val)
-    node.api('system').set_iprouting(enable: val)
+    apival = val == :true ? true : false
+    node.api('system').set_iprouting(enable: apival)
     @property_hash[:ip_routing] = val
   end
 end

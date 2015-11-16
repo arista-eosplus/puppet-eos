@@ -39,9 +39,9 @@ Puppet::Type.newtype(:eos_system) do
   def munge_boolean(value)
     case value
     when true, 'true', :true, 'yes', 'on'
-      true
+      :true
     when false, 'false', :false, 'no', 'off'
-      false
+      :false
     else
       fail('munge_boolean only takes booleans')
     end
@@ -83,7 +83,7 @@ Puppet::Type.newtype(:eos_system) do
       Configures the ip routing state
     EOS
 
-    newvalues(true, false)
+    newvalues(:true, :yes, :on, :false, :no, :off)
 
     munge do |value|
       @resource.munge_boolean(value)
