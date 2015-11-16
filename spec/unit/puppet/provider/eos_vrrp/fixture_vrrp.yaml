@@ -1,0 +1,58 @@
+---
+Vlan100:
+   10: { !ruby/sym preempt: false,
+         !ruby/sym primary_ip: '40.10.5.30',
+         !ruby/sym secondary_ip: ['1.2.3.4', '40.10.5.40'],
+         !ruby/sym enable: true
+       }
+   20: { !ruby/sym priority: 200,
+         !ruby/sym preempt: false,
+         !ruby/sym primary_ip: '10.10.4.20',
+         !ruby/sym enable: false
+       }
+Vlan150:
+   30: { !ruby/sym preempt: false,
+         !ruby/sym enable: false,
+         !ruby/sym primary_ip: '40.10.5.31',
+         !ruby/sym secondary_ip: ['1.2.3.4', '40.10.5.41'],
+         !ruby/sym description: 'The description',
+         !ruby/sym track: [{ name: 'Ethernet1',
+                             action: 'decrement',
+                             amount: 5
+                           }]
+       }
+   40: { !ruby/sym preempt: false,
+         !ruby/sym enable: true,
+         !ruby/sym primary_ip: '40.10.5.32',
+         !ruby/sym priority: 200,
+         !ruby/sym description: 'The description',
+         !ruby/sym secondary_ip: ['1.2.3.4', '40.10.5.42'],
+         !ruby/sym ip_version: 2,
+         !ruby/sym timers_advertise: 100,
+         !ruby/sym mac_addr_adv_interval: 101,
+         !ruby/sym preempt_delay_min: 102,
+         !ruby/sym preempt_delay_reload: 103,
+         !ruby/sym delay_reload: 104,
+         !ruby/sym track: [{ name: 'Ethernet3',
+                             action: 'decrement',
+                             amount: 33
+                           },
+                           { name: 'Ethernet2',
+                             action: 'decrement',
+                             amount: 22
+                           },
+                           { name: 'Ethernet2',
+                             action: 'shutdown'
+                           }]
+       }
+   50: { !ruby/sym preempt: true,
+         !ruby/sym enable: true,
+         !ruby/sym primary_ip: '0.0.0.0',
+         !ruby/sym priority: 100,
+         !ruby/sym ip_version: 2,
+         !ruby/sym timers_advertise: 1,
+         !ruby/sym mac_addr_adv_interval: 30,
+         !ruby/sym preempt_delay_min: 0,
+         !ruby/sym preempt_delay_reload: 0,
+         !ruby/sym delay_reload: 0,
+       }

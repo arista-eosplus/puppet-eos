@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2015, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,11 +35,7 @@ require 'pathname'
 module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
-Puppet::Type.type(:eos_switchport).provide(:eos) do
-  confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
-  confine feature: :rbeapi
-  confine true: Gem.loaded_specs['rbeapi'].version >= Gem::Version.new('0.3.0')
-
+Puppet::Type.type(:eos_routemap).provide(:eos) do
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -50,34 +46,49 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    switchports = node.api('switchports').getall
-    return [] if !switchports || switchports.empty?
-    switchports.map do |(name, attrs)|
-      provider_hash = { name: name, ensure: :present }
-      provider_hash.merge!(attrs)
-      provider_hash[:mode] = attrs[:mode].to_sym
-      new(provider_hash)
+    routemaps = node.api('routemaps').getall
+    return [] if !routemaps || routemaps.empty?
+    routemaps.each_with_object([]) do |(name, entries), arry|
+      entries.each_with_object({}) do |(action, rows)|
+        rows.each_with_object({}) do |(seqno, attrs)|
+          provider_hash = { name: "#{name}:#{seqno}",
+                            action: action,
+                            ensure: :present }
+          if attrs[:description]
+            provider_hash[:description] = attrs[:description]
+          end
+          provider_hash[:match] = attrs[:match] if attrs[:match]
+          provider_hash[:set] = attrs[:set] if attrs[:set]
+          provider_hash[:continue] = attrs[:continue] if attrs[:continue]
+          arry << new(provider_hash)
+        end
+      end
     end
   end
 
-  def mode=(val)
-    node.api('switchports').set_mode(resource[:name], value: val)
-    @property_hash[:mode] = val
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
   end
 
-  def trunk_allowed_vlans=(val)
-    node.api('switchports').set_trunk_allowed_vlans(resource[:name], value: val)
-    @property_hash[:trunk_allowed_vlans] = val
+  def description=(value)
+    @property_flush[:description] = value
   end
 
-  def trunk_native_vlan=(val)
-    node.api('switchports').set_trunk_native_vlan(resource[:name], value: val)
-    @property_hash[:trunk_native_vlan] = val
+  def action=(value)
+    @property_flush[:action] = value
   end
 
-  def access_vlan=(val)
-    node.api('switchports').set_access_vlan(resource[:name], value: val)
-    @property_hash[:access_vlan] = val
+  def match=(value)
+    @property_flush[:match] = value
+  end
+
+  def set=(value)
+    @property_flush[:set] = value
+  end
+
+  def continue=(value)
+    @property_flush[:continue] = value
   end
 
   def exists?
@@ -85,21 +96,26 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   end
 
   def create
-    node.api('switchports').create(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :present }
-    self.mode = resource[:mode] if resource[:mode]
-
-    self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] \
-                               if resource[:trunk_allowed_vlans]
-
-    self.trunk_native_vlan = resource[:trunk_native_vlan] \
-                             if resource[:trunk_native_vlan]
-
-    self.access_vlan = resource[:access_vlan] if resource[:access_vlan]
+    @property_flush = resource.to_hash
   end
 
   def destroy
-    node.api('switchports').delete(resource[:name])
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = node.api('routemaps')
+    @property_hash.merge!(@property_flush)
+    name = resource[:name].partition(':').first
+    seqno = resource[:name].partition(':').last.to_i
+    action = @property_hash[:action] || 'permit'
+    case @property_hash[:ensure]
+    when :present
+      remove_puppet_keys(@property_flush)
+      api.create(name, action, seqno, @property_flush)
+    when :absent
+      api.delete(name, action, seqno)
+    end
+    @property_flush = {}
   end
 end

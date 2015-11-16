@@ -31,56 +31,107 @@
 #
 
 require 'puppet_x/eos/utils/helpers'
-require 'netaddr'
 
-Puppet::Type.newtype(:eos_varp) do
+Puppet::Type.newtype(:eos_routemap) do
   @doc = <<-EOS
-    Configures varp settings.
+    Configures routemap settings.
   EOS
 
   ensurable
-
-  def munge_mac_address(value)
-    begin
-      addr = NetAddr::EUI.create(value)
-    rescue
-      raise "value #{value.inspect} is invalid, must be a mac address."
-    end
-    addr.address(Delimiter: ':')
-  end
 
   # Parameters
 
   newparam(:name, namevar: true) do
     desc <<-EOS
-      Resource name defaults to 'settings' and is not used to configure EOS.
-      Returns an error if a name other than 'settings' is specified.
+      The name of the routemap namevar composite name:seqno.
     EOS
 
     validate do |value|
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
-      unless value == 'settings'
-        fail "value #{value.inspect} is invalid, namevar must be 'settings'."
+      seqno = value.partition(':').last if value.include?(':')
+      if seqno
+        unless seqno.to_i.is_a? Integer
+          fail "value #{seqno} must be an integer."
+        end
+        unless seqno.to_i.between?(1, 65_535)
+          fail "value #{seqno} is invalid, /
+               must be an integer from 1-65535."
+        end
+      else
+        fail "value #{value.inspect} must be a composite name:seqno"
       end
     end
   end
 
   # Properties (state management)
 
-  newproperty(:mac_address) do
+  newproperty(:description) do
     desc <<-EOS
-      Assigns a virtual MAC address to the switch.
+      A description for the route-map.
     EOS
-
-    munge do |value|
-      @resource.munge_mac_address(value)
-    end
 
     validate do |value|
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
+  end
+
+  newproperty(:action) do
+    desc <<-EOS
+      A description for the route-map.
+    EOS
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
+      unless value == 'permit' || value == 'deny'
+        fail "value #{value.inspect} can only be deny or permit"
+      end
+    end
+  end
+
+  newproperty(:match, array_matching: :all) do
+    desc <<-EOS
+      Route map match rule.
+    EOS
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
+  end
+
+  newproperty(:set, array_matching: :all) do
+    desc <<-EOS
+      Set route attribute.
+    EOS
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
+  end
+
+  newproperty(:continue) do
+    desc <<-EOS
+      A route-map sequence number to continue on.
+    EOS
+
+    munge { |value| Integer(value) }
+
+    validate do |value|
+      unless value.to_i.is_a? Integer
+        fail "value #{value.inspect} is invalid, must be an Integer."
+      end
+      unless value.to_i.between?(1, 16_777_215)
+        fail "value #{value.inspect} is invalid, /
+             must be an integer from 1-16777215."
       end
     end
   end

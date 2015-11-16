@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'NetAddr'
+require 'netaddr'
 
 RSpec.shared_examples 'property' do
   it 'is a property' do
@@ -473,5 +473,13 @@ RSpec.shared_examples 'it has a string property' do |attribute|
     let(:attribute) { attribute }
     include_examples '#doc Documentation'
     include_examples 'string value'
+  end
+end
+
+RSpec.shared_examples 'rejects non integer seqno values' do |values|
+  [*values].each do |val|
+    it "rejects #{val.inspect}" do
+      expect { type[attribute] = val }.to raise_error Puppet::ResourceError
+    end
   end
 end

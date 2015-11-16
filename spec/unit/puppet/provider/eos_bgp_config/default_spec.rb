@@ -169,6 +169,7 @@ describe Puppet::Type.type(:eos_bgp_config).provider(:eos) do
         expect(provider.router_id).to eq('192.168.254.1')
         expect(provider.maximum_paths).to eq(3)
         expect(provider.maximum_ecmp_paths).to eq(56)
+        expect(provider.ensure).to eq(:present)
       end
     end
 

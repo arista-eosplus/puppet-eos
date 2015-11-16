@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0.0'
   spec.add_development_dependency 'puppetlabs_spec_helper'
   spec.add_development_dependency 'simplecov'
+  # Runtime
+  spec.add_runtime_dependency 'netaddr'
 
   spec.add_dependency 'puppet'
 end
