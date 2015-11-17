@@ -12,16 +12,16 @@ New Resource Types
     .. comment
 * 'eos_config' (`50 <https://github.com/arista-eosplus/puppet-eos/pull/50>`_) [`devrobo <https://github.com/devrobo>`_]
     .. comment
-* 'eos_varp and eos_varp_interface.' (`47 <https://github.com/arista-eosplus/puppet-eos/pull/47>`_) [`websitescenes <https://github.com/websitescenes>`_]
+* 'eos_varp and eos_varp_interface' (`47 <https://github.com/arista-eosplus/puppet-eos/pull/47>`_) [`websitescenes <https://github.com/websitescenes>`_]
     .. comment
-* 'eos_user.' (`42 <https://github.com/arista-eosplus/puppet-eos/pull/42>`_) [`websitescenes <https://github.com/websitescenes>`_]
+* 'eos_user' (`42 <https://github.com/arista-eosplus/puppet-eos/pull/42>`_) [`websitescenes <https://github.com/websitescenes>`_]
     .. comment
 
 Enhancements
 ------------
 
 * 'Confine providers to only run on AristaEOS and when rbeapi >= 0.3.0 is present' (`48 <https://github.com/arista-eosplus/puppet-eos/pull/48>`_) [`jerearista <https://github.com/jerearista>`_]
-    .. comment
+    Implements puppet feature :rbeapi.   Example use: ``confine :feature => :rbeapi``
 * 'Feature bgp update' (`41 <https://github.com/arista-eosplus/puppet-eos/pull/41>`_) [`websitescenes <https://github.com/websitescenes>`_]
     .. comment
 
