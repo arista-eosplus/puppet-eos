@@ -6,18 +6,29 @@ Cookbook
 Creating a Node Profile Manifest
 --------------------------------
 
-A common pattern is to use node profile manifests to define reusable blocks that get applied to individual nodes, as needed. Node profile manifests define contain classes which define the desired state for one or more settings. These profile classes are, then, assigned to nodes based on the node classification. Profile classes may use parameters (specified in a resource definition or Hiera) to allow customization per node.
+A common pattern is to use node profile manifests to define reusable blocks that
+get applied to individual nodes, as needed. Node profile manifests define
+contain classes which define the desired state for one or more settings. These
+profile classes are, then, assigned to nodes based on the node classification.
+Profile classes may use parameters (specified in a resource definition or Hiera)
+to allow customization per node.
 
 Recipe 1: Masterless / Headless
 -------------------------------
 
-Puppet may be run in a masterless / headless manner.  This method is useful for testing as well as full deployments. When running headless, modules, manifests, etc are made available to each node (NFS, wget, git, subversion) then are applied at the node with the ``puppet apply <manifest>`` command.
+Puppet may be run in a masterless / headless manner.  This method is useful for
+testing as well as full deployments. When running headless, modules, manifests,
+etc are made available to each node (NFS, wget, git, subversion) then are
+applied at the node with the ``puppet apply <manifest>`` command.  For example:
+``puppet apply site.pp``
 
 Recipe 2: MLAG
 --------------
 
-Below are two sample manifests (classes) that can be applied to nodes to configure MLAG between a spine and ToR switch.
-This is a very basic example to illustrate the use of the eos types.  A more useful class would accept variables or read data from hiera 
+Below are two sample manifests (classes) that can be applied to nodes to
+configure MLAG between a spine and ToR switch.
+This is a very basic example to illustrate the use of the eos types.  A more
+advanced class would accept variables or read data from hiera
 to use for interface IDs, VLAN IDs, peer-addresses, etc.
 
 Spine1 Sample
