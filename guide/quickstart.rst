@@ -68,7 +68,7 @@ Puppet 3.x::
   Arista#copy http://myserver/puppet-enterprise-3.8.2-eos-4-i386.swix extensions:
   Arista#extension puppet-enterprise-3.8.2-eos-4-i386.swix
 
-Puppet 2015.x::
+Puppet All-In-One agent (2015.x)::
 
   Arista#copy http://myserver/puppet-agent-1.2.7-1.eos4.i386.swix extensions:
   Arista#extension puppet-agent-1.2.7-1.eos4.i386.swix
@@ -83,7 +83,7 @@ Puppet 3.x::
   Arista#copy http://myserver/rbeapi-puppet3-0.4.0.swix extensions:
   Arista#extension rbeapi-puppet3-0.4.0.swix
 
-Puppet 2015.x::
+Puppet All-In-One agent (2015.x)::
 
   Arista#copy http://myserver/rbeapi-puppet-aio-0.4.0.swix extensions:
   Arista#extension rbeapi-puppet-aio-0.4.0.swix
