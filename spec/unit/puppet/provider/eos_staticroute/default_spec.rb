@@ -159,7 +159,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
       it 'sets ensure on the resource' do
         expect(api).to receive(:create).with('192.0.3.0/24', '192.0.3.1',
                                              distance: 3,
-                                             route_name: 'Edge10',
+                                             name: 'Edge10',
                                              tag: 4)
         provider.create
         provider.flush
@@ -171,7 +171,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
       it 'sets route_name to the resource value' do
         expect(api).to receive(:create).with('192.0.3.0/24', '192.0.3.1',
                                              distance: 3,
-                                             route_name: 'Edge10',
+                                             name: 'Edge10',
                                              tag: 4)
         provider.create
         provider.flush
@@ -183,7 +183,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
       it 'sets distance to the resource value' do
         expect(api).to receive(:create).with('192.0.3.0/24', '192.0.3.1',
                                              distance: 3,
-                                             route_name: 'Edge10',
+                                             name: 'Edge10',
                                              tag: 4)
         provider.create
         provider.flush
@@ -195,7 +195,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
       it 'sets tag to the resource value' do
         expect(api).to receive(:create).with('192.0.3.0/24', '192.0.3.1',
                                              distance: 3,
-                                             route_name: 'Edge10',
+                                             name: 'Edge10',
                                              tag: 4)
         provider.create
         provider.flush
