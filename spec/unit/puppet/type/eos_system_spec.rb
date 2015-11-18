@@ -54,4 +54,16 @@ describe Puppet::Type.type(:eos_system) do
     include_examples 'accepts values without munging', %w(localhost foo bar)
     include_examples 'rejects values', [[1], { two: 'three' }, 1]
   end
+
+  describe 'ip_routing' do
+    let(:attribute) { :ip_routing }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+    include_examples 'rejects values', ['blah', 123, [123]]
+    include_examples 'accepts values', [:true, :false]
+  end
 end

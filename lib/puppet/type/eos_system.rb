@@ -36,6 +36,17 @@ Puppet::Type.newtype(:eos_system) do
     configuration of global node attributes.
   EOS
 
+  def munge_boolean(value)
+    case value
+    when true, 'true', :true, 'yes', 'on'
+      :true
+    when false, 'false', :false, 'no', 'off'
+      :false
+    else
+      fail('munge_boolean only takes booleans')
+    end
+  end
+
   # Parameters
 
   newparam(:name) do
@@ -64,6 +75,18 @@ Puppet::Type.newtype(:eos_system) do
       when String then super(resource)
       else fail "value #{value.inspect} is invalid, must be a String."
       end
+    end
+  end
+
+  newproperty(:ip_routing, boolean: true) do
+    desc <<-EOS
+      Configures the ip routing state
+    EOS
+
+    newvalues(:true, :yes, :on, :false, :no, :off)
+
+    munge do |value|
+      @resource.munge_boolean(value)
     end
   end
 end
