@@ -104,7 +104,7 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
 
     opts = {}
     opts[:distance] = desired_state[:distance]
-    opts[:route_name] = desired_state[:route_name]
+    opts[:name] = desired_state[:route_name]
     opts[:tag] = desired_state[:tag]
 
     api = node.api('staticroutes')
