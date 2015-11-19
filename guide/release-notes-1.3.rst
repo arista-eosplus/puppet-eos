@@ -22,14 +22,15 @@ Enhancements
 
 * Confine providers to only run on AristaEOS and when rbeapi >= 0.3.0 is present (`48 <https://github.com/arista-eosplus/puppet-eos/pull/48>`_) [`jerearista <https://github.com/jerearista>`_]
     Implements puppet feature :rbeapi.   Example use: ``confine :feature => :rbeapi``
-* Feature bgp update (`41 <https://github.com/arista-eosplus/puppet-eos/pull/41>`_) [`websitescenes <https://github.com/websitescenes>`_]
+* eos_system (`58 <https://github.com/arista-eosplus/puppet-eos/pull/58>`_) [`websitescenes <https://github.com/websitescenes>`_]
+    Add support for managing the global 'ip_routing' setting
+* Feature bgp update (`41 <https://github.com/aristaeossta-eosplus/puppet-eos/pull/41>`_) [`websitescenes <https://github.com/websitescenes>`_]
     .. comment
 
 Fixed
 -----
 
-* Unittests: mock not intercepting acl.getall call (`14 <https://github.com/arista-eosplus/puppet-eos/issues/14>`_)
-    .. comment
+* None
 
 Known Caveats
 -------------
@@ -37,8 +38,6 @@ Known Caveats
 * eos_portchannel members not idempotent when interface order is not the same (`46 <https://github.com/arista-eosplus/puppet-eos/issues/46>`_)
     .. comment
 * eos_vlan provider does not properly set trunk_groups (`38 <https://github.com/arista-eosplus/puppet-eos/issues/38>`_)
-    .. comment
-* Feature system update (`58 <https://github.com/arista-eosplus/puppet-eos/pull/58>`_)
     .. comment
 * All providers should have a description (`55 <https://github.com/arista-eosplus/puppet-eos/issues/55>`_)
     .. comment
