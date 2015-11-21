@@ -36,6 +36,9 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_staticroute).provide(:eos) do
+  confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
+  confine feature: :rbeapi
+
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -100,7 +103,7 @@ Puppet::Type.type(:eos_staticroute).provide(:eos) do
 
     opts = {}
     opts[:distance] = desired_state[:distance]
-    opts[:route_name] = desired_state[:route_name]
+    opts[:name] = desired_state[:route_name]
     opts[:tag] = desired_state[:tag]
 
     api = node.api('staticroutes')

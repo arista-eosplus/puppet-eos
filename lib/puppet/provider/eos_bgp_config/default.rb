@@ -36,6 +36,9 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_bgp_config).provide(:eos) do
+  confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
+  confine feature: :rbeapi
+
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -52,18 +55,34 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
     provider_hash = { name: name, bgp_as: name, ensure: :present }
     provider_hash[:enable] = attrs[:shutdown] ? :false : :true
     provider_hash[:router_id] = attrs[:router_id] if attrs[:router_id]
+    if attrs[:maximum_paths]
+      provider_hash[:maximum_paths] = attrs[:maximum_paths]
+    end
+    if attrs[:maximum_ecmp_paths]
+      provider_hash[:maximum_ecmp_paths] = attrs[:maximum_ecmp_paths]
+    end
     [new(provider_hash)]
   end
 
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
+  end
+
   def enable=(value)
-    val = value == :true ? true : false
-    node.api('bgp').set_shutdown(enable: val)
-    @property_hash[:enable] = value
+    @property_flush[:enable] = value
   end
 
   def router_id=(value)
-    node.api('bgp').set_router_id(value: value)
-    @property_hash[:router_id] = value
+    @property_flush[:router_id] = value
+  end
+
+  def maximum_paths=(value)
+    @property_flush[:maximum_paths] = value
+  end
+
+  def maximum_ecmp_paths=(value)
+    @property_flush[:maximum_ecmp_paths] = value
   end
 
   def exists?
@@ -71,16 +90,36 @@ Puppet::Type.type(:eos_bgp_config).provide(:eos) do
   end
 
   def create
-    node.api('bgp').create(resource[:name])
-    @property_hash = { name: resource[:name], bgp_as: resource[:name],
-                       ensure: :present }
-
-    self.enable = resource[:enable] if resource[:enable]
-    self.router_id = resource[:router_id] if resource[:router_id]
+    @property_flush = resource.to_hash
   end
 
   def destroy
-    node.api('bgp').delete
-    @property_hash = { name: resource[:name], ensure: :absent }
+    @property_flush = resource.to_hash
+  end
+
+  def flush
+    api = node.api('bgp')
+    @property_hash.merge!(@property_flush)
+
+    case @property_hash[:ensure]
+    when :present
+      # The :enable attribute stores :true or :false (i.e. symbols)
+      # The rbeapi library expects a boolean value. Modify the :enable
+      # value passed into the create call to store a boolean value.
+      if @property_flush.key?(:enable)
+        enable = @property_flush[:enable]
+        @property_flush[:enable] = (enable == :true ? true : false)
+      end
+      maximum_ecmp_paths = @property_flush.key?(:maximum_ecmp_paths)
+      desired_maximum = @property_hash.key?(:maximum_paths)
+      if maximum_ecmp_paths && desired_maximum
+        @property_flush[:maximum_paths] = @property_hash[:maximum_paths]
+      end
+      remove_puppet_keys(@property_flush)
+      api.create(resource[:name], @property_flush)
+    when :absent
+      api.delete
+    end
+    @property_flush = {}
   end
 end

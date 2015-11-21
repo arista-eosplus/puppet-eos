@@ -36,6 +36,9 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_system).provide(:eos) do
+  confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
+  confine feature: :rbeapi
+
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
 
@@ -50,6 +53,8 @@ Puppet::Type.type(:eos_system).provide(:eos) do
     return [] if !result || result.empty?
     provider_hash = { name: 'settings', ensure: :present,
                       hostname: result[:hostname] }
+    ip_routing = result[:iprouting] == true ? :true : :false
+    provider_hash[:ip_routing] = ip_routing
     [new(provider_hash)]
   end
 
@@ -60,5 +65,11 @@ Puppet::Type.type(:eos_system).provide(:eos) do
   def hostname=(val)
     node.api('system').set_hostname(value: val)
     @property_hash[:hostname] = val
+  end
+
+  def ip_routing=(val)
+    apival = val == :true ? true : false
+    node.api('system').set_iprouting(enable: apival)
+    @property_hash[:ip_routing] = val
   end
 end

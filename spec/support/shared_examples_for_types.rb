@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'netaddr'
 
 RSpec.shared_examples 'property' do
   it 'is a property' do
@@ -441,6 +442,19 @@ RSpec.shared_examples 'accepts values' do |values|
   end
 end
 
+RSpec.shared_examples 'accepts mac address values' do |values|
+  [*values].each do |val|
+    it "accepts #{val.inspect}" do
+      type[attribute] = val
+    end
+
+    it "munges #{val.inspect} to #{val.intern.inspect}" do
+      type[attribute] = val.scan(/.{1,2}/).join(':')
+      expect(type[attribute]).to eq(val.scan(/.{1,2}/).join(':'))
+    end
+  end
+end
+
 RSpec.shared_examples 'accepts values without munging' do |values|
   [*values].each do |val|
     it "accepts #{val.inspect}" do
@@ -459,5 +473,13 @@ RSpec.shared_examples 'it has a string property' do |attribute|
     let(:attribute) { attribute }
     include_examples '#doc Documentation'
     include_examples 'string value'
+  end
+end
+
+RSpec.shared_examples 'rejects non integer seqno values' do |values|
+  [*values].each do |val|
+    it "rejects #{val.inspect}" do
+      expect { type[attribute] = val }.to raise_error Puppet::ResourceError
+    end
   end
 end

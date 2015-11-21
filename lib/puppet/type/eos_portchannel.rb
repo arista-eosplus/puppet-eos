@@ -169,21 +169,11 @@ Puppet::Type.newtype(:eos_portchannel) do
       timeout configures the period an interface in fallback mode
       remains in LACP mode without receiving a PDU.
 
-      The lacp_timeout value is configured in seconds with a valid
-      range betwee 1 and 100.
-
-      The default value is 90
+      The lacp_timeout value is configured in seconds.
     EOS
 
     munge do |value|
       Integer(value)
-    end
-
-    # Validate each value is a valid timeout value
-    validate do |value|
-      unless value.to_i.between?(1, 100)
-        fail "value #{value.inspect} is not between 1 and 100"
-      end
     end
   end
 end

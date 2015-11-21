@@ -27,7 +27,7 @@ Sample minimal configuration on a switch includes basic IP connectivity, hostnam
   ip route 0.0.0.0/0 192.2.2.1
   !
 
-From EOS 4.15.5 and up, it is recommended configure EOS to use unix-sockets for eAPI:
+From EOS 4.14.5 and up, it is recommended configure EOS to use unix-sockets for eAPI:
 
 .. code-block:: console
 
@@ -37,7 +37,7 @@ From EOS 4.15.5 and up, it is recommended configure EOS to use unix-sockets for 
      no shutdown
   !
 
-In EOS versions below 4.15.5, it is recommended to configure EOS to use https for eAPI.  This also requires the creation of a ``flash:eapi.conf`` in which to store user credentials to login to eAPI:
+In EOS versions below 4.14.5, it is recommended to configure EOS to use https for eAPI.  This also requires the creation of a ``flash:eapi.conf`` in which to store user credentials to login to eAPI:
 
 .. code-block:: console
 
@@ -61,15 +61,32 @@ Example ``flash:eapi.conf``:
   password: password
   enablepwd: itsasecret
 
-Install the puppet agent from `PuppetLabs`_ (`previous releases`_)::
+Install the puppet agent from `PuppetLabs`_ (`previous releases`_):
+
+Puppet 3.x::
 
   Arista#copy http://myserver/puppet-enterprise-3.8.2-eos-4-i386.swix extensions:
   Arista#extension puppet-enterprise-3.8.2-eos-4-i386.swix
 
-Install the `rbeapi extension`_::
+Puppet All-In-One agent (2015.x)::
 
-  Arista#copy http://myserver/rbeapi-0.3.0.swix extensions:
-  Arista#extension rbeapi-0.3.0.swix
+  Arista#copy http://myserver/puppet-agent-1.2.7-1.eos4.i386.swix extensions:
+  Arista#extension puppet-agent-1.2.7-1.eos4.i386.swix
+
+Install the `rbeapi extension`_:
+
+.. note::
+  The rbeapi rubygem and its requirements MAY be installed using Puppet instead of by SWIX on the CLI.  Care should be taken to ensure that the rubygems are installed in a manner that will be restored upon switch reload.  This is automatic with the SWIX package but, otherwise, will be re-initiated by the next Puppet agent run following a reload.
+
+Puppet 3.x::
+
+  Arista#copy http://myserver/rbeapi-puppet3-0.4.0.swix extensions:
+  Arista#extension rbeapi-puppet3-0.4.0.swix
+
+Puppet All-In-One agent (2015.x)::
+
+  Arista#copy http://myserver/rbeapi-puppet-aio-0.4.0.swix extensions:
+  Arista#extension rbeapi-puppet-aio-0.4.0.swix
 
 Save the installed extensions::
 
@@ -78,12 +95,14 @@ Save the installed extensions::
 EOS Command Aliases
 ^^^^^^^^^^^^^^^^^^^
 
-If working with puppet manually from the CLI, it may be convenient to add the following aliases to your systems
+If working with puppet manually from the CLI, it may be convenient to add CLI aliases to your systems.  Some examples follow.
 
 .. code-block:: console
 
   alias pa bash sudo puppet agent --environment demo --waitforcert 30 --onetime true
   alias puppet bash sudo puppet
+  alias puppet2015 bash sudo /opt/puppetlabs/bin/puppet
+  alias puppet-vrf bash sudo ip netns exec <MGMT-VRF> /opt/puppetlabs/bin/puppet
 
 With the above aliases, repetitive typing can be reduced to, for example:
 
@@ -103,9 +122,7 @@ On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-
 .. note::
   There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
-Install the rbeapi rubygem on the server::
-
-  $ sudo gem install rbeapi
+It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 0.4.0.
 
 Add the puppet-eos module to your server's modulepath:
 
@@ -144,8 +161,8 @@ On the Master, sign the node's certificate request:
 
 .. code-block:: console
 
-  $puppet cert list
-  $puppet cert sign <certname>
+  $sudo puppet cert list
+  $sudo puppet cert sign <certname>
 
 If you did not include ``waitforcert``, above, then re-run the puppet agent command to install the signed certificate from the server:
 
