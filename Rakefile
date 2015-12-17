@@ -35,6 +35,15 @@ task :validate do
   end
 end
 
+desc 'Generate typedoc.rst for the guide'
+task :typedoc do
+  system 'puppet doc -r type \
+         | awk \'/This page/{flag=1}/augeas/{flag=0}/eos_/{flag=1}/ exec/\
+         {flag=0}/\*This page/{flag=1}flag\' \
+         | pandoc --from=markdown --to=rst --output=- \
+         > guide/typedoc.rst'
+end
+
 desc 'Generate Getting Started Guide HTML'
 task :guide do
   system 'make -C guide html'
