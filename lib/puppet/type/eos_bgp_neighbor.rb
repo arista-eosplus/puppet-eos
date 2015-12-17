@@ -34,8 +34,28 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_bgp_neighbor) do
   @doc = <<-EOS
-    Provides stateful management of the neighbor statements for the BGP
-    routing process for Arista EOS nodes.
+    Manage BGP neighbor configuration on Arista EOS.
+
+    Example:
+
+        eos_bgp_neighbor{ 'Edge':
+          ensure         => present,
+          enable         => true,
+          description    => 'some text',
+          send_community => true,
+          route_map_in   => 'in_map',
+          route_map_out  => 'out_map',
+          next_hop_self  => false,
+        }
+
+        eos_bgp_neighbor{ '192.0.3.1':
+          ensure         => present,
+          enable         => true,
+          peer_group     => 'Edge',
+          remote_as      => 65004,
+          send_community => true,
+          next_hop_self  => true,
+        }
   EOS
 
   ensurable

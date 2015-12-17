@@ -34,9 +34,23 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_acl_entry) do
   @doc = <<-EOS
-    This type provides management of ACLs on the Arista EOS node from
-    within Puppet.
+    Manage access-lists on Arista EOS.
+
+    Example:
+
+        eos_acl_entry{ 'test1:10':
+          ensure       => present,
+          acltype      => standard,
+          action       => permit,
+          srcaddr      => '1.2.3.0',
+          srcprefixlen => 8,
+          log          => true,
+        }
   EOS
+  #@doc = <<-EOS
+  #  This type provides management of ACLs on the Arista EOS node from
+  #  within Puppet.
+  #EOS
 
   ensurable
 

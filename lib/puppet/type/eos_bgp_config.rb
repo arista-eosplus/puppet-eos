@@ -34,8 +34,17 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_bgp_config) do
   @doc = <<-EOS
-    Provides resource management of the global BGP routing process for
-    Arista EOS nodes.
+    Manage the global BGP routing process on Arista EOS.
+
+    Example:
+
+        eos_bgp_config{ 65001:
+          ensure             => present,
+          enable             => true,
+          router_id          => '192.0.2.4',
+          maximum_paths      => 8,
+          maximum_ecmp_paths => 8,
+        }
   EOS
 
   ensurable

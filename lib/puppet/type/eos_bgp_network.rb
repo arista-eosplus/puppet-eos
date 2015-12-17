@@ -34,8 +34,14 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_bgp_network) do
   @doc = <<-EOS
-    Provides stateful management of the network statements for the BGP
-    routing process for Arista EOS nodes.
+    Manage BGP network statements on Arista EOS.
+
+    Example:
+
+        eos_bgp_network{ '192.0.3.0/24':
+          ensure    => present,
+          route_map => 'neighbor3_map',
+        }
   EOS
 
   ensurable
