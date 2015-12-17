@@ -45,7 +45,7 @@ task :typedoc do
 end
 
 desc 'Generate Getting Started Guide HTML'
-task :guide do
+task :guide => [:typedoc] do
   system 'make -C guide html'
 end
 
