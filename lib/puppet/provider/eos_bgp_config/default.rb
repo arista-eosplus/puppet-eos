@@ -36,6 +36,8 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_bgp_config).provide(:eos) do
+  desc 'Manage global BGP routing process on Arista EOS. Requires rbeapi.'
+
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 
