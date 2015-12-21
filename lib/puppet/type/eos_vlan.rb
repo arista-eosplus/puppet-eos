@@ -43,7 +43,7 @@ Puppet::Type.newtype(:eos_vlan) do
         eos_vlan { '4094':
           enable       => true,
           vlan_name    => 'MLAG_control',
-          trunk_groups => 'mlag',
+          trunk_groups => ['trunkpeer'],
         }
 
         # Remove all un-managed VLANs

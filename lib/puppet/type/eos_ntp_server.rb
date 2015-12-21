@@ -39,6 +39,9 @@ Puppet::Type.newtype(:eos_ntp_server) do
         eos_ntp_server { '174.127.117.113':
           ensure => present,
         }
+
+        # Remove all un-managed servers
+        resources { 'eos_snmp': purge => true }
   EOS
 
   ensurable

@@ -38,7 +38,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
 
     Example:
 
-        eos_bgp_neighbor{ 'Edge':
+        eos_bgp_neighbor { 'Edge':
           ensure         => present,
           enable         => true,
           description    => 'some text',
@@ -48,7 +48,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
           next_hop_self  => false,
         }
 
-        eos_bgp_neighbor{ '192.0.3.1':
+        eos_bgp_neighbor { '192.0.3.1':
           ensure         => present,
           enable         => true,
           peer_group     => 'Edge',

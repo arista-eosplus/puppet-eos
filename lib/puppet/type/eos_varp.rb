@@ -41,7 +41,7 @@ Puppet::Type.newtype(:eos_varp) do
     Example:
 
         eos_varp { 'settings':
-            mac_address => '001c.7300.0099'
+            mac_address => '001c.7300.0099',
         }
   EOS
 

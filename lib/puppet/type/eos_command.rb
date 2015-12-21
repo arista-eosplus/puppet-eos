@@ -39,7 +39,7 @@ Puppet::Type.newtype(:eos_command) do
     Example:
 
         eos_command { 'Save running-config':
-          mode => 'enable',
+          mode     => 'enable',
           commands => 'copy running-config startup-config',
         }
   EOS

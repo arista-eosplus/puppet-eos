@@ -38,7 +38,7 @@ Puppet::Type.newtype(:eos_bgp_network) do
 
     Example:
 
-        eos_bgp_network{ '192.0.3.0/24':
+        eos_bgp_network { '192.0.3.0/24':
           ensure    => present,
           route_map => 'neighbor3_map',
         }

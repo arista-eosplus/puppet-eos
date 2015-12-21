@@ -41,7 +41,7 @@ Puppet::Type.newtype(:eos_config) do
 
     Example:
 
-        eos_config {'Shut interface':
+        eos_config { 'Shut interface':
           command => 'shutdown',
           section => 'interface Ethernet1',
           regexp  => '',

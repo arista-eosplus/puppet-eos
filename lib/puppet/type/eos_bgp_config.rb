@@ -38,7 +38,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
     Example:
 
-        eos_bgp_config{ 65001:
+        eos_bgp_config { 65001:
           ensure             => present,
           enable             => true,
           router_id          => '192.0.2.4',

@@ -41,7 +41,7 @@ Puppet::Type.newtype(:eos_varp_interface) do
     Example:
 
         eos_varp_interface { 'Vlan2':
-          shared_ip => '192.0.2.1'
+          shared_ip => '192.0.2.1',
         }
   EOS
 
