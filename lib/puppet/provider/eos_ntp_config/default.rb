@@ -36,6 +36,7 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_ntp_config).provide(:eos) do
+  desc 'Manage global NTP configuration on EOS.  Requires rbeapi rubygem.'
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 

@@ -35,11 +35,11 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_staticroute) do
   @doc = <<-EOS
-    Configure static routes in EOS.
+    Manage static routes in EOS.
 
-    Example:
+    Examples:
 
-        eos_staticroute { '192.168.99.0/24/10.0.0.1': }
+        eos_staticroute { '192.168.99.0/24/10.0.0.254': }
 
         eos_staticroute { '192.168.99.0/24/10.0.0.1':
           ensure => absent,

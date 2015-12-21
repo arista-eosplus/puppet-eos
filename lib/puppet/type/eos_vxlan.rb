@@ -35,9 +35,16 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_vxlan) do
   @doc = <<-EOS
-    This type mananges VXLAN interface configuration on Arista
-    EOS nodes.  It provides configuration of logical Vxlan interface
+    Manange VXLAN interface configuration on Arista EOS.
+    Configure  logical Vxlan interface
     instances and settings
+
+    Example:
+
+        eos_vxlan { 'Vxlan1':
+          source_interface => 'Loopback1',
+          udp_port         => 5500,
+        }
   EOS
 
   ensurable

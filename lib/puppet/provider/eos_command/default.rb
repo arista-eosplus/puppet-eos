@@ -33,6 +33,7 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_command).provide(:eos) do
+  desc 'Exec commands on Arista EOS. Requires rbeapi rubygem.'
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 

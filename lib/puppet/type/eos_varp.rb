@@ -35,7 +35,14 @@ require 'netaddr'
 
 Puppet::Type.newtype(:eos_varp) do
   @doc = <<-EOS
-    Configures varp settings.
+    Manage global VARP settings on Arista EOS. Configure the Virtual-ARP mac
+    address.
+
+    Example:
+
+        eos_varp { 'settings':
+            mac_address => '001c.7300.0099',
+        }
   EOS
 
   ensurable

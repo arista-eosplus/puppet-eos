@@ -36,6 +36,8 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_vlan).provide(:eos) do
+  desc 'Manage VLANs on Arista EOS. Requires rbeapi rubygem.'
+
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 

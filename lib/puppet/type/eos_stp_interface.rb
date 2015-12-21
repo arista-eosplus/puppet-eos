@@ -34,6 +34,14 @@
 Puppet::Type.newtype(:eos_stp_interface) do
   @doc = <<-EOS
     Manage Spanning Tree Protocol interface configuration.
+
+    Example:
+
+        eos_stp_interface { 'Ethernet16':
+          portfast      => true,
+          portfast_type => network,
+          bpduguard     => false,
+        }
   EOS
 
   # Parameters

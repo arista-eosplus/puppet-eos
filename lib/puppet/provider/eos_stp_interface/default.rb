@@ -33,6 +33,8 @@ require 'puppet/type'
 require 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_stp_interface).provide(:eos) do
+  desc 'Manage interface spanning-tree settings on Arista EOS. Requires rbeapi'
+
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 

@@ -32,8 +32,14 @@
 
 Puppet::Type.newtype(:eos_system) do
   @doc = <<-EOS
-    This type manages the global EOS node settings.  It provides
-    configuration of global node attributes.
+    Manage global EOS switch settings.
+
+    Example:
+
+        eos_system { 'settings':
+          hostname   => 'dc02-pod2-rack3-leaf1',
+          ip_routing => true,
+        }
   EOS
 
   def munge_boolean(value)
