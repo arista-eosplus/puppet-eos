@@ -34,17 +34,22 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_config) do
   @doc = <<-EOS
-    Apply arbitrary configuration commands in Arista EOS.  Commands will only be applied based on the absence or presence of regular expression matches.
+    Apply arbitrary configuration commands in Arista EOS.  Commands will only
+    be applied based on the absence or presence of regular expression matches.
     configuration for a specific command.  If the command are either
     present or absent, the eos_config will configure the node using
     the command argument.
 
-    Example:
+    Examples:
 
-        eos_config { 'Shut interface':
-          command => 'shutdown',
+        eos_config { 'Set location':
+          command => 'snmp-server location Here',
+        }
+
+        eos_config { 'Set interface description':
           section => 'interface Ethernet1',
-          regexp  => '',
+          command => 'description My Description',
+          regexp  => 'description [A-z]',
         }
   EOS
 
