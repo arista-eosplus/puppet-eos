@@ -32,13 +32,24 @@
 
 Puppet::Type.newtype(:eos_switchport) do
   @doc = <<-EOS
-    This type provides a resource for configuring logical layer 2
-    switchports in EOS.  The resource provides configuration for both
-    access and trunk operating modes.
+    Manage logical layer 2 switchports in EOS.
 
     When creating a logical switchport interface, if the specified
     physical interface was previously configured with an IP interface,
     the logical IP interface will be removed.
+
+    Examples:
+
+        eos_switchport { 'Ethernet14':
+          mode        => access,
+          access_vlan => 200,
+        }
+
+        eos_switchport { 'Ethernet15':
+          mode                => trunk,
+          trunk_allowed_vlans => [1, 100, 101, 102, 103, 104],
+          trunk_native_vlan   => 10,
+        }
   EOS
 
   ensurable

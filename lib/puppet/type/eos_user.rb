@@ -34,7 +34,19 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_user) do
   @doc = <<-EOS
-    Configures user settings.
+    Manage Arista EOS user accounts.
+
+    Example:
+
+        $pub_key = 'ssh-rsa AAAAB3u...QHLzF9 admin@example.com'
+
+        eos_user { 'admin':
+          privilege  => 15,
+          role       => 'network-admin',
+          encryption => sha512,
+          secret     => '$1$rnfsWaC6$ZFPdsxxLS4wvSCA9p1wGg/',
+          sshkey     => $pub_key,
+        }
   EOS
 
   ensurable

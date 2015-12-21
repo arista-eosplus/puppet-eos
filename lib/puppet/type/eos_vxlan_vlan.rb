@@ -33,9 +33,17 @@
 
 Puppet::Type.newtype(:eos_vxlan_vlan) do
   @doc = <<-EOS
-    This type manages the VXLAN VLAN to VNI mappings in the nodes
-    current running configuration.  It provides a resources for
-    ensuring specific mappings are present or absent
+    Manage VXLAN VLAN to VNI mappings in Arista EOS.
+
+    Examples:
+
+        eos_vxlan_vlan { '100':
+          vni => '100',
+        }
+
+        eos_vxlan_vlan { '200':
+          vni => '10.10.200',
+        }
   EOS
 
   ensurable

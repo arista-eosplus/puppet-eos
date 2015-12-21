@@ -33,8 +33,15 @@
 
 Puppet::Type.newtype(:eos_command) do
   @doc = <<-EOS
-    Execute commands on the EOS node. Commands can be either priviledged
-    mode (enable) commands or configuration commands.
+    Execute arbitrary CLI commands on Arista EOS. Commands can be executed
+    in priviledged mode (enable) or configuration commands.
+
+    Example:
+
+        eos_command { 'Save running-config':
+          mode => 'enable',
+          commands => 'copy running-config startup-config',
+        }
   EOS
 
   # Parameters

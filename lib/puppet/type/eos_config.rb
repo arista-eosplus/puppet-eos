@@ -34,10 +34,18 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_config) do
   @doc = <<-EOS
-    The eos_config type allows for the evaluation of the current
+    Apply arbitrary configuration commands in Arista EOS.  Commands will only be applied based on the absence or presence of regular expression matches.
     configuration for a specific command.  If the command are either
     present or absent, the eos_config will configure the node using
     the command argument.
+
+    Example:
+
+        eos_config {'Shut interface':
+          command => 'shutdown',
+          section => 'interface Ethernet1',
+          regexp  => '',
+        }
   EOS
 
   # Parameters

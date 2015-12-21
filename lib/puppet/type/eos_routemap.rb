@@ -34,7 +34,27 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_routemap) do
   @doc = <<-EOS
-    Configures routemap settings.
+    Manage route-maps on Arista EOS.
+
+    Examples:
+
+        eos_routemap { 'my_routemap:10':
+          description => 'test 10',
+          action      => permit,
+          match       => 'ip address prefix-list 8to24',
+        }
+
+        eos_routemap { 'bgp_map:10':
+          action   => permit,
+          match    => 'as 10',
+          set      => 'local-preference 100',
+          continue => 20,
+        }
+
+        eos_routemap { 'bgp_map:20':
+          action => permit,
+          match  => [' metric-type type-1', 'as 100'],
+        }
   EOS
 
   ensurable

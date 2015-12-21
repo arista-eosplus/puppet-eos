@@ -32,9 +32,16 @@
 
 Puppet::Type.newtype(:eos_snmp) do
   @doc = <<-EOS
-    This type manages the global SNMP configuration instance on EOS
-    nodes.  It provides configuration resources for global SNMP
-    settings.
+    Manage global SNMP configuration on Arista EOS.
+
+    Example:
+
+        eos_snmp { 'settings':
+          contact          => 'DC02-ops@example.com',
+          location         => 'DC02 POD12 Rack3'
+          chassis_id       => 'JMB00000',
+          source_interface => 'Loopback0',
+        }
   EOS
 
   # Parameters

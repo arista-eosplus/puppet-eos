@@ -32,9 +32,22 @@
 
 Puppet::Type.newtype(:eos_portchannel) do
   @doc = <<-EOS
-    This type manages Port-Channel interface instances on Arista
-    EOS nodes.  It provides configuration resources for logical
-    Port-Channel instances and settings
+    Manage logical Port-Channel interfaces on Arista EOS.
+
+    Example:
+
+        eos_portchannel { 'Port-Channel30':
+          ensure        => present,
+          description   => 'Host 39b',
+          minimum_links => 2,
+          lacp_mode     => active,
+          lacp_fallback => individual,
+          lacp_timeout  => 30,
+        }
+
+        eos_portchannel { 'Port-Channel31':
+          ensure => absent,
+        }
   EOS
 
   ensurable

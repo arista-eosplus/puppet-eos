@@ -34,7 +34,19 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_vrrp) do
   @doc = <<-EOS
-    Provides resource management of the virtual router.
+    Manage VRRP settings on Arista EOS. Configures the Virtual Router
+    Redundancy Protocol settings.
+
+    Example:
+
+        eos_vrrp { 'Vlan50:10':
+          description      => 'Virtual IP'
+          priority         => 100,
+          preempt          => true,
+          primary_ip       => '192.0.2.1',
+          secondary_ip     => ['10.2.4.5'],
+          timers_advertise => 10,
+        }
   EOS
 
   ensurable

@@ -33,9 +33,13 @@
 
 Puppet::Type.newtype(:eos_ntp_config) do
   @doc = <<-EOS
-    This type manages the nodes global NTP configuration settings.
-    It provides a configuration resource for setting global NTP
-    values
+    Manage global NTP configuration settings on Arista EOS.
+
+    Example:
+
+        eos_ntp_config { 'settings':
+          source_interface => 'Management1',
+        }
   EOS
 
   # Parameters

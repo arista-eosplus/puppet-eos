@@ -47,10 +47,6 @@ Puppet::Type.newtype(:eos_acl_entry) do
           log          => true,
         }
   EOS
-  #@doc = <<-EOS
-  #  This type provides management of ACLs on the Arista EOS node from
-  #  within Puppet.
-  #EOS
 
   ensurable
 
