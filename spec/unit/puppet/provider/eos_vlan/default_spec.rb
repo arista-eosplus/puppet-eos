@@ -156,7 +156,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
         allow(api).to receive_messages(
           set_state: true,
           set_name: true,
-          set_trunk_group: true
+          set_trunk_groups: true
         )
         expect(api).to receive(:create).with(resource[:name])
       end
@@ -219,7 +219,7 @@ describe Puppet::Type.type(:eos_vlan).provider(:eos) do
       let(:tgs) { %w(tg1 tg2 tg3) }
 
       it 'updates trunk_groups with array [tg1, tg2, tg3]' do
-        expect(api).to receive(:set_trunk_group).with(vid, value: tgs)
+        expect(api).to receive(:set_trunk_groups).with(vid, value: tgs)
         provider.trunk_groups = tgs
         expect(provider.trunk_groups).to eq(tgs)
       end
