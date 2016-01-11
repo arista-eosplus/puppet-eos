@@ -119,6 +119,11 @@ Puppet::Type.newtype(:eos_routemap) do
       Route map match rule.
     EOS
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
@@ -130,6 +135,11 @@ Puppet::Type.newtype(:eos_routemap) do
     desc <<-EOS
       Set route attribute.
     EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
 
     validate do |value|
       unless value.is_a? String
