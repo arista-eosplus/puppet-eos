@@ -68,6 +68,11 @@ Puppet::Type.newtype(:eos_varp_interface) do
       Array of virtual IP addresses for the interface.
     EOS
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       unless value =~ IPADDR_REGEXP
         fail "value #{value.inspect} is invalid, must be an IP address"

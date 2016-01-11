@@ -130,6 +130,11 @@ Puppet::Type.newtype(:eos_portchannel) do
       The default value for members is []
     EOS
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       unless value =~ %r{^Ethernet\d(:\/\d+)?}
         fail "value #{value.inspect} is invalid, must be an Ethernet interface"

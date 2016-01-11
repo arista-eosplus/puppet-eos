@@ -108,6 +108,11 @@ Puppet::Type.newtype(:eos_switchport) do
       Integer(value)
     end
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       unless value.to_i.between?(1, 4_094)
         fail "value #{value.inspect} is not between 1 and 4094"

@@ -98,6 +98,11 @@ Puppet::Type.newtype(:eos_ipinterface) do
         helper_addresses => ['192.168.10.254', '192.168.11.254']
     EOS
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       unless value =~ IPADDR_REGEXP
         fail "value #{value.inspect} is invalid, must be an IP address"

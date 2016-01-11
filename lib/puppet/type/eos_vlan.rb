@@ -134,6 +134,11 @@ Puppet::Type.newtype(:eos_vlan) do
       The default configure is an empty list
     EOS
 
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
     validate do |value|
       case value
       when String then super(value)
