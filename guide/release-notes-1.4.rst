@@ -21,7 +21,7 @@ Fixed
     one or more members were not properly configured, reapplying their config.
     (`4    6 <https://github.com/arista-eosplus/puppet-eos/issues/46>`_)
 * eos_vlan provider does not properly set trunk_groups (`38 <https://github.com/arista-eosplus/puppet-eos/issues/38>`_)
-    The eos_vlan provider now properly sets the trunk_groups:
+    The eos_vlan provider now properly sets the trunk_groups::
 
         eos_vlan { '4094':
           trunk_groups => ['mlag_peer'],
