@@ -91,7 +91,7 @@ See the [Type reference](http://puppet-eos.readthedocs.org/en/master/types.html)
 * Puppet 3.6 or later
 * Ruby 1.9.3 or later
 * [Arista EOS 4.13.7M or later](arista)
-* [Ruby Client for eAPI 0.3.0 or later](rbeapi)
+* [Ruby Client for eAPI 0.4.0 or later](rbeapi)
 
 ## Development
 
