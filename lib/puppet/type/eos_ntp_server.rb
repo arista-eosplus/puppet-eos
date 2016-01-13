@@ -32,9 +32,16 @@
 
 Puppet::Type.newtype(:eos_ntp_server) do
   @doc = <<-EOS
-    This type manages the list of NTP servers.  It provides a
-    configuration resource for managing the list of NTP servers
-    used by the node.
+    Manage the list of NTP servers on Arista EOS.
+
+    Example:
+
+        eos_ntp_server { '174.127.117.113':
+          ensure => present,
+        }
+
+        # Remove all un-managed servers
+        resources { 'eos_snmp': purge => true }
   EOS
 
   ensurable

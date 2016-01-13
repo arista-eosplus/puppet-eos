@@ -33,9 +33,14 @@
 
 Puppet::Type.newtype(:eos_interface) do
   @doc = <<-EOS
-    This type provides management of Arista EOS interfaces.  The type
-    is used as a basis type for any interface available in EOS and
-    therefore the properties are common across all interface types
+    Manage common attributes of all Arista EOS interfaces.
+
+    Example:
+
+        eos_interface { 'Management1':
+          enable      => true,
+          description => 'OOB management to mgmt-sw1 Ethernet42',
+        }
   EOS
 
   ensurable

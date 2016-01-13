@@ -35,8 +35,18 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_mlag) do
   @doc = <<-EOS
-    This type manages the global MLAG instance on EOS nodes.  It
-    provides configuration for global MLAG configuration parameters.
+    Manage the global MLAG instance on Arista EOS.  It provides configuration
+    for global MLAG configuration parameters.
+
+    Example:
+
+        eos_mlag { 'settings':
+          enable          => true,
+          domain_id       => 'SPINE-MLAG',
+          local_interface => 'Vlan4094',
+          peer_address    => '192.168.0.2',
+          peer_link       => 'Port-Channel900',
+        }
   EOS
 
   # Parameters

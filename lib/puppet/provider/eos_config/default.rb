@@ -36,13 +36,7 @@ module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
 Puppet::Type.type(:eos_config).provide(:eos) do
-  desc 'The eos_config provider allows for the evaluation of the current
-    configuration for a specific command.  The prefetch is a no-op because
-    it is not possible to know if the command is set without the properties.
-    Cannot define an exists? method since XXX
-    The exists? method always returns false unless the properties have been
-    set. The eos_config will configure the node using the command argument
-    when the resource is present and not set on the switch.'
+  desc 'Manage arbitrary config entries on EOS.  Requires rbeapi rubygem.'
 
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi

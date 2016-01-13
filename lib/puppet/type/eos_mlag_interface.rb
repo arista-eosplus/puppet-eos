@@ -32,9 +32,14 @@
 
 Puppet::Type.newtype(:eos_mlag_interface) do
   @doc = <<-EOS
-    This type manages MLAG interfaces on the node used to establish
-    a valid MLAG with a peer switch.  The mlag_id parameter is required
-    for this type.
+    Manage MLAG interfaces on Arista EOS. Configure a valid MLAG with a
+    peer switch.  The mlag_id parameter is required.
+
+    Example:
+
+        eos_mlag_interface { 'Port-Channel10':
+          mlag_id => 10,
+        }
   EOS
 
   ensurable

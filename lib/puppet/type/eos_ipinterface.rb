@@ -34,9 +34,20 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_ipinterface) do
   @doc = <<-EOS
-    This type provides management of logical IP interfaces configured
-    in EOS.  It provides configuration of IPv4 properties on physical
+    Manage logical IP (L3) interfaces in Arista EOS. Used for IPv4 physical
     interfaces and logical virtual interfaces.
+
+    Example:
+
+        eos_ipinterface { 'Ethernet3':
+          address => '192.0.3.2/24',
+          mtu     => 1514,
+
+        }
+        eos_ipinterface { 'Vlan201':
+          address          => '192.0.2.1/24',
+          helper_addresses => ['192.168.10.254', '192.168.11.254'],
+        }
   EOS
 
   ensurable
@@ -86,6 +97,11 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
         helper_addresses => ['192.168.10.254', '192.168.11.254']
     EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
 
     validate do |value|
       unless value =~ IPADDR_REGEXP

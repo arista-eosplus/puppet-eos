@@ -34,8 +34,15 @@ require 'puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_varp_interface) do
   @doc = <<-EOS
-    Configures varp interface settings. Will create interface with
-    designated name if none exists when assigning shared_ip addresses.
+    Manage VARP interface settings on Arista EOS. Will create interface with
+    the designated name if none exists when assigning Virtual-ARP shared_ip
+    addresses.
+
+    Example:
+
+        eos_varp_interface { 'Vlan2':
+          shared_ip => '192.0.2.1',
+        }
   EOS
 
   ensurable
@@ -60,6 +67,11 @@ Puppet::Type.newtype(:eos_varp_interface) do
     desc <<-EOS
       Array of virtual IP addresses for the interface.
     EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
 
     validate do |value|
       unless value =~ IPADDR_REGEXP

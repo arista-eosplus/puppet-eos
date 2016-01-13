@@ -33,10 +33,18 @@
 
 Puppet::Type.newtype(:eos_ethernet) do
   @doc = <<-EOS
-    This type provides management of physical Ethernet interfaces on
-    Arista EOS nodes from within Puppet.  Physical Ethernet interfaces
-    include the physical characteristics of front panel data plane
-    ports with but does not include the out-of-band Management interface.
+    Manage physical Ethernet interfaces on Arista EOS.  Physical Ethernet
+    interfaces include the physical characteristics of front panel data plane
+    ports but does not include out-of-band Management interfaces.
+
+    Example:
+
+        eos_ethernet { 'Ethernet3/17':
+          enable              => true,
+          description         => 'To switch2 Ethernet 1/3',
+          flowcontrol_send    => on,
+          flowcontrol_receive => on,
+        }
   EOS
 
   # Parameters

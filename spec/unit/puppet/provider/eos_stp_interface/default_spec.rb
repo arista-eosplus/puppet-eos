@@ -59,6 +59,7 @@ describe Puppet::Type.type(:eos_stp_interface).provider(:eos) do
 
   before :each do
     allow(described_class.node).to receive(:api).with('stp').and_return(api)
+    allow(provider.node).to receive(:api).with('stp').and_return(api)
     allow(api).to receive(:interfaces).and_return(interfaces)
   end
 
@@ -132,6 +133,35 @@ describe Puppet::Type.type(:eos_stp_interface).provider(:eos) do
         expect(res.provider.portfast).to eq :absent
         expect(res.provider.portfast_type).to eq :absent
         expect(res.provider.bpduguard).to eq :absent
+      end
+    end
+  end
+
+  context 'resource (instance) methods' do
+    describe '#portfast=(value)' do
+      it 'enables portfast in the provider' do
+        expect(interfaces).to receive(:set_portfast)
+          .with(resource[:name], enable: true)
+        provider.portfast = :true
+        expect(provider.portfast).to be_truthy
+      end
+    end
+
+    describe '#portfast_type=(value)' do
+      it 'sets portfast type in the provider' do
+        expect(interfaces).to receive(:set_portfast_type)
+          .with(resource[:name], value: 'network')
+        provider.portfast_type = :network
+        expect(provider.portfast_type).to eq(:network)
+      end
+    end
+
+    describe '#bpduguard=(value)' do
+      it 'enable bpduguard in the provider' do
+        expect(interfaces).to receive(:set_bpduguard)
+          .with(resource[:name], enable: true)
+        provider.bpduguard = :true
+        expect(provider.bpduguard).to be_truthy
       end
     end
   end

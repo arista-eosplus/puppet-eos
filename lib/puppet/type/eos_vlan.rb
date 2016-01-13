@@ -32,8 +32,22 @@
 
 Puppet::Type.newtype(:eos_vlan) do
   @doc = <<-EOS
-    This type provides management of VLANs on the Arista EOS node from
-    within Puppet.
+    Manage VLANs on Arista EOS.
+
+    Examples:
+
+        eos_vlan { '1':
+          vlan_name => 'default',
+        }
+
+        eos_vlan { '4094':
+          enable       => true,
+          vlan_name    => 'MLAG_control',
+          trunk_groups => ['trunkpeer'],
+        }
+
+        # Remove all un-managed VLANs
+        resources { 'eos_vlan': purge => true }
   EOS
 
   ensurable
@@ -119,6 +133,11 @@ Puppet::Type.newtype(:eos_vlan) do
 
       The default configure is an empty list
     EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
 
     validate do |value|
       case value

@@ -33,7 +33,11 @@
 
 Puppet::Type.newtype(:eos_vxlan_vtep) do
   @doc = <<-EOS
-    This type provides management of the global Vxlan VTEP flood list.
+    Manage the global Vxlan VTEP flood list on Arista EOS.
+
+    Example:
+
+        eos_vxlan_vtep { '10.1.1.1': }
   EOS
 
   ensurable
@@ -46,7 +50,7 @@ Puppet::Type.newtype(:eos_vxlan_vtep) do
       VXLAN VNI interface.  The address value is configured using
       address format.
 
-      For example
+      Example
 
         name => 192.168.10.16
     EOS

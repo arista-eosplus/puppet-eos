@@ -6,7 +6,7 @@ Quick Start
 Bootstrapping a switch
 ----------------------
 
-There are a number of ways to bootstrap the necessary components on to a switch, and automatically load the minimal, initial configuration.  We strongly suggest _`ZTP Server` to automate the steps from initial power-on to contacting the Puppet master.
+There are a number of ways to bootstrap the necessary components on to a switch, and automatically load the minimal, initial configuration.  We strongly suggest `ZTP Server`_ to automate the steps from initial power-on to contacting the Puppet master.
 
 Sample minimal configuration on a switch includes basic IP connectivity, hostname and domain-name which are used to generate the switch's SSL certificate, a name-server or host entry for "puppet", the default master name unless otherwise specified, and enabling eAPI (management api http-commands):
 
@@ -80,13 +80,13 @@ Install the `rbeapi extension`_:
 
 Puppet 3.x::
 
-  Arista#copy http://myserver/rbeapi-puppet3-0.4.0.swix extensions:
-  Arista#extension rbeapi-puppet3-0.4.0.swix
+  Arista#copy http://myserver/rbeapi-puppet3-0.5.0.swix extensions:
+  Arista#extension rbeapi-puppet3-0.5.0.swix
 
 Puppet All-In-One agent (2015.x)::
 
-  Arista#copy http://myserver/rbeapi-puppet-aio-0.4.0.swix extensions:
-  Arista#extension rbeapi-puppet-aio-0.4.0.swix
+  Arista#copy http://myserver/rbeapi-puppet-aio-0.5.0.swix extensions:
+  Arista#extension rbeapi-puppet-aio-0.5.0.swix
 
 Save the installed extensions::
 
@@ -122,7 +122,7 @@ On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-
 .. note::
   There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
-It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 0.4.0.
+It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 1.3.0.
 
 Add the puppet-eos module to your server's modulepath:
 
