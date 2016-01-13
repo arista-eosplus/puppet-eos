@@ -19,7 +19,6 @@ build/
 /_yardoc/
 /doc/
 /rdoc/
-/guide/typedoc.rst
 
 ## Environment normalisation:
 /.bundle/
