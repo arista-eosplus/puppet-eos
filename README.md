@@ -19,8 +19,9 @@
 
 ## Build status
 
-[![Start Build Status](https://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_start&style=plastic)](https://revproxy.arista.com/eosplus/ci/job/puppet-eos_start)
-System tests [![Spec Build Status](https://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_spec&style=plastic)](https://revproxy.arista.com/eosplus/ci/job/puppet-eos_spec)
+Style/Lint/build/docs [![Start Build Status](https://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_start&style=plastic)](https://revproxy.arista.com/eosplus/ci/job/puppet-eos_start)
+
+System tests spec/coverage[![Spec Build Status](https://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_spec&style=plastic)](https://revproxy.arista.com/eosplus/ci/job/puppet-eos_spec)
 
 ## Overview
 
