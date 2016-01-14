@@ -17,6 +17,10 @@
 10. [Release Notes](#release-notes)
 
 
+## Build status
+
+[![Build Status](http://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_start)](http://revproxy.arista.com/eosplus/ci/job/puppet-eos_start)
+
 ## Overview
 
 The Arista EOS module for Puppet provides a set of types and providers for
