@@ -19,7 +19,7 @@
 
 ## Build status
 
-[![Build Status](http://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_start)](http://revproxy.arista.com/eosplus/ci/job/puppet-eos_start)
+[![Build Status](https://revproxy.arista.com/eosplus/ci/buildStatus/icon?job=puppet-eos_start)](https://revproxy.arista.com/eosplus/ci/job/puppet-eos_start)
 
 ## Overview
 
