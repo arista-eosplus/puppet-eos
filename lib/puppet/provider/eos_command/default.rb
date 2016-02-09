@@ -55,11 +55,30 @@ Puppet::Type.type(:eos_command).provide(:eos) do
     @property_flush = {}
   end
 
+  def mode=(value)
+    @property_flush[:mode] = value
+  end
+
+  def refreshonly=(value)
+    @property_flush[:refreshonly] = value
+  end
+
+  def commands=(value)
+    @property_flush[:commands] = value
+  end
+
   def flush
-    if resource[:mode] == :config
-      node.config(resource[:commands])
+    @property_hash.merge!(@property_flush)
+
+    if @property_hash[:refreshonly] == :true
+      @property_flush = {}
     else
-      node.enable(resource[:commands])
+      if @property_hash[:mode] == :config
+        node.config(@property_hash[:commands])
+      else
+        node.enable(@property_hash[:commands])
+      end
+      @property_flush = {}
     end
   end
 end
