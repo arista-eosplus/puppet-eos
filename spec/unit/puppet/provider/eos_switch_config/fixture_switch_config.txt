@@ -1,0 +1,561 @@
+! Command: show running-config
+! device: clnchsw14f1zhh (DCS-7150S-64-CL, EOS-4.14.7M)
+! XXX DO NOT CHECKIN - MUST BE ANONYMIZED
+!
+! boot system flash:/EOS-4.14.7M.swi
+!
+terminal length 30
+alias puppet bash sudo ip netns exec ns-cloud-mgmt puppet agent --server cm2master-cnv-zhh-int-1.zhh.imgmtsccloud.net --confdir /persist/sys/puppet --daemonize --no-onetime
+!
+errdisable recovery cause bpduguard
+errdisable recovery cause link-flap
+errdisable recovery cause uplink-failure-detection
+!
+event-handler backup-on-wr
+   trigger on-startup-config
+   action bash /mnt/flash/backup-script.sh
+   delay 60
+   timeout 20
+!
+event-handler configpush-on-wr
+   trigger on-startup-config
+   action bash export SERIAL=`FastCli -p 15 -c 'show ver' | grep Serial | tr -s ' ' | cut -d ' ' -f 3 | tr -d '\r'`; sudo ip netns exec ns-cloud-mgmt curl http://cm2ztp-zhh-int-1.zhh.imgmtsccloud.net:8080/nodes/$SERIAL/startup-config <http://cm2ztp-zhh-int-1.zhh.imgmtsccloud.net:8080/nodes/%24SERIAL/startup-config> -H "content-type: text/plain" --data-binary @/mnt/flash/startup-config -X PUT
+!
+event-handler facts-on-startup
+   trigger on-boot
+   action bash sudo ln -s /persist/sys/var/ /etc/facter
+   delay 60
+!
+event-handler puppet-agent-on-startup
+   trigger on-boot
+   action bash sudo ip netns exec ns-cloud-mgmt puppet agent --server cm2master-cnv-zhh-int-1.zhh.imgmtsccloud.net --confdir /persist/sys/puppet --daemonize --no-onetime
+   delay 120
+!
+transceiver qsfp default-mode 4x10G
+!
+queue-monitor length update-interval 5000000
+!
+logging buffered 2147483647
+logging vrf cloud-mgmt host 10.129.95.20
+!
+hostname clnchsw14f1zhh
+ip name-server vrf cloud-mgmt 138.190.137.72
+ip name-server vrf cloud-mgmt 138.190.137.73
+ip domain-name zhh.imgmtsccloud.net
+!
+ntp server vrf cloud-mgmt 138.190.137.72
+!
+snmp-server contact NMC Cloud
+snmp-server location clnchsw14f1zhh
+snmp-server community cloudsnmp ro
+snmp-server vrf cloud-mgmt
+!
+spanning-tree mode mstp
+no spanning-tree vlan 4094
+spanning-tree mst 0 priority 8192
+!
+aaa authorization exec default local
+!
+aaa root secret 5 $1$axIWUcPJ$lzTnBZDw38fBLB/QHacWb.
+!
+username admin privilege 15 role network-admin secret 5 $1$38JDF.uf$r248Fm95jPI7pHrvFij0T1
+username eapi role network-operator secret 5 $1$9WsWEUqW$bSh79tSWuKvw32k9TpzDJ0
+!
+clock timezone CET
+!
+vlan 500
+   name int11ch-wl-storage
+!
+vlan 501
+   name int11ch-wl-hypervisor-mgmt
+!
+vlan 502
+   name int11ch-wl-vxlan
+!
+vlan 2000
+   name int11ch-cm-storage
+!
+vlan 2010
+   name int11ch-cm-hypervisor-mgmt
+!
+vlan 2020
+   name int11ch-cm-mgmt-services
+!
+vlan 2030
+   name int11ch-cm-uberbau
+!
+vlan 4093
+   name ospf-link
+!
+vlan 4094
+   name mlag
+   trunk group mlagpeer
+!
+vrf definition cloud-mgmt
+   rd 100:100
+!
+interface Port-Channel4
+   description clnchse1425zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 4
+   spanning-tree portfast
+!
+interface Port-Channel5
+   description clnchse1424zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 5
+   spanning-tree portfast
+!
+interface Port-Channel6
+   description clnchse1423zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 6
+   spanning-tree portfast
+!
+interface Port-Channel7
+   description clnchse1422zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 7
+   spanning-tree portfast
+!
+interface Port-Channel8
+   description clnchse1421zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 8
+   spanning-tree portfast
+!
+interface Port-Channel9
+   description clnchse1420zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 9
+   spanning-tree portfast
+!
+interface Port-Channel10
+   description clnchse1419zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 10
+   spanning-tree portfast
+!
+interface Port-Channel11
+   description clnchse1418zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 11
+   spanning-tree portfast
+!
+interface Port-Channel12
+   description clnchse1417zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 12
+   spanning-tree portfast
+!
+interface Port-Channel13
+   description clnchse1416zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 13
+   spanning-tree portfast
+!
+interface Port-Channel14
+   description clnchse1415zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 14
+   spanning-tree portfast
+!
+interface Port-Channel15
+   description clnchse1414zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   port-channel lacp fallback static
+   port-channel lacp fallback timeout 30
+   mlag 15
+   spanning-tree portfast
+!
+interface Port-Channel900
+   description mlag
+   switchport mode trunk
+   switchport trunk group mlagpeer
+!
+interface Ethernet1
+   description clnchse1437zhh:2
+   lacp port-priority 20000
+!
+interface Ethernet2
+   description clnchse1433zhh:2
+   lacp port-priority 20000
+!
+interface Ethernet3
+   description clnchse1429zhh:2
+   lacp port-priority 20000
+!
+interface Ethernet4
+   description clnchse1425zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 4 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet5
+   description clnchse1424zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 5 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet6
+   description clnchse1423zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 6 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet7
+   description clnchse1422zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 7 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet8
+   description clnchse1421zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 8 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet9
+   description clnchse1420zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 9 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet10
+   description clnchse1419zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 10 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet11
+   description clnchse1418zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 11 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet12
+   description clnchse1417zhh:2
+   switchport trunk allowed vlan 500-502
+   switchport mode trunk
+   channel-group 12 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet13
+   description clnchse1416zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   channel-group 13 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet14
+   description clnchse1415zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   channel-group 14 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet15
+   description clnchse1414zhh:2
+   switchport trunk allowed vlan 2000-2099
+   switchport mode trunk
+   channel-group 15 mode active
+   lacp port-priority 20000
+   spanning-tree portfast
+!
+interface Ethernet16
+!
+interface Ethernet17
+!
+interface Ethernet18
+!
+interface Ethernet19
+!
+interface Ethernet20
+!
+interface Ethernet21
+!
+interface Ethernet22
+!
+interface Ethernet23
+!
+interface Ethernet24
+!
+interface Ethernet25
+!
+interface Ethernet26
+!
+interface Ethernet27
+!
+interface Ethernet28
+!
+interface Ethernet29
+!
+interface Ethernet30
+!
+interface Ethernet31
+!
+interface Ethernet32
+!
+interface Ethernet33
+!
+interface Ethernet34
+!
+interface Ethernet35
+!
+interface Ethernet36
+!
+interface Ethernet37
+!
+interface Ethernet38
+!
+interface Ethernet39
+!
+interface Ethernet40
+!
+interface Ethernet41
+!
+interface Ethernet42
+!
+interface Ethernet43
+!
+interface Ethernet44
+!
+interface Ethernet45
+!
+interface Ethernet46
+!
+interface Ethernet47
+!
+interface Ethernet48
+!
+interface Ethernet49/1
+   description clnchro01s1zhh:Ethernet4/17/1
+   mtu 9214
+   speed forced 40gfull
+   no switchport
+   ip address 10.129.0.70/31
+   ip ospf network point-to-point
+!
+interface Ethernet49/2
+!
+interface Ethernet49/3
+!
+interface Ethernet49/4
+!
+interface Ethernet50/1
+   description clnchro02s2zhh:Ethernet4/17/1
+   mtu 9214
+   speed forced 40gfull
+   no switchport
+   ip address 10.129.0.72/31
+   ip ospf network point-to-point
+!
+interface Ethernet50/2
+!
+interface Ethernet50/3
+!
+interface Ethernet50/4
+!
+interface Ethernet51/1
+   description clnchsw14f2zhh:Ethernet51/1
+   mtu 9214
+   speed forced 40gfull
+   no switchport
+   channel-group 900 mode active
+!
+interface Ethernet51/2
+!
+interface Ethernet51/3
+!
+interface Ethernet51/4
+!
+interface Ethernet52/1
+   description clnchsw14f2zhh:Ethernet52/1
+   mtu 9214
+   speed forced 40gfull
+   no switchport
+   channel-group 900 mode active
+!
+interface Ethernet52/2
+!
+interface Ethernet52/3
+!
+interface Ethernet52/4
+!
+interface Loopback0
+   ip address 10.129.2.19/32
+!
+interface Management1
+   vrf forwarding cloud-mgmt
+   ip address 10.129.95.206/26
+!
+interface Vlan500
+   description int11ch-wl-storage
+   mtu 9214
+   ip address 10.129.83.194/26
+   ip virtual-router address 10.129.83.193
+!
+interface Vlan501
+   description int11ch-wl-hypervisor-mgmt
+   mtu 9214
+   ip address 10.129.83.130/26
+   ip virtual-router address 10.129.83.129
+!
+interface Vlan502
+   description int11ch-wl-vxlan
+   mtu 9214
+   ip address 10.129.84.2/26
+   ip helper-address 10.129.95.14
+   ip virtual-router address 10.129.84.1
+!
+interface Vlan2000
+   description int11ch-cm-storage
+   mtu 9214
+   ip address 10.129.82.226/27
+   ip virtual-router address 10.129.82.225
+!
+interface Vlan2010
+   description int11ch-cm-hypervisor-mgmt
+   mtu 9214
+   ip address 10.129.82.194/27
+   ip virtual-router address 10.129.82.193
+!
+interface Vlan2020
+   description int11ch-cm-gmt-services
+   mtu 9214
+   ip address 10.129.83.2/25
+   ip virtual-router address 10.129.83.1
+!
+interface Vlan2030
+   description int11ch-cm-uberbau
+   mtu 9214
+   ip address 10.129.85.130/25
+   ip helper-address 10.129.95.14
+   ip virtual-router address 10.129.85.129
+!
+interface Vlan4093
+   description ospf-link
+   mtu 9214
+   ip address 10.129.0.78/31
+   ip ospf network point-to-point
+!
+interface Vlan4094
+   description mlag
+   mtu 9214
+   no autostate
+   ip address 1.1.1.1/30
+!
+ip virtual-router mac-address 00:1c:73:00:00:99
+!
+ip route vrf cloud-mgmt 0.0.0.0/0 10.129.95.193
+!
+ip routing
+ip routing vrf cloud-mgmt
+!
+router ospf 1
+   router-id 10.129.2.19
+   auto-cost reference-bandwidth 2000000
+   passive-interface default
+   no passive-interface Ethernet49/1
+   no passive-interface Ethernet50/1
+   no passive-interface Vlan4093
+   network 10.129.0.70/31 area 0.0.0.0
+   network 10.129.0.72/31 area 0.0.0.0
+   network 10.129.0.78/31 area 0.0.0.0
+   network 10.129.2.19/32 area 0.0.0.0
+   network 10.129.82.192/27 area 0.0.0.0
+   network 10.129.82.224/27 area 0.0.0.0
+   network 10.129.83.0/25 area 0.0.0.0
+   network 10.129.83.128/26 area 0.0.0.0
+   network 10.129.83.192/26 area 0.0.0.0
+   network 10.129.84.0/26 area 0.0.0.0
+   network 10.129.85.128/25 area 0.0.0.0
+   max-lsa 12000
+   maximum-paths 32
+!
+banner login
+*** WARNING **** WARNING **** WARNING **** WARNING **** WARNING **** WARNING **
+* This system is for the use of authorized users only. Individuals using this *
+* computer system without authority or in the excess of their authority are   *
+* subject to having all their activities on this system monitored and         *
+* recorded. In the course of monitoring individuals improperly using this     *
+* system or in the course of system maintenance, the activities of authorized *
+* user may also be monitored. Anyone using this system expressly consents to  *
+* such monitoring and is advised that if such monitoring reveals possible     *
+* evidence of criminal activity, system personnel may provide the evidence of *
+* such monitoring to law enforcement officials.                               *
+*** WARNING **** WARNING **** WARNING **** WARNING **** WARNING **** WARNING **
+EOF
+banner motd
+*******************************************************************************
+    SWISSCOM AG
+    You are connected to $(hostname)
+*******************************************************************************
+EOF
+!
+management api http-commands
+   no shutdown
+   vrf cloud-mgmt
+      no shutdown
+!
+management console
+   idle-timeout 180
+!
+management ssh
+   idle-timeout 180
+!
+!
+end
