@@ -155,9 +155,12 @@ Run the puppet agent on EOS.  This performs several key tasks:
 * Run pluginsync (enabled by default) to download the types and providers
 * Run the defined manifests, if configured
 
+.. note::
+  Prior to the first full agent run, there may not be a link in the default PATH requiring you to fully qualify the path to puppet. Starting with Puppet 2015.x, the puppet binary is installed in /opt/puppetlabs/bin/.  After the first puppet agent run, a link will be created in /usr/bin/ which is in the default PATH.
+
 .. code-block:: console
 
-  Arista#bash sudo puppet agent [--environment <env_name>] --test --onetime --no-daemonize --waitforcert 30
+  Arista#bash sudo /opt/puppetlabs/bin/puppet agent [--environment <env_name>] --test --onetime --no-daemonize --waitforcert 30
 
 On the Master, sign the node's certificate request:
 
