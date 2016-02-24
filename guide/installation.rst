@@ -73,6 +73,17 @@ Puppet All-In-One agent (2015.x)::
   Arista#copy http://myserver/puppet-agent-1.3.5-1.eos4.i386.swix extensions:
   Arista#extension puppet-agent-1.3.5-1.eos4.i386.swix
 
+Additionally, Puppet 2015.x and up should be configured to run as root in the puppet.conf file::
+
+  Arista#bash sudo /opt/puppetlabs/bin/puppet config set user root
+
+Alternatively, a puppet user maybe created within linux, if preferred, and the agent will automatically run as user 'puppet'::
+
+  #!/bin/bash
+  # flash:rc.eos
+  # This script will be executed on-startup of EOS
+  sudo useradd puppet
+
 Install the `rbeapi extension`_:
 
 .. note::
@@ -100,8 +111,9 @@ If working with puppet manually from the CLI, it may be convenient to add CLI al
 .. code-block:: console
 
   alias pa bash sudo puppet agent --environment demo --waitforcert 30 --onetime true
-  alias puppet bash sudo puppet
+  alias puppet bash sudo /opt/puppetlabs/bin/puppet
   alias puppet2015 bash sudo /opt/puppetlabs/bin/puppet
+  alias puppet3 bash sudo puppet
   alias puppet-vrf bash sudo ip netns exec <MGMT-VRF> /opt/puppetlabs/bin/puppet
 
 With the above aliases, repetitive typing can be reduced to, for example:
@@ -122,7 +134,7 @@ On the master, install the `Forge: eos`_ module (Source: `GitHub: puppet-eos`_).
 .. note::
   There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
-It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 0.4.0.
+It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 1.3.0.
 
 Add the aristanetworks-eos module to your server's modulepath:
 
@@ -148,14 +160,18 @@ Verifying the agent on EOS
 --------------------------
 
 Run the puppet agent on EOS.  This performs several key tasks:
+
 * Generate a keypair and request a certificate from the master
 * Retrieve the CA and Master certificates
 * Run pluginsync (enabled by default) to download the types and providers
 * Run the defined manifests, if configured
 
+.. note::
+  Prior to the first full agent run, there may not be a link in the default PATH requiring you to fully qualify the path to puppet. Starting with Puppet 2015.x, the puppet binary is installed in /opt/puppetlabs/bin/.  After the first puppet agent run, a link will be created in /usr/bin/ which is in the default PATH.
+
 .. code-block:: console
 
-  Arista#bash sudo puppet agent [--environment <env_name>] --test --onetime --no-daemonize --waitforcert 30
+  Arista#bash sudo /opt/puppetlabs/bin/puppet agent [--environment <env_name>] --test --onetime --no-daemonize --waitforcert 30
 
 On the Master, sign the node's certificate request:
 
@@ -203,5 +219,5 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
 .. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
 .. _`previous releases`: https://puppetlabs.com/misc/pe-files/previous-releases
-.. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi
+.. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi/releases
 
