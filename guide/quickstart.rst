@@ -149,6 +149,7 @@ Verifying the agent on EOS
 --------------------------
 
 Run the puppet agent on EOS.  This performs several key tasks:
+
 * Generate a keypair and request a certificate from the master
 * Retrieve the CA and Master certificates
 * Run pluginsync (enabled by default) to download the types and providers
