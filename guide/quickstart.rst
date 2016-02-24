@@ -204,5 +204,5 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
 .. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
 .. _`previous releases`: https://puppetlabs.com/misc/pe-files/previous-releases
-.. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi
+.. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi/releases
 
