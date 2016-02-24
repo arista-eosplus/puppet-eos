@@ -73,6 +73,10 @@ Puppet All-In-One agent (2015.x)::
   Arista#copy http://myserver/puppet-agent-1.3.5-1.eos4.i386.swix extensions:
   Arista#extension puppet-agent-1.3.5-1.eos4.i386.swix
 
+Additionally, Puppet 2015.x and up should be configured to run as root in the puppet.conf file::
+
+  Arista#bash sudo /opt/puppetlabs/bin/puppet config set user root
+
 Install the `rbeapi extension`_:
 
 .. note::
