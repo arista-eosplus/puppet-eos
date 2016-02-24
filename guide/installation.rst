@@ -70,8 +70,8 @@ Puppet 3.x::
 
 Puppet All-In-One agent (2015.x)::
 
-  Arista#copy http://myserver/puppet-agent-1.2.7-1.eos4.i386.swix extensions:
-  Arista#extension puppet-agent-1.2.7-1.eos4.i386.swix
+  Arista#copy http://myserver/puppet-agent-1.3.5-1.eos4.i386.swix extensions:
+  Arista#extension puppet-agent-1.3.5-1.eos4.i386.swix
 
 Install the `rbeapi extension`_:
 
@@ -80,13 +80,13 @@ Install the `rbeapi extension`_:
 
 Puppet 3.x::
 
-  Arista#copy http://myserver/rbeapi-puppet3-0.4.0.swix extensions:
-  Arista#extension rbeapi-puppet3-0.4.0.swix
+  Arista#copy http://myserver/rbeapi-puppet3-0.5.1.swix extensions:
+  Arista#extension rbeapi-puppet3-0.5.1.swix
 
 Puppet All-In-One agent (2015.x)::
 
-  Arista#copy http://myserver/rbeapi-puppet-aio-0.4.0.swix extensions:
-  Arista#extension rbeapi-puppet-aio-0.4.0.swix
+  Arista#copy http://myserver/rbeapi-puppet-aio-0.5.1.swix extensions:
+  Arista#extension rbeapi-puppet-aio-0.5.1.swix
 
 Save the installed extensions::
 
@@ -117,18 +117,18 @@ Configuring the Puppet Master
 
 Follow the standard instructions for `installing either a Puppet Enterprise or Puppet Open-source master <https://docs.puppetlabs.com/>`_ server and setup your environment(s). (Standalone Puppet, also known as headless or masterless puppet, is covered in a separate section.) As the paths to various items and specifics may vary from system to system, you may need to make minor adjustments to the ommands, below, to conform to your particular system.  Use ``puppet config print`` to locate the correct paths.
 
-On the master, install the `Forge: puppet-eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.
+On the master, install the `Forge: eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.
 
 .. note::
   There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
 
 It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 0.4.0.
 
-Add the puppet-eos module to your server's modulepath:
+Add the aristanetworks-eos module to your server's modulepath:
 
 Puppet installer::
 
-  $ sudo puppet module install puppet-eos [--environment production ] [--modulepath $basemodulepath ]
+  $ sudo puppet module install aristanetworks-eos [--environment production ] [--modulepath $basemodulepath ]
 
 Install from source::
 
@@ -198,7 +198,7 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. target-notes::
 
 .. _`eapi.conf`: https://github.com/arista-eosplus/rbeapi#example-eapiconf-file
-.. _`Forge: puppet-eos`: https://forge.puppetlabs.com/aristanetworks/puppet-eos
+.. _`Forge: eos`: https://forge.puppetlabs.com/aristanetworks/eos
 .. _`Github: puppet-eos`: https://github.com/arista-eosplus/puppet-eos
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
 .. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
