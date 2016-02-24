@@ -100,8 +100,9 @@ If working with puppet manually from the CLI, it may be convenient to add CLI al
 .. code-block:: console
 
   alias pa bash sudo puppet agent --environment demo --waitforcert 30 --onetime true
-  alias puppet bash sudo puppet
+  alias puppet bash sudo /opt/puppetlabs/bin/puppet
   alias puppet2015 bash sudo /opt/puppetlabs/bin/puppet
+  alias puppet3 bash sudo puppet
   alias puppet-vrf bash sudo ip netns exec <MGMT-VRF> /opt/puppetlabs/bin/puppet
 
 With the above aliases, repetitive typing can be reduced to, for example:
