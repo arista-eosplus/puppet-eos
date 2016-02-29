@@ -3,6 +3,15 @@ Release 1.4.0 - January 2016
 
 .. contents:: :local:
 
+Known Issues
+------------
+
+* The minimum recommended 2015.x Puppet agent is 2015.3.2
+    Early versions of the 2015.x puppet agent for EOS do not store
+    configuration in persistent storage on the switch which can cause the
+    node to create a new SSL private-key and certificate request after each
+    reload.  Use at least release 2015.3.2 (v4.3.2), puppet-agent-1.3.5-1.eos4.i386.swix
+
 Enhancements
 ------------
 
