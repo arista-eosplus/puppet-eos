@@ -74,7 +74,7 @@ Puppet::Type.type(:eos_vlan).provide(:eos) do
   end
 
   def trunk_groups=(value)
-    node.api('vlans').set_trunk_groups(resource[:vlanid], value: value)
+    node.api('vlans').add_trunk_group(resource[:vlanid], value: value)
     @property_hash[:trunk_groups] = value
   end
 
