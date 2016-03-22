@@ -51,7 +51,6 @@ Puppet::Type.type(:eos_vrrp).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   # rubocop:disable Metrics/MethodLength
-  # rubocop:disable Metrics/AbcSize
   def self.instances
     entries = node.api('vrrp').getall
     return [] if !entries || entries.empty?
