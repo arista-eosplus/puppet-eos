@@ -30,7 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-require 'puppet_x/eos/utils/helpers'
+# Work around due to autoloader issues: https://projects.puppetlabs.com/issues/4248
+require File.dirname(__FILE__) + '/../../puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_config) do
   @doc = <<-EOS
