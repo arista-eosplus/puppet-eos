@@ -55,4 +55,16 @@ if rbeapiversion
 else
   gem 'rbeapi', require: false
 end
+
+# Rubocop > 0.37 requires a gem that only works with ruby 2.x
+if RUBY_VERSION.to_f < 2.0
+  group :development, :test do
+    gem 'rubocop', '>=0.35.1', '< 0.38'
+  end
+else
+  group :development, :test do
+    gem 'rubocop', '>=0.35.1'
+  end
+end
+
 # vim:ft=ruby
