@@ -49,6 +49,7 @@ Puppet::Type.newtype(:eos_switchport) do
           mode                => trunk,
           trunk_allowed_vlans => [1, 100, 101, 102, 103, 104],
           trunk_native_vlan   => 10,
+          trunk_groups        => [tg1, tg2],
         }
   EOS
 
@@ -75,6 +76,33 @@ Puppet::Type.newtype(:eos_switchport) do
   end
 
   # Properties (state management)
+
+  newproperty(:trunk_groups, array_matching: :all) do
+    desc <<-EOS
+      The trunk_groups property assigns an array of trunk group names to
+      the specified switchport/portchannel. A trunk group is the set of
+      interfaces that comprise the trunk and the collection of VLANs whose traffic
+      is carried only on ports that are members of the trunk groups to which
+      the VLAN belongs.
+
+      Example configuration
+
+      trunk_groups => ['tg1', 'tg2']
+
+      The default configure is an empty list
+    EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is not a String"
+      end
+    end
+  end
 
   newproperty(:mode) do
     desc <<-EOS

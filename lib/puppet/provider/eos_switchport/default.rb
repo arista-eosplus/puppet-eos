@@ -1,4 +1,3 @@
-#
 # Copyright (c) 2014, Arista Networks, Inc.
 # All rights reserved.
 #
@@ -60,6 +59,11 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
     end
   end
 
+  def trunk_groups=(val)
+    node.api('switchports').set_trunk_groups(resource[:name], value: val)
+    @property_hash[:trunk_groups] = val
+  end
+
   def mode=(val)
     node.api('switchports').set_mode(resource[:name], value: val)
     @property_hash[:mode] = val
@@ -87,6 +91,9 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   def create
     node.api('switchports').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
+    self.trunk_groups= resource[:trunk_groups] \
+                               if resource[:trunk_groups]
+
     self.mode = resource[:mode] if resource[:mode]
 
     self.trunk_allowed_vlans = resource[:trunk_allowed_vlans] \
