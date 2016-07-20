@@ -85,4 +85,13 @@ describe Puppet::Type.type(:eos_switchport) do
     include_examples '#doc Documentation'
     include_examples 'vlan id value'
   end
+
+  describe 'trunk_groups' do
+    let(:attribute) { :trunk_groups }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [%w(tg1 tg2)]
+  end
 end

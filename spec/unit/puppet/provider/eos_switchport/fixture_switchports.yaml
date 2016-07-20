@@ -4,4 +4,5 @@ Ethernet1:
   :access_vlan: "1"
   :trunk_native_vlan: "1"
   :trunk_allowed_vlans: [1,10,100,1000]
+  :trunk_groups: []
 
