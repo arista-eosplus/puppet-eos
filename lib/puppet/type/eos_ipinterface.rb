@@ -111,6 +111,30 @@ Puppet::Type.newtype(:eos_ipinterface) do
     end
   end
 
+  newproperty(:secondary_addresses, array_matching: :all) do
+    desc <<-EOS
+      The secondary_addresses property configures the list of IP
+      addresses marked as secondary.
+
+      Each element value is in address/mask format.
+
+      Example:
+
+        secondary_addresses => ['192.168.10.24/31', '192.168.10.25/31']
+    EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
+    validate do |value|
+      unless value =~ CIDR_REGEXP
+        fail "value #{value.inspect} is invalid, must be an IP address followed by a netmask"
+      end
+    end
+  end
+
   newproperty(:mtu) do
     desc <<-EOS
       The mtu property configures the IP interface MTU value
@@ -127,6 +151,18 @@ Puppet::Type.newtype(:eos_ipinterface) do
     validate do |value|
       unless value.to_i.between?(68, 9214)
         fail "value #{value.inspect} must be in the range of 68 and 9214"
+      end
+    end
+  end
+
+  validate do
+    if self[:name] =~ /Ethernet/
+      unless !self[:secondary_addresses]
+        self[:secondary_addresses].each do |address|
+          unless address =~ CIDR_REGEXP31
+            fail "value #{address.inspect} is invalid, only netmask 31 and greater are allowed"
+          end
+        end
       end
     end
   end

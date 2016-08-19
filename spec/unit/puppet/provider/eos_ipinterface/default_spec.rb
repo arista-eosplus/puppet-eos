@@ -41,6 +41,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       name: 'Ethernet1',
       address: '1.2.3.4/5',
       helper_addresses: %w(5.6.7.8 9.10.11.12),
+      secondary_addresses: %w(1.2.3.4/31 1.2.3.5/31),
       mtu: '9000',
       provider: described_class.name
     }
@@ -88,6 +89,7 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
                          name: 'Ethernet1',
                          address: '1.2.3.4/5',
                          helper_addresses: %w(5.6.7.8 9.10.11.12),
+                         secondary_addresses: %w(1.2.3.4/31 1.2.3.5/31),
                          mtu: '1500',
                          exists?: true
       end
@@ -120,6 +122,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         expect(resources['Ethernet1'].provider.mtu).to eq '1500'
         expect(resources['Ethernet1'].provider.helper_addresses).to \
           eq %w(5.6.7.8 9.10.11.12)
+        expect(resources['Ethernet1'].provider.secondary_addresses).to \
+          eq %w(1.2.3.4/31 1.2.3.5/31)
         expect(resources['Ethernet1'].provider.exists?).to be_truthy
       end
 
@@ -159,7 +163,8 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
         allow(api).to receive_messages(
           set_address: true,
           set_mtu: true,
-          set_helper_addresses: true
+          set_helper_addresses: true,
+          set_secondary_addresses: true
         )
       end
 
@@ -181,6 +186,11 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       it 'sets helper_addresses to the resource value' do
         provider.create
         expect(provider.helper_addresses).to eq(resource[:helper_addresses])
+      end
+
+      it 'sets secondary_addresses to the resource value' do
+        provider.create
+        expect(provider.secondary_addresses).to eq(resource[:secondary_addresses])
       end
     end
 
@@ -217,6 +227,17 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
           .with(resource[:name], value: value)
         provider.helper_addresses = value
         expect(provider.helper_addresses).to eq(value)
+      end
+    end
+
+    describe '#secondary_addresses=(val)' do
+      let(:value) { %w(5.6.7.8 9.10.11.12) }
+
+      it 'updates secondary_addresses on the provider' do
+        expect(api).to receive(:set_secondary_addresses)
+          .with(resource[:name], value: value)
+        provider.secondary_addresses = value
+        expect(provider.secondary_addresses).to eq(value)
       end
     end
   end
