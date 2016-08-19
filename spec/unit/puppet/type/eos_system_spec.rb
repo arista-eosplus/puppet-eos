@@ -66,4 +66,14 @@ describe Puppet::Type.type(:eos_system) do
     include_examples 'rejects values', ['blah', 123, [123]]
     include_examples 'accepts values', [:true, :false]
   end
+
+  describe 'timezone' do
+    let(:attribute) { :timezone }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'rejects values', [:true, :false, [123], { two: 'three' }, 123]
+    include_examples 'accepts values without munging', ['Europe/Paris','UTC','Europe/Berlin']
+  end
 end
