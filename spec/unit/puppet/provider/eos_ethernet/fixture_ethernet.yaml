@@ -5,4 +5,5 @@ Ethernet1:
   :shutdown: false
   :flowcontrol_send: 'on'
   :flowcontrol_receive: 'on' 
+  :speed: forced 40gfull
 

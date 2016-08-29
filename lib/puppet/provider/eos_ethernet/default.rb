@@ -59,6 +59,7 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
       provider_hash[:description] = attrs[:description]
       provider_hash[:flowcontrol_send] = attrs[:flowcontrol_send].to_sym
       provider_hash[:flowcontrol_receive] = attrs[:flowcontrol_receive].to_sym
+      provider_hash[:speed] = attrs[:speed]
       arry << new(provider_hash)
     end
   end
@@ -72,6 +73,7 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
                             if resource[:flowcontrol_send]
     self.flowcontrol_receive = resource[:flowcontrol_receive] \
                                if resource[:flowcontrol_receive]
+    self.speed = resource[:speed] if resource[:speed]
   end
 
   def destroy
@@ -98,5 +100,10 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
   def flowcontrol_receive=(val)
     node.api('interfaces').set_flowcontrol_receive(resource[:name], value: val)
     @property_hash[:flowcontrol_receive] = val
+  end
+
+  def speed=(val)
+    node.api('interfaces').set_speed(resource[:name], value: val)
+    @property_hash[:speed] = val
   end
 end
