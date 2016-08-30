@@ -55,6 +55,31 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
+  describe 'encapsulation' do
+    let(:attribute) { :encapsulation }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'rejects values', [{ two: :three }, 'abc']
+    [100, '100'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'" do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
+  end
+
+  describe 'load_interval' do
+    let(:attribute) { :load_interval }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', %w(5)
+    include_examples 'rejects values', [['string'], { two: :three }]
+  end
+
   describe 'enable' do
     let(:attribute) { :enable }
     subject { described_class.attrclass(attribute) }
