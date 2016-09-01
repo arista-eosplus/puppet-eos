@@ -44,6 +44,7 @@ Puppet::Type.newtype(:eos_ethernet) do
           description         => 'To switch2 Ethernet 1/3',
           flowcontrol_send    => on,
           flowcontrol_receive => on,
+          speed               => 'forced 40gfull',
         }
   EOS
 
@@ -105,5 +106,35 @@ Puppet::Type.newtype(:eos_ethernet) do
       * off - Configures flowcontrol receive off
     EOS
     newvalues(:on, :off)
+  end
+
+  newproperty(:speed) do
+    desc <<-EOS
+      This property configures the interface speed for the specified Ethernet
+      interface. Valid values for speed are:
+
+      * 'default'
+      * '100full'
+      * '10full'
+      * 'auto'
+      * 'auto 100full'
+      * 'auto 10full'
+      * 'auto 40gfull'
+      * 'forced 10000full'
+      * 'forced 1000full'
+      * 'forced 1000half'
+      * 'forced 100full'
+      * 'forced 100gfull'
+      * 'forced 100half'
+      * 'forced 10full'
+      * 'forced 10half'
+      * 'forced 40gfull'
+      * 'sfp-1000baset auto 100full'
+    EOS
+    newvalues('default', '100full', '10full', 'auto', 'auto 100full',
+              'auto 10full', 'auto 40gfull', 'forced 10000full',
+              'forced 1000full', 'forced 1000half', 'forced 100full',
+              'forced 100gfull', 'forced 100half', 'forced 10full',
+              'forced 10half', 'forced 40gfull', 'sfp-1000baset auto 100full')
   end
 end

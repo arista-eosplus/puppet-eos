@@ -311,7 +311,11 @@ end
 RSpec.shared_examples 'speed property' do
   include_examples 'property'
 
-  %w(auto 1g 10g 40g 56g 100g 100m 10m).each do |val|
+  [:default, '100full', '10full', 'auto', 'auto 100full', 'auto 10full',
+    'auto 40gfull', 'forced 10000full', 'forced 1000full', 'forced 1000half',
+    'forced 100full', 'forced 100gfull', 'forced 100half', 'forced 10full',
+    'forced 10half', 'forced 40gfull',
+    'sfp-1000baset auto 100full'].each do |val|
     it "accepts #{val.inspect}" do
       type[attribute] = val
     end
