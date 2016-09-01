@@ -91,7 +91,7 @@ describe Puppet::Type.type(:eos_ethernet) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', ['100full', '10full', 'auto',
+    include_examples 'accepts values', ['default', '100full', '10full', 'auto',
       'auto 100full', 'auto 10full', 'auto 40gfull', 'forced 10000full',
       'forced 1000full', 'forced 1000half', 'forced 100full',
       'forced 100gfull', 'forced 100half', 'forced 10full', 'forced 10half',
