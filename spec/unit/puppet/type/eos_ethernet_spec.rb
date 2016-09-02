@@ -99,4 +99,14 @@ describe Puppet::Type.type(:eos_ethernet) do
     include_examples 'rejects values', [0, 15, '0', '15', { two: :three },
       :'abc']
   end
+
+  describe 'lacp_priority' do
+    let(:attribute) { :lacp_priority }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [0, 65535]
+    include_examples 'rejects values', [[-1], -1, 65536, { two: :three }]
+  end
 end

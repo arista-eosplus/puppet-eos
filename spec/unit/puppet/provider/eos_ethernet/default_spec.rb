@@ -43,6 +43,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
       flowcontrol_send: :on,
       flowcontrol_receive: :on,
       speed: 'forced 40gfull',
+      lacp_priority: 0,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_ethernet).new(resource_hash)
@@ -91,7 +92,8 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
                          enable: :true,
                          flowcontrol_send: :on,
                          flowcontrol_receive: :on,
-                         speed: 'forced 40gfull'
+                         speed: 'forced 40gfull',
+                         lacp_priority: 0
       end
     end
 
@@ -113,6 +115,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
           expect(rsrc.provider.flowcontrol_send).to eq(:absent)
           expect(rsrc.provider.flowcontrol_receive).to eq(:absent)
           expect(rsrc.provider.speed).to eq(:absent)
+          expect(rsrc.provider.lacp_priority).to eq(:absent)
         end
       end
 
@@ -124,6 +127,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
         expect(resources['Ethernet1'].provider.flowcontrol_send).to eq(:on)
         expect(resources['Ethernet1'].provider.flowcontrol_receive).to eq(:on)
         expect(resources['Ethernet1'].provider.speed).to eq('forced 40gfull')
+        expect(resources['Ethernet1'].provider.lacp_priority).to eq(0)
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -134,6 +138,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
         expect(resources['Ethernet2'].provider.flowcontrol_receive).to \
           eq(:absent)
         expect(resources['Ethernet2'].provider.speed).to eq(:absent)
+        expect(resources['Ethernet2'].provider.lacp_priority).to eq(:absent)
       end
     end
   end
@@ -149,7 +154,8 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
           set_description: true,
           set_flowcontrol_send: true,
           set_flowcontrol_receive: true,
-          set_speed: true
+          set_speed: true,
+          set_lacp_priority: true,
         )
       end
 
@@ -176,6 +182,11 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
       it 'sets speed on the resource' do
         provider.create
         expect(provider.speed).to eq(:'forced 40gfull')
+      end
+
+      it 'sets lacp priority on the resource' do
+        provider.create
+        expect(provider.lacp_priority).to eq(0)
       end
     end
 
@@ -239,6 +250,15 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
           .with(resource[:name], value: 'auto')
         provider.speed = 'auto'
         expect(provider.speed).to eq('auto')
+      end
+    end
+
+    describe '#lacp_priority=(value)' do
+      it 'updates lacp priority in the provider' do
+        expect(api).to receive(:set_lacp_priority)
+          .with(resource[:name], value: 65000)
+        provider.lacp_priority = 65000
+        expect(provider.lacp_priority).to eq(65000)
       end
     end
   end

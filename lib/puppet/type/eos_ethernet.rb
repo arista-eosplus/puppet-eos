@@ -45,6 +45,7 @@ Puppet::Type.newtype(:eos_ethernet) do
           flowcontrol_send    => on,
           flowcontrol_receive => on,
           speed               => 'forced 40gfull',
+          lacp_priority       => 0,
         }
   EOS
 
@@ -136,5 +137,23 @@ Puppet::Type.newtype(:eos_ethernet) do
               'forced 1000full', 'forced 1000half', 'forced 100full',
               'forced 100gfull', 'forced 100half', 'forced 10full',
               'forced 10half', 'forced 40gfull', 'sfp-1000baset auto 100full')
+  end
+
+  newproperty(:lacp_priority) do
+    desc <<-EOS
+      The lacp_priority property specifies the lacp port priority associated
+      with the ethernet interface. The configured value must be an integer in
+      the range of 0 to 65535.
+
+      The default value for the lacp_priority setting is 32768
+    EOS
+
+    munge { |value| Integer(value) }
+
+    validate do |value|
+      unless value.to_i.between?(0, 65_535)
+        fail "value #{value.inspect} must be between 0 and 65535"
+      end
+    end
   end
 end

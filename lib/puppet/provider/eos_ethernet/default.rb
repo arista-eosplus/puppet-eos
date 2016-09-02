@@ -60,6 +60,7 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
       provider_hash[:flowcontrol_send] = attrs[:flowcontrol_send].to_sym
       provider_hash[:flowcontrol_receive] = attrs[:flowcontrol_receive].to_sym
       provider_hash[:speed] = attrs[:speed]
+      provider_hash[:lacp_priority] = attrs[:lacp_priority]
       arry << new(provider_hash)
     end
   end
@@ -74,6 +75,7 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
     self.flowcontrol_receive = resource[:flowcontrol_receive] \
                                if resource[:flowcontrol_receive]
     self.speed = resource[:speed] if resource[:speed]
+    self.lacp_priority = resource[:lacp_priority] if resource[:lacp_priority]
   end
 
   def destroy
@@ -105,5 +107,10 @@ Puppet::Type.type(:eos_ethernet).provide(:eos) do
   def speed=(val)
     node.api('interfaces').set_speed(resource[:name], value: val)
     @property_hash[:speed] = val
+  end
+
+  def lacp_priority=(val)
+    node.api('interfaces').set_lacp_priority(resource[:name], value: val)
+    @property_hash[:lacp_priority] = val
   end
 end
