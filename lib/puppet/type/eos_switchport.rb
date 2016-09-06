@@ -47,7 +47,7 @@ Puppet::Type.newtype(:eos_switchport) do
 
         eos_switchport { 'Ethernet15':
           mode                => trunk,
-          trunk_allowed_vlans => [1, 100, 101, 102, 103, 104],
+          trunk_allowed_vlans => ['1', '100-104', '110', '2000-2099'],
           trunk_native_vlan   => 10,
           trunk_groups        => [tg1, tg2],
         }
@@ -132,18 +132,23 @@ Puppet::Type.newtype(:eos_switchport) do
       VLAN IDs (1-4094).
     EOS
 
-    munge do |value|
-      Integer(value)
-    end
-
     # Sort the arrays before comparing
     def insync?(current)
       current.sort == should.sort
     end
 
     validate do |value|
-      unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+      if value.to_s.include? "-"
+        vid_start, vid_end = value.split('-')
+        Array(vid_start.to_i..vid_end.to_i).each do |vid|
+          unless vid.to_i.between?(1, 4_094)
+            fail "value #{vid.inspect} is not between 1 and 4094"
+          end
+        end
+      else
+        unless value.to_i.between?(1, 4_094)
+          fail "value #{value.inspect} is not between 1 and 4094"
+        end
       end
     end
   end

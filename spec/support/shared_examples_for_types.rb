@@ -184,7 +184,7 @@ RSpec.shared_examples 'vlan id value' do
 end
 
 RSpec.shared_examples 'vlan range value' do
-  [1, 10, 100, 4094].each do |val|
+  ['1', '10', '100', '2000-2099', '4094'].each do |val|
     it "munges #{val.inspect} to [#{val}]" do
       type[attribute] = val
       expect(type[attribute]).to eq([val])

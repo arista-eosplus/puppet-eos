@@ -40,7 +40,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       ensure: :present,
       name: 'Ethernet1',
       mode: :trunk,
-      trunk_allowed_vlans: %w(1 10 100 1000),
+      trunk_allowed_vlans: ['1','10','100-500','1000'],
       trunk_native_vlan: '1',
       access_vlan: '1',
       trunk_groups: [],
@@ -91,7 +91,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
                          ensure: :present,
                          name: 'Ethernet1',
                          mode: :trunk,
-                         trunk_allowed_vlans: [1, 10, 100, 1000],
+                         trunk_allowed_vlans: ['1', '10', '100-500', '1000'],
                          trunk_native_vlan: '1',
                          access_vlan: '1',
                          trunk_groups: []
@@ -128,7 +128,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet1'].provider.access_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_native_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to \
-          eq [1, 10, 100, 1000]
+          eq ['1', '10', '100-500', '1000']
         expect(resources['Ethernet1'].provider.trunk_groups).to eq []
       end
 
@@ -239,7 +239,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     end
 
     describe '#trunk_allowed_vlans=(val)' do
-      let(:vlans) { %w(1 10 100 1000) }
+      let(:vlans) { ['1','10','100-500','1000'] }
 
       it 'updates trunk_allowed_vlans in the provider' do
         expect(api).to receive(:set_trunk_allowed_vlans)
