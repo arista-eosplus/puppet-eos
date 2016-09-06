@@ -4,5 +4,7 @@ Ethernet1:
   :description: test interface
   :shutdown: false
   :flowcontrol_send: 'on'
-  :flowcontrol_receive: 'on' 
+  :flowcontrol_receive: 'on'
+  :speed: forced 40gfull
+  :lacp_priority: 0
 
