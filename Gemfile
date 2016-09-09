@@ -56,12 +56,15 @@ else
   gem 'rbeapi', require: false
 end
 
-# Rubocop > 0.37 requires a gem that only works with ruby 2.x
+# Ensure this remains usable with Ruby 1.9
 if RUBY_VERSION.to_f < 2.0
+  gem 'json', '< 2.0'
   group :development, :test do
     gem 'rubocop', '>=0.35.1', '< 0.38'
+    gem 'listen', '< 3.1.0'
   end
 else
+  gem 'json'
   group :development, :test do
     gem 'rubocop', '>=0.35.1'
   end
