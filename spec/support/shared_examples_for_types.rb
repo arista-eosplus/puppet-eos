@@ -487,3 +487,26 @@ RSpec.shared_examples 'rejects non integer seqno values' do |values|
     end
   end
 end
+
+RSpec.shared_examples 'accepts only IP values' do
+  [:undef, :undefined, 'foobar', 'foo.bar', ['foo','bar'] ].each do |val|
+    it "rejects #{val.inspect} with a TypeError" do
+      expect { type[attribute] = val }.to raise_error Puppet::ResourceError
+    end
+  end
+  [nil].each do |val|
+    it "rejects #{val.inspect} with a Puppet::Error" do
+      expect { type[attribute] = val }.to raise_error Puppet::Error
+    end
+  end
+  [{ two: :three }].each do |val|
+    it "rejects #{val.inspect} with a Error" do
+      expect { type[attribute] = val }.to raise_error
+    end
+  end
+  ['1.2.3.4','192.168.0.1'].each do |val|
+    it "accepts #{val.inspect}" do
+      type[attribute] = val
+    end
+  end
+end
