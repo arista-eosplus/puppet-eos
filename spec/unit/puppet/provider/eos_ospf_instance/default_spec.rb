@@ -57,7 +57,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   def ospf
     ospf = Fixtures[:ospf]
     return ospf if ospf
-    fixture('ospf', dir: File.dirname(__FILE__))
+    fixture('ospf')
   end
 
   # Stub the Api method class to obtain all vlans.
