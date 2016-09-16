@@ -87,17 +87,15 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
   end
 
   def create
-    if resource[:instance_id].nil?
-      fail('instance_id property must be included')
-    end
+    fail('instance_id property must be included') \
+      if resource[:instance_id].nil?
     fail('area property must be included') if resource[:area].nil?
     @property_flush = resource.to_hash
   end
 
   def destroy
-    if resource[:instance_id].nil?
-      fail('instance_id property must be included')
-    end
+    fail('instance_id property must be included') \
+      if resource[:instance_id].nil?
     fail('area property must be included') if resource[:area].nil?
     @property_flush = resource.to_hash
   end

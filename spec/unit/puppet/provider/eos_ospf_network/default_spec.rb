@@ -148,6 +148,16 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
       end
     end
 
+    describe '#area=(value)' do
+      it 'sets area on the resource' do
+        expect(api).to receive(:add_network).with('192.168.10.0/24', 1, '0.0.0.1')
+        provider.create
+        provider.area = '0.0.0.1'
+        provider.flush
+        expect(provider.area).to eq('0.0.0.1')
+      end
+    end
+
     describe '#instance_id=(value)' do
       it 'sets instance_id on the resource' do
         expect(api).to receive(:add_network).with('192.168.10.0/24', 2, '0.0.0.0')
