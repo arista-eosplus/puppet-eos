@@ -60,7 +60,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     fixture('ospf')
   end
 
-  # Stub the Api method class to obtain all vlans.
+  # Stub the Api method class to obtain all ospf instances.
   before :each do
     allow(described_class.node).to receive(:api).with('ospf').and_return(api)
     allow(provider.node).to receive(:api).with('ospf').and_return(api)
