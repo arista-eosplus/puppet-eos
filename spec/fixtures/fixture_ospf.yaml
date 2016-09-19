@@ -14,3 +14,6 @@
   Ethernet1:
     :name: 'Ethernet1'
     :network_type: "point-to-point"
+  Ethernet2:
+    :name: 'Ethernet2'
+    :network_type: "broadcast"
