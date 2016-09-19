@@ -40,6 +40,7 @@ Puppet::Type.newtype(:eos_interface) do
         eos_interface { 'Management1':
           enable      => true,
           description => 'OOB management to mgmt-sw1 Ethernet42',
+          autostate   => true,
         }
   EOS
 
@@ -78,6 +79,17 @@ Puppet::Type.newtype(:eos_interface) do
 
       * true - Administratively enables the interface
       * false - Administratively disables the interface
+    EOS
+    newvalues(:true, :false)
+  end
+
+  newproperty(:autostate) do
+    desc <<-EOS
+      This option configures autostate on a VLAN interface.
+      Valid values for enable are:
+
+      * true - Enable autostate (default setting on EOS)
+      * false - Set no autostate
     EOS
     newvalues(:true, :false)
   end

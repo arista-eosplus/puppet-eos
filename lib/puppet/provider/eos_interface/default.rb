@@ -66,6 +66,11 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_hash[:enable] = val
   end
 
+  def autostate=(val)
+    node.api('interfaces').set_autostate(resource[:name], value: val)
+    @property_hash[:autostate] = val
+  end
+
   def description=(val)
     node.api('interfaces').set_description(resource[:name], value: val)
     @property_hash[:description] = val
