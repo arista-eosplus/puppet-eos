@@ -47,6 +47,15 @@ describe Puppet::Type.type(:eos_ospf_instance) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
+    include_examples 'rejects values', [0, 65_536]
+    include_examples 'rejected parameter values'
+
+    [100, '100'].each do |val|
+      it "validates #{val.inspect} as isomorphic to '100'" do
+        type[attribute] = val
+        expect(type[attribute]).to eq(val.to_s)
+      end
+    end
   end
 
   describe 'router_id' do

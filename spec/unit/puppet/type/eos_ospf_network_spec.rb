@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_ospf_network) do
     include_examples 'accepts values without munging',
                      %w(1.2.3.4/32 8.0.0.0/8)
     include_examples 'rejects values',
-                     %w(1.2 255.255.255.256 host 1.2.3.4/0 8.0.0.0/33)
+                     %w(1.2 255.255.255.256 host 1.2.3.4/0 8.0.0.0/33 256.0.0.0/8)
     include_examples 'rejected parameter values'
   end
 
