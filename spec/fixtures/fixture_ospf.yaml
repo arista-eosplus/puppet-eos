@@ -10,6 +10,11 @@
   :areas:
     :0.0.0.0: ["192.168.10.0/24", "192.168.11.0/24"]
     :0.0.0.1: ["192.168.12.0/24"]
+  :redistribute:
+    'static':
+      :route_map: "test"
+    'connected':
+      :route_map:
 :interfaces:
   Ethernet1:
     :name: 'Ethernet1'

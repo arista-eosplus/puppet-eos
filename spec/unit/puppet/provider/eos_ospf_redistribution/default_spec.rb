@@ -33,17 +33,17 @@ require 'spec_helper'
 
 include FixtureHelpers
 
-describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
+describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
       ensure: :present,
-      name: '192.168.10.0/24',
+      name: 'static',
       instance_id: 1,
-      area: '0.0.0.0',
+      route_map: 'test',
       provider: described_class.name
     }
-    Puppet::Type.type(:eos_ospf_network).new(resource_hash)
+    Puppet::Type.type(:eos_ospf_redistribution).new(resource_hash)
   end
 
   let(:provider) { resource.provider }
@@ -72,29 +72,29 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
       it { is_expected.to be_an Array }
 
       it 'has three entries' do
-        expect(subject.size).to eq 3
+        expect(subject.size).to eq 2
       end
 
-      it 'has a ospf network 192.168.10.0/24' do
-        instance = subject.find { |p| p.name == '192.168.10.0/24' }
+      it 'has a ospf redistribution static' do
+        instance = subject.find { |p| p.name == 'static' }
         expect(instance).to be_a described_class
       end
 
-      context "eos_ospf_network { '192.168.10.0/24': }" do
-        subject { described_class.instances.find { |p| p.name == '192.168.10.0/24' } }
+      context "eos_ospf_redistribution { 'static': }" do
+        subject { described_class.instances.find { |p| p.name == 'static' } }
         include_examples 'provider resource methods',
                          ensure: :present,
-                         name: '192.168.10.0/24',
+                         name: 'static',
                          instance_id: 1,
-                         area: '0.0.0.0'
+                         route_map: 'test'
       end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '192.168.10.0/24' => Puppet::Type.type(:eos_ospf_network).new(name: '192.168.10.0/24'),
-          '192.168.20.0/24' => Puppet::Type.type(:eos_ospf_network).new(name: '192.168.20.0/24')
+          'static' => Puppet::Type.type(:eos_ospf_redistribution).new(name: 'static'),
+          'rip' => Puppet::Type.type(:eos_ospf_redistribution).new(name: 'rip')
         }
       end
 
@@ -108,14 +108,14 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['192.168.10.0/24'].provider.name).to eq('192.168.10.0/24')
-        expect(resources['192.168.10.0/24'].provider.exists?).to be_truthy
+        expect(resources['static'].provider.name).to eq('static')
+        expect(resources['static'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['192.168.20.0/24'].provider.name).to eq('192.168.20.0/24')
-        expect(resources['192.168.20.0/24'].provider.exists?).to be_falsey
+        expect(resources['rip'].provider.name).to eq('rip')
+        expect(resources['rip'].provider.exists?).to be_falsey
       end
     end
   end
@@ -124,11 +124,11 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#exists?' do
       subject { provider.exists? }
-    
+
       context 'when the resource does not exist on the system' do
         it { is_expected.to be_falsey }
       end
-    
+
       context 'when the resource exists on the system' do
         let(:provider) do
           allow(api).to receive(:getall).and_return(ospf)
@@ -140,26 +140,26 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#create' do
       it 'sets ensure on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 1, '0.0.0.0')
+        expect(api).to receive(:set_redistribute).with('static', 1, 'test')
         provider.create
         provider.flush
         expect(provider.ensure).to eq(:present)
       end
     end
 
-    describe '#area=(value)' do
-      it 'sets area on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 1, '0.0.0.1')
+    describe '#route_map=(value)' do
+      it 'sets route_map on the resource' do
+        expect(api).to receive(:set_redistribute).with('static', 1, 'foo')
         provider.create
-        provider.area = '0.0.0.1'
+        provider.route_map = 'foo'
         provider.flush
-        expect(provider.area).to eq('0.0.0.1')
+        expect(provider.route_map).to eq('foo')
       end
     end
 
     describe '#instance_id=(value)' do
       it 'sets instance_id on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 2, '0.0.0.0')
+        expect(api).to receive(:set_redistribute).with('static', 2, 'test')
         provider.create
         provider.instance_id = 2
         provider.flush
@@ -170,7 +170,7 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:remove_network).with('192.168.10.0/24', 1, '0.0.0.0')
+        expect(api).to receive(:set_redistribute).with('static', 1)
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)
