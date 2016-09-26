@@ -1,5 +1,10 @@
 ---
 :mode: mstp
+:instances:
+  '0':
+      :priority: "8192"
+  '1':
+      :priority: ""
 :interfaces:
   Ethernet1:
     :portfast: true
