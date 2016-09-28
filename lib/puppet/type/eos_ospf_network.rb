@@ -50,7 +50,7 @@ Puppet::Type.newtype(:eos_ospf_network) do
 
   # Parameters
 
-  newparam(:name) do
+  newparam(:name, namevar: true) do
     @doc = <<-EOS
       The name parameter specifies the ospf network address identifier of the
       Arista EOS ospf network to manage. This value must correspond to a valid

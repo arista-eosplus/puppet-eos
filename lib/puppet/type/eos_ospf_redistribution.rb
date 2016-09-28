@@ -52,7 +52,7 @@ Puppet::Type.newtype(:eos_ospf_redistribution) do
 
   # Parameters
 
-  newparam(:name) do
+  newparam(:name, namevar: true) do
     desc <<-EOS
       Protocol name for the OSPF redistribution.
     EOS

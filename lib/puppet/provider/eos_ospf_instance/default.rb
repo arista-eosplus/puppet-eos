@@ -52,6 +52,7 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
   def self.instances
     result = node.api('ospf').getall
     return [] if !result || result.empty?
+    arr = []
     result.map do |(name, attrs)|
       next if name.eql? "interfaces"
       provider_hash = { name: name, ensure: :present }
@@ -62,8 +63,9 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
       provider_hash[:passive_interface_default] = value
       provider_hash[:active_interfaces] = attrs[:active_interfaces]
       provider_hash[:passive_interfaces] = attrs[:passive_interfaces]
-      new(provider_hash)
+      arr.push(new(provider_hash))
     end
+    arr
   end
 
   def router_id=(val)
