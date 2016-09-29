@@ -48,6 +48,7 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   let(:provider) { resource.provider }
 
   let(:api) { double('ospf') }
+  let(:interfaces) { double('ospf.interfaces') }
 
   def ospf
     ospf = Fixtures[:ospf]
@@ -59,6 +60,7 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   before :each do
     allow(described_class.node).to receive(:api).with('ospf').and_return(api)
     allow(provider.node).to receive(:api).with('ospf').and_return(api)
+    allow(api).to receive(:interfaces).and_return(interfaces)
   end
 
   context 'class methods' do
@@ -140,7 +142,7 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
       let(:name) { resource[:name] }
 
       it 'sets ensure to :present' do
-        expect(api).to receive(:set_network_type)
+        expect(interfaces).to receive(:set_network_type)
           .with(name, value: 'point-to-point')
         provider.create
         provider.network_type = 'point-to-point'
@@ -161,7 +163,8 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
       let(:name) { resource[:name] }
 
       it 'sets ensure to :absent' do
-        expect(api).to receive(:set_network_type).with(name, enable: false)
+        expect(interfaces).to receive(:set_network_type)
+          .with(name, enable: false)
         resource[:ensure] = :absent
         provider.destroy
         provider.flush
@@ -173,7 +176,7 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
       let(:name) { resource[:name] }
 
       it 'sets network_type to value "point-to-point"' do
-        expect(api).to receive(:set_network_type)
+        expect(interfaces).to receive(:set_network_type)
           .with(name, value: 'point-to-point')
         provider.create
         provider.network_type = 'point-to-point'

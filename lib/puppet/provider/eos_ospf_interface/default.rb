@@ -51,7 +51,7 @@ Puppet::Type.type(:eos_ospf_interface).provide(:eos) do
 
   def self.instances
     result = node.api('ospf').getall
-    return [] if !result || result.empty?
+    return [] if !result || result.empty? || result[:interfaces].nil?
     result[:interfaces].each_with_object([]) do |(name, attrs), arry|
       next if attrs[:network_type].empty?
       provider_hash = { :name => name, :ensure => :present }
@@ -83,7 +83,7 @@ Puppet::Type.type(:eos_ospf_interface).provide(:eos) do
   end
 
   def flush
-    api = node.api('ospf')
+    api = node.api('ospf').interfaces
     @property_hash.merge!(@property_flush)
 
     case @property_hash[:ensure]

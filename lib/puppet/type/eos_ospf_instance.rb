@@ -154,6 +154,7 @@ Puppet::Type.newtype(:eos_ospf_instance) do
     EOS
 
     def insync?(is)
+      is = [] if is == :absent or is.nil?
       is.sort == @should.sort.map(&:to_s)
     end
   end
@@ -170,6 +171,7 @@ Puppet::Type.newtype(:eos_ospf_instance) do
     EOS
 
     def insync?(is)
+      is = [] if is == :absent or is.nil?
       is.sort == @should.sort.map(&:to_s)
     end
   end
