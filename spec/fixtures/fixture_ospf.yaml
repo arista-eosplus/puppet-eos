@@ -7,7 +7,7 @@
   :passive_interfaces: []
   :active_interfaces: ["Ethernet49", "Ethernet50", "Vlan4093"]
   :passive_interface_default: "true"
-  :areas:
+  'areas':
     :0.0.0.0: ["192.168.10.0/24", "192.168.11.0/24"]
     :0.0.0.1: ["192.168.12.0/24"]
   :redistribute:

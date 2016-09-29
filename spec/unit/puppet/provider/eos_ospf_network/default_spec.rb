@@ -140,7 +140,7 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#create' do
       it 'sets ensure on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 1, '0.0.0.0')
+        expect(api).to receive(:add_network).with(1, '192.168.10.0/24', '0.0.0.0')
         provider.create
         provider.flush
         expect(provider.ensure).to eq(:present)
@@ -149,7 +149,7 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#area=(value)' do
       it 'sets area on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 1, '0.0.0.1')
+        expect(api).to receive(:add_network).with(1, '192.168.10.0/24', '0.0.0.1')
         provider.create
         provider.area = '0.0.0.1'
         provider.flush
@@ -159,7 +159,7 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#instance_id=(value)' do
       it 'sets instance_id on the resource' do
-        expect(api).to receive(:add_network).with('192.168.10.0/24', 2, '0.0.0.0')
+        expect(api).to receive(:add_network).with(2, '192.168.10.0/24', '0.0.0.0')
         provider.create
         provider.instance_id = 2
         provider.flush
@@ -170,7 +170,7 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:remove_network).with('192.168.10.0/24', 1, '0.0.0.0')
+        expect(api).to receive(:remove_network).with(1, '192.168.10.0/24', '0.0.0.0')
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)
