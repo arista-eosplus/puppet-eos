@@ -37,10 +37,10 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      :ensure => :present,
-      :name => 'Ethernet1',
-      :network_type => 'point-to-point',
-      :provider => described_class.name
+      ensure: :present,
+      name: 'Ethernet1',
+      network_type: 'point-to-point',
+      provider: described_class.name
     }
     Puppet::Type.type(:eos_ospf_interface).new(resource_hash)
   end

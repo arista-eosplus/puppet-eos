@@ -55,7 +55,7 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
     arr = []
     ospf.each do |(instance_id, attrs)|
       next if instance_id.eql? "interfaces"
-      areas = attrs['areas']
+      areas = attrs[:areas]
       next if areas.nil?
       areas.each do |(area, networks)|
         networks.each do |network|

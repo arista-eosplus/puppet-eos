@@ -7,18 +7,18 @@
   :passive_interfaces: []
   :active_interfaces: ["Ethernet49", "Ethernet50", "Vlan4093"]
   :passive_interface_default: "true"
-  'areas':
-    :0.0.0.0: ["192.168.10.0/24", "192.168.11.0/24"]
-    :0.0.0.1: ["192.168.12.0/24"]
+  :areas:
+    '0.0.0.0': ["192.168.10.0/24", "192.168.11.0/24"]
+    '0.0.0.1': ["192.168.12.0/24"]
   :redistribute:
     'static':
       :route_map: "test"
     'connected':
       :route_map:
 :interfaces:
-  Ethernet1:
+  'Ethernet1':
     :name: 'Ethernet1'
     :network_type: "point-to-point"
-  Ethernet2:
+  'Ethernet2':
     :name: 'Ethernet2'
     :network_type: "broadcast"

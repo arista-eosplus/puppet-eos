@@ -37,15 +37,15 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      :ensure => :present,
-      :name => '1',
-      :router_id => '1.1.1.1',
-      :max_lsa => 12000,
-      :maximum_paths => 16,
-      :passive_interfaces => [],
-      :active_interfaces => ['Ethernet49', 'Ethernet50', 'Vlan4093'],
-      :passive_interface_default => :true,
-      :provider => described_class.name
+      ensure: :present,
+      name: '1',
+      router_id: '1.1.1.1',
+      max_lsa: 12000,
+      maximum_paths: 16,
+      passive_interfaces: [],
+      active_interfaces: ['Ethernet49', 'Ethernet50', 'Vlan4093'],
+      passive_interface_default: :true,
+      provider: described_class.name
     }
     Puppet::Type.type(:eos_ospf_instance).new(resource_hash)
   end
