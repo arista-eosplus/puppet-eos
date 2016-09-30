@@ -100,12 +100,14 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
     desired_state = @property_hash.merge!(@property_flush)
     case desired_state[:ensure]
     when :present
-      node.api('ospf').set_redistribute(desired_state[:name],
-                                        desired_state[:instance_id],
-                                        desired_state[:route_map])
+      node.api('ospf').set_redistribute(desired_state[:instance_id],
+                                        desired_state[:name],
+                                        route_map: desired_state[:route_map])
     when :absent
-      node.api('ospf').set_redistribute(desired_state[:name],
-                                        desired_state[:instance_id])
+      node.api('ospf').set_redistribute(desired_state[:instance_id],
+                                        desired_state[:name],
+                                        route_map: desired_state[:route_map],
+                                        enable: false)
     end
     @property_hash = desired_state
   end
