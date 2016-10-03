@@ -15,5 +15,5 @@
 'test1':
   - seq: '10'
     action: permit
-    prefix: 1.10.10.0/24
+    prefix: 10.10.10.0/24
 'test2': []
