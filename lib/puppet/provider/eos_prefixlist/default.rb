@@ -56,8 +56,8 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
       rules.each do |rule|
         attrs = parse_prefix(rule['prefix'])
         provider_hash = {
-          :name => namevar(prefix_list: prefix_list, seqno: rule['seq']),
-          :ensure => :present
+          name: namevar(prefix_list: prefix_list, seqno: rule['seq']),
+          ensure: :present
         }
         provider_hash[:prefix_list] = prefix_list
         provider_hash[:seqno] = rule['seq'].to_i
@@ -67,7 +67,6 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
         provider_hash[:eq] = attrs[:eq].to_i if attrs[:eq]
         provider_hash[:ge] = attrs[:ge].to_i if attrs[:ge]
         provider_hash[:le] = attrs[:le].to_i if attrs[:le]
-        Puppet.debug(provider_hash)
         arry << new(provider_hash)
       end
     end
@@ -151,11 +150,10 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
       order to uniquely identify the prefix list resource.
     EOS
 
-    errors = false
     missing = [:prefix_list, :seqno].reject { |k| opts[k] }
     errors = !missing.empty?
     msg = "Invalid options #{opts.inspect} missing: #{missing.join(', ')}"
-    fail Puppet::Error, msg if errors
+    raise Puppet::Error, msg if errors
   end
   private :validate_identity
 
@@ -174,7 +172,7 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
             /x
 
     groups = prefix.match(regex)
-    Hash.new.tap do |attrs|
+    {}.tap do |attrs|
       attrs[:prefix] = groups[1]
       attrs[:masklen] = groups[2]
       # comparison operators
@@ -182,5 +180,4 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
       attrs[groups[7].to_sym] = groups[8] if groups[7]
     end
   end
-
 end
