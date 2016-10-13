@@ -1,0 +1,20 @@
+---
+driver:
+  name: vagrant
+  vm_hostname: false
+  provision: true
+
+provisioner:
+  name: shell
+
+verifier:
+  ruby_bindir: /opt/puppetlabs/puppet/bin
+
+platforms:
+  - name: vEOS-4.17.1F
+    driver:
+      vagrantfiles:
+        - vagrantfiles/veos.rb
+
+suites:
+  - name: default
