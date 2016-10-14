@@ -3,6 +3,8 @@ driver:
   name: vagrant
   vm_hostname: false
   provision: true
+  vagrantfiles:
+    - vagrantfiles/veos.rb
 
 provisioner:
   name: shell
@@ -12,9 +14,7 @@ verifier:
 
 platforms:
   - name: vEOS-4.17.1F
-    driver:
-      vagrantfiles:
-        - vagrantfiles/veos.rb
+  - name: vEOS-4.16.7M
 
 suites:
   - name: default
