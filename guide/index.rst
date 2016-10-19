@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   why_puppet
    overview
    quickstart
    installation
