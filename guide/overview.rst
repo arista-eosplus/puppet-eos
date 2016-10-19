@@ -20,7 +20,7 @@ When working with Puppet there is some basic terminology which is helpful to und
 Prerequisites
 -------------
 
-`PuppetLabs <http://puppetlabs.com/>`_ provides an EOS extension (SWIX file) for Arista switches that contains Ruby, the Puppet Enterprise agent and a number of dependencies for use with either Puppet Enterprise or Open Source Puppet masters.
+`Puppet <http://puppet.com/>`_ provides an EOS extension (SWIX file) for Arista switches that contains Ruby, the Puppet Enterprise agent and a number of dependencies for use with either Puppet Enterprise or Open Source Puppet masters.
 
 On EOS, `eAPI <https://eos.arista.com/arista-eapi-101/>`_ must be initially enabled and the `rbeapi <https://github.com/arista-eosplus/rbeapi>`_ rubygem extension installed.  These 2 components are used by the puppet modules to review the current state of resources and to bring them into compliance with the desired state.
 

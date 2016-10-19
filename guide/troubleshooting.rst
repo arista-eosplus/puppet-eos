@@ -8,7 +8,7 @@ Troubleshooting
 Introduction
 ------------
 
-The Puppet-EOS module is developed by Arista EOS+ CS and supported by the Arista EOS+ community. Support for the module as well as using Puppet with Arista EOS nodes is provided on a best effort basis by the Arista EOS+ CS team and the community. Support for the puppet-enterprise agent extension is provided by PuppetLabs.
+The Puppet-EOS module is developed by Arista EOS+ CS and supported by the Arista EOS+ community. Support for the module as well as using Puppet with Arista EOS nodes is provided on a best effort basis by the Arista EOS+ CS team and the community. Support for the puppet-enterprise agent extension is provided by Puppet.
 
 For customers looking for a premium level of support, please contact your local Arista account team or email `eosplus@arista.com <mailto://eosplus@arista.com>`_ for assistance.
 

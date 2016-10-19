@@ -61,7 +61,7 @@ Example ``flash:eapi.conf``:
   password: password
   enablepwd: itsasecret
 
-Install the puppet agent from `PuppetLabs`_ (`previous releases`_):
+Install the puppet agent from `Puppet`_ (`previous releases`_):
 
 Puppet 3.x::
 
@@ -127,12 +127,12 @@ With the above aliases, repetitive typing can be reduced to, for example:
 Configuring the Puppet Master
 -----------------------------
 
-Follow the standard instructions for `installing either a Puppet Enterprise or Puppet Open-source master <https://docs.puppetlabs.com/>`_ server and setup your environment(s). (Standalone Puppet, also known as headless or masterless puppet, is covered in a separate section.) As the paths to various items and specifics may vary from system to system, you may need to make minor adjustments to the ommands, below, to conform to your particular system.  Use ``puppet config print`` to locate the correct paths.
+Follow the standard instructions for `installing either a Puppet Enterprise or Puppet Open-source master <https://docs.puppet.com/>`_ server and setup your environment(s). (Standalone Puppet, also known as headless or masterless puppet, is covered in a separate section.) As the paths to various items and specifics may vary from system to system, you may need to make minor adjustments to the ommands, below, to conform to your particular system.  Use ``puppet config print`` to locate the correct paths.
 
 On the master, install the `Forge: eos`_ module (Source: `GitHub: puppet-eos`_). This module is self-contained including the types and providers specific to EOS.
 
 .. note::
-  There is also a `netdev_stdlib <https://forge.puppetlabs.com/netdevops/netdev_stdlib>`_ module in which PuppetLabs maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppetlabs.com/aristanetworks/netdev_stdlib_eos>`_.
+  There is also a `netdev_stdlib <https://forge.puppet.com/netdevops/netdev_stdlib>`_ module in which Puppet maintains a cross-platform set of Types in netdev_stdlib and the EOS-specific providers are in `netdev_stdlib_eos <https://forge.puppet.com/aristanetworks/netdev_stdlib_eos>`_.
 
 It is NOT necessary to install the rbeapi rubygem on the server, beginning with module version 1.3.0.
 
@@ -214,10 +214,10 @@ If the steps, above, were not successful, proceed to the :ref:`troubleshooting` 
 .. target-notes::
 
 .. _`eapi.conf`: https://github.com/arista-eosplus/rbeapi#example-eapiconf-file
-.. _`Forge: eos`: https://forge.puppetlabs.com/aristanetworks/eos
+.. _`Forge: eos`: https://forge.puppet.com/aristanetworks/eos
 .. _`Github: puppet-eos`: https://github.com/arista-eosplus/puppet-eos
 .. _`ZTP Server`: https://github.com/arista-eosplus/ztpserver
-.. _`PuppetLabs`: https://puppetlabs.com/download-puppet-enterprise-all#eos
-.. _`previous releases`: https://puppetlabs.com/misc/pe-files/previous-releases
+.. _`Puppet`: https://puppet.com/download-puppet-enterprise-all#eos
+.. _`previous releases`: https://puppet.com/misc/pe-files/previous-releases
 .. _`rbeapi extension`: https://github.com/arista-eosplus/rbeapi/releases
 
