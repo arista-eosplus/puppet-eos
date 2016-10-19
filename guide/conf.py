@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'puppet_eos'
-copyright = u'2015, Arista Networks - EOS+ Consulting Services'
+copyright = u'2016, Arista Networks - EOS+ Consulting Services'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
