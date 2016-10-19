@@ -43,6 +43,27 @@ of your application to communicate and reach the customer.
     manually configuring each device.  This reduces the risk of a configuration
     change and saves time, getting your team on to more important tasks
     quickly.
+
+    Hiera data::
+
+        ---
+        ntp::source_interface: 'Management1'
+        ntp::servers:
+          - 192.0.2.251
+
+        eos_config::snmp::contact: 'NetOps'
+
+        eos_config::name_servers::name_servers:
+          - 192.0.2.250
+          - 192.0.2.252
+
+        vlans:
+          1: { vlan_name: default }
+          2: { vlan_name: TestVlan_2 }
+          9: { vlan_name: Demo_vlan }
+          100: { vlan_name: TestVlan_100, enable: false }
+          101: { vlan_name: TEST_VLAN_101 }
+
 * Delegate routine server-port provisioning to the server team
     Puppet can be the self-service catalog for other teams within your
     business, increasing your ability to rapidly deliver business value. Does
@@ -71,7 +92,7 @@ of your application to communicate and reach the customer.
     control and easily group and abstract complex portions of the config in to
     easy to use resources.
 
-    eos_switchconfig::
+    Switchconfig with templates::
 
         eos_switchconfig {'running-config':
           content => template('network_configs/spine'),
@@ -87,12 +108,12 @@ of your application to communicate and reach the customer.
           ensure       => present,
           acltype      => standard,
           action       => permit,
-          srcaddr      => '1.2.3.0',
+          srcaddr      => '192.168.1.0',
           srcprefixlen => 8,
           log          => true,
         }
 
-        eos_bgp_neighbor { '192.0.3.1':
+        eos_bgp_neighbor { '192.0.2.1':
           ensure     => present,
           enable     => true,
           peer_group => 'Edge',
