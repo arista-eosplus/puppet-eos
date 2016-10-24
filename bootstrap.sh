@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 PUPPET='puppet-agent-1.5.2-1.eos4.i386.swix'
 PUPPET_URL="http://pm.puppetlabs.com/puppet-agent/2016.2.0/1.5.2/repos/eos/4/PC1/i386/${PUPPET}"
 RBEAPI='rbeapi-puppet-aio-1.0-1.swix'
