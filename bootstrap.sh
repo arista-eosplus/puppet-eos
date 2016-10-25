@@ -8,8 +8,9 @@ RBEAPI_URL="https://github.com/arista-eosplus/rbeapi/releases/download/v1.0/${RB
 WGET_OPTS="--progress=dot:binary"
 
 # Ensure the puppet agent is installed
-puppet_exists=`ls -l /mnt/flash/.extensions/${PUPPET}`
-if [ $? -ne 0 ]; then
+#puppet_exists=`ls -l /mnt/flash/.extensions/${PUPPET}`
+#if [ $? -ne 0 ]; then
+if ! [ -f /mnt/flash/.extensions/${PUPPET} ]; then
   wget ${WGET_OPTS} -O /mnt/flash/${PUPPET} ${PUPPET_URL}
   cmds="copy flash:${PUPPET} extension:
 extension ${PUPPET}"
@@ -17,8 +18,9 @@ extension ${PUPPET}"
 fi
 
 # Ensure rbeapi is installed
-rbeapi_exists=`ls -l /mnt/flash/.extensions/${RBEAPI}`
-if [ $? -ne 0 ]; then
+#rbeapi_exists=`ls -l /mnt/flash/.extensions/${RBEAPI}`
+#if [ $? -ne 0 ]; then
+if ! [ -f /mnt/flash/.extensions/${RBEAPI} ]; then
   wget ${WGET_OPTS} -O /mnt/flash/${RBEAPI} ${RBEAPI_URL}
   cmds="copy flash:${RBEAPI} extension:
 extension ${RBEAPI}"
@@ -45,4 +47,8 @@ fi
 
 ${puppet} describe --modulepath=/tmp/kitchen/data eos_switchconfig
 ${puppet} resource --modulepath=/tmp/kitchen/data eos_switchconfig
-${puppet} apply --modulepath=/tmp/kitchen/data -e "eos_switchconfig{'running-config': content => template('eos/tmp_config'), staging_file => 'puppet-config', }"
+resource="eos_switchconfig{'running-config': \
+            content => template('eos/tmp_config'), \
+            staging_file => 'puppet-config', \
+          }"
+${puppet} apply --modulepath=/tmp/kitchen/data -e "${resource}"
