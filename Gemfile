@@ -61,6 +61,7 @@ end
 # Ensure this remains usable with Ruby 1.9
 if RUBY_VERSION.to_f < 2.0
   gem 'json', '< 2.0'
+  gem 'json_pure', '~> 1.8', :require => false
   group :development, :test do
     gem 'rubocop', '>=0.35.1', '< 0.38'
     gem 'listen', '< 3.1.0'
