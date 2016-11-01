@@ -40,7 +40,7 @@ group :development, :test do
   gem 'ci_reporter'
   gem 'ci_reporter_rspec'
   gem 'test-kitchen'
-  gem "kitchen-vagrant"
+  gem 'kitchen-vagrant'
 end
 
 ENV['GEM_PUPPET_VERSION'] ||= ENV['PUPPET_GEM_VERSION']
