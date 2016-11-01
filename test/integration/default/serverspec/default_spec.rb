@@ -3,7 +3,9 @@ require 'spec_helper'
 # http://serverspec.org/resource_types.html
 
 ## checking successfull puppet run
-describe command('grep fail /var/lib/puppet/state/last_run_summary.yaml |grep -v "fail.*:\ 0”') do
+# rubocop:disable LineLength
+describe command('grep fail s/var/lib/puppet/state/last_run_summary.yaml |grep -v "fail.*:\ 0”') do
+  # rubocop:enable LineLength
   its(:exit_status) { should eq 1 }
 end
 

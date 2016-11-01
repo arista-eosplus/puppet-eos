@@ -95,6 +95,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
     end
 
     describe '.prefetch' do
+      # rubocop:disable LineLength
       let :resources do
         {
           '1.2.3.4/32/Null0' => Puppet::Type.type(:eos_staticroute)
@@ -105,6 +106,7 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
                                                   .new(name: '192.0.4.0/24/Ethernet1')
         }
       end
+      # rubocop:enable LineLength
       subject { described_class.prefetch(resources) }
 
       it 'resource providers are absent prior to calling .prefetch' do
