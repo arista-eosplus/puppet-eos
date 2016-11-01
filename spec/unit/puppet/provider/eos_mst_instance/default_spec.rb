@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -90,8 +90,7 @@ describe Puppet::Type.type(:eos_mst_instance).provider(:eos) do
                          priority: '8192'
       end
 
-      context 
-
+      context
     end
 
     describe '.prefetch' do
@@ -162,7 +161,7 @@ describe Puppet::Type.type(:eos_mst_instance).provider(:eos) do
 
     describe '#destroy' do
       let(:name) { resource[:name] }
-    
+
       it 'sets ensure to :absent' do
         expect(instances).to receive(:set_priority).with(name, enable: false)
         resource[:ensure] = :absent

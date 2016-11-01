@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2015-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
       end
 
       it 'has an instance for test1 and test2 entries' do
-        %w(test1:10 test1:20 test2:10 test2:20 ).each do |name|
+        %w(test1:10 test1:20 test2:10 test2:20).each do |name|
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
         end

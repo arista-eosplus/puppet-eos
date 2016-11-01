@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -92,9 +92,9 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       let :resources do
         {
           'Loopback0' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback0'),
+                                     .new(name: 'Loopback0'),
           'Loopback2' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback2')
+                                     .new(name: 'Loopback2')
         }
       end
       subject { described_class.prefetch(resources) }

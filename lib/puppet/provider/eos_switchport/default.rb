@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ Puppet::Type.type(:eos_switchport).provide(:eos) do
   def create
     node.api('switchports').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
-    self.trunk_groups= resource[:trunk_groups] \
+    self.trunk_groups = resource[:trunk_groups] \
                                if resource[:trunk_groups]
 
     self.mode = resource[:mode] if resource[:mode]

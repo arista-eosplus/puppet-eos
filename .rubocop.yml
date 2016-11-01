@@ -11,6 +11,12 @@ Metrics/MethodLength:
 Style/AccessorMethodName:
   Enabled: False
 
+Style/SignalException:
+  Enabled: False
+
+Style/GuardClause:
+  Enabled: False
+
 Metrics/PerceivedComplexity:
   Max: 20 
 

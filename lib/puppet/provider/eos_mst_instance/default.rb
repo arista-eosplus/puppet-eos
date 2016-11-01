@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,12 +53,12 @@ Puppet::Type.type(:eos_mst_instance).provide(:eos) do
     result = node.api('stp').get
     return [] if !result || result.empty?
     result[:instances].map do |(name, attrs)|
-      provider_hash = { :name => name, priority: attrs[:priority] }
-      if attrs[:priority] == ''
-        provider_hash[:ensure] = :absent
-      else
-        provider_hash[:ensure] = :present
-      end
+      provider_hash = { name: name, priority: attrs[:priority] }
+      provider_hash[:ensure] = if attrs[:priority] == ''
+                                 :absent
+                               else
+                                 :present
+                               end
       new(provider_hash)
     end
   end

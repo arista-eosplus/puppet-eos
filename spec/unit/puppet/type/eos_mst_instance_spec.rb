@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_mst_instance) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => '100', :catalog => catalog) }
+  let(:type) { described_class.new(name: '100', catalog: catalog) }
 
   # Cannot use the helper ensurable type check because even though the
   # namevar is always a string, for this type the namevar is really an integer
@@ -48,7 +48,9 @@ describe Puppet::Type.type(:eos_mst_instance) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(0 200 3278 4094)
-    include_examples 'rejects values', [4_095, 'string', { :two => :three }]
+    include_examples 'rejects values', [4_095,
+                                        'string',
+                                        { two: :three }]
   end
 
   describe 'priority' do
@@ -58,7 +60,9 @@ describe Puppet::Type.type(:eos_mst_instance) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging', %w(0 20480 45056 61440)
-    include_examples 'rejects values', [100, 65_536, 'string', { :two => :three }]
+    include_examples 'rejects values', [100,
+                                        65_536,
+                                        'string',
+                                        { two: :three }]
   end
-
 end

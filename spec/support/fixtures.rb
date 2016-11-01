@@ -67,7 +67,7 @@ module FixtureHelpers
     json = Pathname.new(File.join(dir, "fixture_#{key}.json"))
 
     Fixtures[key] = if yaml.exist?; then YAML.load(File.read(yaml))
-                    elsif json.exist?; then JSON.load(File.read(json))
+                    elsif json.exist?; then JSON.parse(File.read(json))
                     else fail "could not load YAML or JSON fixture #{key}"
                     end
   end

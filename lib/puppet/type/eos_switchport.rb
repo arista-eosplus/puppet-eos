@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,9 +98,7 @@ Puppet::Type.newtype(:eos_switchport) do
     end
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      fail "value #{value.inspect} is not a String" unless value.is_a? String
     end
   end
 
@@ -138,7 +136,7 @@ Puppet::Type.newtype(:eos_switchport) do
     end
 
     validate do |value|
-      if value.to_s.include? "-"
+      if value.to_s.include? '-'
         vid_start, vid_end = value.split('-')
         Array(vid_start.to_i..vid_end.to_i).each do |vid|
           unless vid.to_i.between?(1, 4_094)

@@ -8,7 +8,7 @@ describe command('grep fail /var/lib/puppet/state/last_run_summary.yaml |grep -v
 end
 
 describe package('puppet-agent') do
-    it { should be_installed.by('rpm') }
+  it { should be_installed.by('rpm') }
 end
 
 cmd = 'show running-config section management api http-commands'
@@ -16,4 +16,3 @@ describe command("/usr/bin/FastCli -p 15 -c \"#{cmd}\"") do
   its(:stdout) { should contain('protocol unix-socket') }
   its(:stdout) { should contain('no shutdown') }
 end
-
