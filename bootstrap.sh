@@ -1,4 +1,5 @@
 #!/bin/bash
+export TERM=vt100
 set -x
 PUPPET='puppet-agent-1.5.2-1.eos4.i386.swix'
 PUPPET_URL="http://pm.puppetlabs.com/puppet-agent/2016.2.0/1.5.2/repos/eos/4/PC1/i386/${PUPPET}"
@@ -8,8 +9,6 @@ RBEAPI_URL="https://github.com/arista-eosplus/rbeapi/releases/download/v1.0/${RB
 WGET_OPTS="--progress=dot:binary"
 
 # Ensure the puppet agent is installed
-#puppet_exists=`ls -l /mnt/flash/.extensions/${PUPPET}`
-#if [ $? -ne 0 ]; then
 if ! [ -f /mnt/flash/.extensions/${PUPPET} ]; then
   wget ${WGET_OPTS} -O /mnt/flash/${PUPPET} ${PUPPET_URL}
   cmds="copy flash:${PUPPET} extension:
@@ -18,8 +17,6 @@ extension ${PUPPET}"
 fi
 
 # Ensure rbeapi is installed
-#rbeapi_exists=`ls -l /mnt/flash/.extensions/${RBEAPI}`
-#if [ $? -ne 0 ]; then
 if ! [ -f /mnt/flash/.extensions/${RBEAPI} ]; then
   wget ${WGET_OPTS} -O /mnt/flash/${RBEAPI} ${RBEAPI_URL}
   cmds="copy flash:${RBEAPI} extension:
@@ -36,7 +33,8 @@ sudo ${puppet} config set group root
 cmds="show extension
 configure
 management api http-commands
-   protocol unix-socket"
+   protocol unix-socket
+   no shutdown"
 FastCli -p 15 -c "${cmds}"
 
 # EOS 4.17 includes the redhat-release file which confuses some os-detection systems.
@@ -45,10 +43,27 @@ if [ -f /etc/redhat-release ]; then
   rm -f /etc/redhat-release
 fi
 
-${puppet} describe --modulepath=/tmp/kitchen/data eos_switchconfig
-${puppet} resource --modulepath=/tmp/kitchen/data eos_switchconfig
+module_path="--modulepath=/tmp/kitchen/data"
+puppet_opts="${module_path} --detailed-exitcodes"
+/opt/puppetlabs/puppet/bin/gem install pry
+/opt/puppetlabs/puppet/bin/gem install pry-nav
+
+${puppet} describe ${module_path} eos_switchconfig
+${puppet} resource ${module_path} eos_switchconfig
 resource="eos_switchconfig{'running-config': \
             content => template('eos/tmp_config'), \
             staging_file => 'puppet-config', \
           }"
-${puppet} apply --modulepath=/tmp/kitchen/data -e "${resource}"
+${puppet} apply ${puppet_opts} -e "${resource}"
+if [ $? == 2 ]; then
+    echo "SUCCESSFULLY applied the first time"
+else
+    echo "FAILED to apply the first time"
+fi
+
+${puppet} apply ${puppet_opts} -e "${resource}"
+if [ $? == 0 ]; then
+    echo "SUCCESSFULLY applied the second time with no changes (Idempotent)"
+else
+    echo "FAILED idempotency check"
+fi
