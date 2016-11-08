@@ -57,6 +57,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
   EOS
 
   require 'rbeapi/switchconfig'
+  require 'set'
 
   ensurable
 
@@ -113,28 +114,24 @@ Puppet::Type.newtype(:eos_switchconfig) do
       # Compare the current and desired configs
       org_swc = Rbeapi::SwitchConfig::SwitchConfig.new(current)
       new_swc = Rbeapi::SwitchConfig::SwitchConfig.new(should)
-      results = org_swc.compare(new_swc)
+      @results = org_swc.compare(new_swc)
 
       # If results are both empty then nothing needs to change.
-      results[0].cmds.empty? && \
-        results[0].children.empty? && \
-        results[1].cmds.empty? && \
-        results[1].children.empty?
+      @results[0].cmds.empty? && \
+        @results[0].children.empty? && \
+        @results[1].cmds.empty? && \
+        @results[1].children.empty?
     end
 
-    def change_to_s(current, desired)
+    def change_to_s(_current, _desired)
       # Update the output when there are differences to show the
       # EOS config blocks that were changed.
-      org_swc = Rbeapi::SwitchConfig::SwitchConfig.new(current)
-      new_swc = Rbeapi::SwitchConfig::SwitchConfig.new(desired)
-      require 'set'
-      results = org_swc.compare(new_swc)
       current_lines = []
       desired_lines = []
-      results[0].children.each do |block|
+      @results[0].children.each do |block|
         current_lines << ([block.line] + block.cmds).join("\n")
       end
-      results[1].children.each do |block|
+      @results[1].children.each do |block|
         desired_lines << ([block.line] + block.cmds).join("\n")
       end
       "changed '#{current_lines.join("\n")}' to
@@ -147,7 +144,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
       The staging_file is the actual file which will be managed on flash:
       on the switch before running 'configure replace'.
 
-      The default value is 'startup-config'.
+      The default value is 'puppet-config' stored on flash:.
     EOS
 
     validate do |value|
