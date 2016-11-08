@@ -39,7 +39,6 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
 
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
-  #require 'rbeapi/switchconfig'
 
   # Create methods that set the @property_hash for the #flush method
   mk_resource_methods
@@ -53,17 +52,9 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
   def self.instances
     # Get the current value
     conf = node.get_config(config: 'running-config', as_string: true)
-    # Remove comment lines and the end statement from conf
-    # The end statement is removed to allow comparison with user
-    # specified switch configs that do not have the end statement.
-    conf_arr = []
-    conf.each_line do |line|
-      #next if line.start_with?('!') || line.start_with?('end')
-      conf_arr.push(line)
-    end
     provider_hash = { name: 'running-config', ensure: :present }
-    provider_hash[:content] = conf_arr.join
-    provider_hash[:staging_file] = 'startup-config'
+    provider_hash[:content] = conf
+    provider_hash[:staging_file] = 'puppet-config'
     [new(provider_hash)]
   end
 
