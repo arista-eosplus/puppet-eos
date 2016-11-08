@@ -84,19 +84,23 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
   end
 
   def flush
-    # Write staging_file to flash
-    open('/mnt/flash/' + @property_flush[:staging_file], 'w') do |f|
-      f.puts @property_flush[:content]
-    end
+    begin
+      # Write staging_file to flash
+      File.open('/mnt/flash/' + @property_flush[:staging_file], 'w') do |f|
+        f.puts @property_flush[:content]
+      end
 
-    # Run 'configure replace' on the switch
-    command = ['FastCli -p15 -c "',
-               'configure replace flash:',
-               @property_flush[:staging_file],
-               '"'].join
-    result = `#{command}`
-    if $CHILD_STATUS.to_i.nonzero? || !result.empty?
-      fail result
+      # Run 'configure replace' on the switch
+      command = ['FastCli -p15 -c "',
+                 'configure replace flash:',
+                 @property_flush[:staging_file],
+                 '"'].join
+      result = `#{command}`
+      if $CHILD_STATUS.to_i.nonzero? || !result.empty?
+        fail result
+      end
+    rescue Exception => msg
+      fail msg
     end
 
     # Merge in values that have changed
