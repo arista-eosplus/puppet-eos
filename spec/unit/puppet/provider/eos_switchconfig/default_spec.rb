@@ -46,7 +46,7 @@ describe Puppet::Type.type(:eos_switchconfig).provider(:eos) do
 
   let(:provider) { resource.provider }
 
-  let(:api) { double('switchconfig') }
+  let(:switchconfig) { double('switchconfig') }
 
   def switchconfig
     switchconfig = Fixtures[:switchconfig]
@@ -55,8 +55,8 @@ describe Puppet::Type.type(:eos_switchconfig).provider(:eos) do
   end
 
   before :each do
-    allow(described_class.node).to receive(:api).and_return(api)
-    allow(provider.node).to receive(:api).and_return(api)
+    allow(described_class.node).to receive(:get_config).and_return(switchconfig)
+    allow(provider.node).to receive(:get_config).and_return(switchconfig)
   end
 
   context 'class methods' do
@@ -73,13 +73,23 @@ describe Puppet::Type.type(:eos_switchconfig).provider(:eos) do
         instance = subject.find { |p| p.name == 'running-config' }
         expect(instance).to be_a described_class
       end
+
+      context 'eos_switchconfig { "running-config": }' do
+        subject do
+          described_class.instances.find { |p| p.name == 'running-config' }
+        end
+
+        include_examples 'provider resource methods',
+                         exists?: true,
+                         staging_file: 'puppet-config'
+      end
     end
 
     describe '.prefetch' do
       let :resources do
         {
-          '1' => Puppet::Type.type(:eos_switchconfig)
-            .new(name: 'running-config')
+          'running-config' => Puppet::Type.type(:eos_switchconfig)
+                                          .new(name: 'running-config')
         }
       end
 
@@ -93,8 +103,9 @@ describe Puppet::Type.type(:eos_switchconfig).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['1'].provider.name).to eq 'running-config'
-        expect(resources['1'].provider.content).to eq(:absent)
+        expect(resources['running-config'].provider.name).to eq 'running-config'
+        expect(resources['running-config'].provider.content).to eq switchconfig
+        expect(resources['running-config'].provider.content).to be_truthy
       end
     end
   end
