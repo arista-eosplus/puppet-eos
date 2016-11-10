@@ -60,6 +60,7 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
 
   def self.prefetch(resources)
     instances.each do |prov|
+      # rubocop:disable Lint/AssignmentInCondition
       if resource = resources[prov.name]
         resource.provider = prov
       end
@@ -97,7 +98,7 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
                  '"'].join
       result = `#{command}`
       raise result if $CHILD_STATUS.to_i.nonzero? || !result.empty?
-    rescue Exception => msg
+    rescue StandardError => msg
       raise msg
     end
 
