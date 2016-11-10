@@ -66,7 +66,7 @@ Puppet::Type.newtype(:eos_interface) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

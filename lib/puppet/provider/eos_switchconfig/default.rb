@@ -1,5 +1,4 @@
-#
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,8 +34,9 @@ require 'pathname'
 module_lib = Pathname.new(__FILE__).parent.parent.parent.parent
 require File.join module_lib, 'puppet_x/eos/provider'
 
-Puppet::Type.type(:eos_varp_interface).provide(:eos) do
-  desc 'Manage interface VARP config on Arista EOS. Requires rbeapi rubygem.'
+Puppet::Type.type(:eos_switchconfig).provide(:eos) do
+  desc 'Manage the entire running-config on Arista EOS. Requires rbeapi.'
+
   confine operatingsystem: [:AristaEOS] unless ENV['RBEAPI_CONNECTION']
   confine feature: :rbeapi
 
@@ -50,14 +50,25 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
   extend PuppetX::Eos::EapiProviderMixin
 
   def self.instances
-    result = node.api('varp').get
-    return [] if !result || result.empty?
-    result[:interfaces].each_with_object([]) do |(name, attrs), arry|
-      next if attrs[:addresses].empty?
-      provider_hash = { name: name, ensure: :present }
-      provider_hash[:shared_ip] = attrs[:addresses]
-      arry << new(provider_hash)
+    # Get the current value
+    conf = node.get_config(config: 'running-config', as_string: true)
+    provider_hash = { name: 'running-config', ensure: :present }
+    provider_hash[:content] = conf
+    provider_hash[:staging_file] = 'puppet-config'
+    [new(provider_hash)]
+  end
+
+  def self.prefetch(resources)
+    instances.each do |prov|
+      # rubocop:disable Lint/AssignmentInCondition
+      if resource = resources[prov.name]
+        resource.provider = prov
+      end
     end
+  end
+
+  def exists?
+    @property_hash[:ensure] == :present
   end
 
   def initialize(resource = {})
@@ -65,33 +76,33 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
     @property_flush = {}
   end
 
-  def shared_ip=(value)
-    @property_flush[:shared_ip] = value
+  def content=(value)
+    @property_flush[:content] = value
   end
 
-  def exists?
-    @property_hash[:ensure] == :present
-  end
-
-  def create
-    raise('shared_ip property must be included') if resource[:shared_ip].nil?
-    @property_flush = resource.to_hash
-  end
-
-  def destroy
-    @property_flush = resource.to_hash
+  def staging_file=(value)
+    @property_flush[:staging_file] = value
   end
 
   def flush
-    api = node.api('varp').interfaces
-    @property_hash.merge!(@property_flush)
+    begin
+      # Write staging_file to flash
+      File.open('/mnt/flash/' + @property_flush[:staging_file], 'w') do |f|
+        f.puts @property_flush[:content]
+      end
 
-    case @property_hash[:ensure]
-    when :present
-      api.set_addresses(resource[:name], value: @property_flush[:shared_ip])
-    when :absent
-      api.set_addresses(resource[:name], enable: false)
+      # Run 'configure replace' on the switch
+      command = ['FastCli -p15 -c "',
+                 'configure replace flash:',
+                 @property_flush[:staging_file],
+                 '"'].join
+      result = `#{command}`
+      raise result if $CHILD_STATUS.to_i.nonzero? || !result.empty?
+    rescue StandardError => msg
+      raise msg
     end
-    @property_flush = {}
+
+    # Merge in values that have changed
+    @property_hash.merge!(@property_flush)
   end
 end

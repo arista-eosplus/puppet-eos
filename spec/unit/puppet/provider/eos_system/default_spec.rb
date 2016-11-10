@@ -91,7 +91,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         {
           'settings' => Puppet::Type.type(:eos_system).new(name: 'settings'),
           'alternative' => Puppet::Type.type(:eos_system)
-            .new(name: 'alternative')
+                                       .new(name: 'alternative')
         }
       end
 

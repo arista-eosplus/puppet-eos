@@ -77,7 +77,7 @@ module PuppetX
         missing = req.reject { |k| opts[k] }
         errors = !missing.empty?
         msg = "Invalid options #{opts.inspect} missing: #{missing.join(', ')}"
-        fail Puppet::Error, msg if errors
+        raise Puppet::Error, msg if errors
       end
       private :validate
 

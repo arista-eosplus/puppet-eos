@@ -71,7 +71,7 @@ Puppet::Type.newtype(:eos_ethernet) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -152,7 +152,7 @@ Puppet::Type.newtype(:eos_ethernet) do
 
     validate do |value|
       unless value.to_i.between?(0, 65_535)
-        fail "value #{value.inspect} must be between 0 and 65535"
+        raise "value #{value.inspect} must be between 0 and 65535"
       end
     end
   end

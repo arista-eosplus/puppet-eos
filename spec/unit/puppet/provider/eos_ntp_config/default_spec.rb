@@ -91,9 +91,9 @@ describe Puppet::Type.type(:eos_ntp_config).provider(:eos) do
       let(:resources) do
         {
           'settings' => Puppet::Type.type(:eos_ntp_config)
-            .new(name: 'settings'),
+                                    .new(name: 'settings'),
           'alternative' => Puppet::Type.type(:eos_ntp_config)
-            .new(name: 'alternative')
+                                       .new(name: 'alternative')
         }
       end
 

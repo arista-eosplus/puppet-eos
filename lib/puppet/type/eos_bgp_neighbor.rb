@@ -68,7 +68,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -82,7 +82,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -105,10 +105,10 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
       unless @resource.name_ip?
-        fail 'peer_group cannot be set unless the neighbor is an IPv4 address'
+        raise 'peer_group cannot be set unless the neighbor is an IPv4 address'
       end
     end
   end
@@ -126,7 +126,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
 
     validate do |value|
       unless value.to_i.between?(1, 65_535)
-        fail "value #{value.inspect} is not between 1 and 65535"
+        raise "value #{value.inspect} is not between 1 and 65535"
       end
     end
   end
@@ -160,7 +160,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -176,7 +176,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -193,7 +193,7 @@ Puppet::Type.newtype(:eos_bgp_neighbor) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

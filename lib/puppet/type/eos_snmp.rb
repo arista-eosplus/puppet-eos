@@ -72,7 +72,7 @@ Puppet::Type.newtype(:eos_snmp) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -91,7 +91,7 @@ Puppet::Type.newtype(:eos_snmp) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      else raise "value #{value.inspect} is invalid, must be a string."
       end
     end
   end
@@ -110,7 +110,7 @@ Puppet::Type.newtype(:eos_snmp) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      else raise "value #{value.inspect} is invalid, must be a string."
       end
     end
   end
@@ -127,7 +127,7 @@ Puppet::Type.newtype(:eos_snmp) do
 
     validate do |value|
       unless value =~ /^[EMPLV]/
-        fail "value #{value.inspect} is invalid, must be an interface name"
+        raise "value #{value.inspect} is invalid, must be an interface name"
       end
     end
   end

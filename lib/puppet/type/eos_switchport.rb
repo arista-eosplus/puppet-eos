@@ -69,7 +69,7 @@ Puppet::Type.newtype(:eos_switchport) do
 
     validate do |value|
       unless value =~ /^[Et|Po]/
-        fail 'value #{value.inspect} is invalid, must be of type ' \
+        raise 'value #{value.inspect} is invalid, must be of type ' \
              'Ethernet or Port-Channel'
       end
     end
@@ -98,9 +98,7 @@ Puppet::Type.newtype(:eos_switchport) do
     end
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      raise "value #{value.inspect} is not a String" unless value.is_a? String
     end
   end
 
@@ -138,16 +136,16 @@ Puppet::Type.newtype(:eos_switchport) do
     end
 
     validate do |value|
-      if value.to_s.include? "-"
+      if value.to_s.include? '-'
         vid_start, vid_end = value.split('-')
         Array(vid_start.to_i..vid_end.to_i).each do |vid|
           unless vid.to_i.between?(1, 4_094)
-            fail "value #{vid.inspect} is not between 1 and 4094"
+            raise "value #{vid.inspect} is not between 1 and 4094"
           end
         end
       else
         unless value.to_i.between?(1, 4_094)
-          fail "value #{value.inspect} is not between 1 and 4094"
+          raise "value #{value.inspect} is not between 1 and 4094"
         end
       end
     end
@@ -170,7 +168,7 @@ Puppet::Type.newtype(:eos_switchport) do
 
     validate do |value|
       unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+        raise "value #{value.inspect} is not between 1 and 4094"
       end
     end
   end
@@ -192,7 +190,7 @@ Puppet::Type.newtype(:eos_switchport) do
 
     validate do |value|
       unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+        raise "value #{value.inspect} is not between 1 and 4094"
       end
     end
   end

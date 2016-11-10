@@ -92,9 +92,9 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       let :resources do
         {
           'Loopback0' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback0'),
+                                     .new(name: 'Loopback0'),
           'Loopback2' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback2')
+                                     .new(name: 'Loopback2')
         }
       end
       subject { described_class.prefetch(resources) }

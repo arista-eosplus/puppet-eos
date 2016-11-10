@@ -90,9 +90,9 @@ describe Puppet::Type.type(:eos_bgp_network).provider(:eos) do
       let :resources do
         {
           '192.168.254.1/32' => Puppet::Type.type(:eos_bgp_network)
-            .new(name: '192.168.254.1/32'),
+                                            .new(name: '192.168.254.1/32'),
           '192.168.254.1/31' => Puppet::Type.type(:eos_bgp_network)
-            .new(name: '192.168.254.1/31')
+                                            .new(name: '192.168.254.1/31')
         }
       end
 

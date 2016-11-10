@@ -37,7 +37,7 @@ class Fixtures
   def self.save(key, obj, opts = {})
     dir = opts[:dir] || File.expand_path('../../fixtures', __FILE__)
     file = Pathname.new(File.join(dir, "fixture_#{key}.yaml"))
-    fail ArgumentError, "Error, file #{file} exists" if file.exist?
+    raise ArgumentError, "Error, file #{file} exists" if file.exist?
     File.open(file, 'w+') { |f| f.puts YAML.dump(obj) }
   end
 end
@@ -65,10 +65,12 @@ module FixtureHelpers
 
     yaml = Pathname.new(File.join(dir, "fixture_#{key}.yaml"))
     json = Pathname.new(File.join(dir, "fixture_#{key}.json"))
+    txt = Pathname.new(File.join(dir, "fixture_#{key}.txt"))
 
     Fixtures[key] = if yaml.exist?; then YAML.load(File.read(yaml))
-                    elsif json.exist?; then JSON.load(File.read(json))
-                    else fail "could not load YAML or JSON fixture #{key}"
+                    elsif json.exist?; then JSON.parse(File.read(json))
+                    elsif txt.exist?; then File.read(txt)
+                    else raise "could not load YAML or JSON fixture #{key}"
                     end
   end
 end

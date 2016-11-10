@@ -69,19 +69,19 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
       seqno = value.partition(':').last if value.include?(':')
       if seqno
         unless seqno.to_i.is_a? Integer
-          fail "value #{seqno} must be an integer."
+          raise "value #{seqno} must be an integer."
         end
         unless seqno.to_i.between?(1, 65_535)
-          fail "value #{seqno} is invalid, /
+          raise "value #{seqno} is invalid, /
                must be an integer from 1-65535."
         end
       else
-        fail "value #{value.inspect} must be a composite name:seqno"
+        raise "value #{value.inspect} must be a composite name:seqno"
       end
     end
   end
@@ -95,7 +95,7 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -107,10 +107,10 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
       unless value == 'permit' || value == 'deny'
-        fail "value #{value.inspect} can only be deny or permit"
+        raise "value #{value.inspect} can only be deny or permit"
       end
     end
   end
@@ -127,7 +127,7 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -144,7 +144,7 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -158,10 +158,10 @@ Puppet::Type.newtype(:eos_routemap) do
 
     validate do |value|
       unless value.to_i.is_a? Integer
-        fail "value #{value.inspect} is invalid, must be an Integer."
+        raise "value #{value.inspect} is invalid, must be an Integer."
       end
       unless value.to_i.between?(1, 16_777_215)
-        fail "value #{value.inspect} is invalid, /
+        raise "value #{value.inspect} is invalid, /
              must be an integer from 1-16777215."
       end
     end

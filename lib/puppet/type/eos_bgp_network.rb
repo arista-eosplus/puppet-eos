@@ -60,14 +60,16 @@ Puppet::Type.newtype(:eos_bgp_network) do
 
     validate do |value|
       unless value =~ %r{/}
-        fail "value #{value.inspect} is invalid, must be an IPv4_Prefix/Masklen"
+        raise "value #{value.inspect} is invalid, must be an
+        IPv4_Prefix/Masklen"
       end
       w = value.split('/')
       unless w[0] =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must contain valid IPv4_Prefix"
+        raise "value #{value.inspect} is invalid, must contain valid
+        IPv4_Prefix"
       end
       unless w[1].to_i.between?(1, 32)
-        fail "value #{value.inspect} is invalid, " \
+        raise "value #{value.inspect} is invalid, " \
                'masklen must be between 1 and 32'
       end
     end
@@ -86,7 +88,7 @@ Puppet::Type.newtype(:eos_bgp_network) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

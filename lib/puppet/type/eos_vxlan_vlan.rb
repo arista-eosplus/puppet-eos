@@ -61,7 +61,7 @@ Puppet::Type.newtype(:eos_vxlan_vlan) do
 
     validate do |value|
       unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+        raise "value #{value.inspect} is not between 1 and 4094"
       end
     end
   end
@@ -79,7 +79,7 @@ Puppet::Type.newtype(:eos_vxlan_vlan) do
 
     validate do |value|
       unless value.to_i.between?(1, 16_777_215)
-        fail "value #{value.inspect} is not between 1 and 16777215"
+        raise "value #{value.inspect} is not between 1 and 16777215"
       end
     end
   end

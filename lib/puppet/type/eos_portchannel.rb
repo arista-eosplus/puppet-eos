@@ -64,7 +64,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
     validate do |value|
       unless value =~ /^Port-Channel/
-        fail "value #{value.inspect} is invalid, must be a valid " \
+        raise "value #{value.inspect} is invalid, must be a valid " \
              'Port-Channel interface name'
       end
     end
@@ -84,7 +84,7 @@ Puppet::Type.newtype(:eos_portchannel) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -137,7 +137,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
     validate do |value|
       unless value =~ %r{^Ethernet\d(:\/\d+)?}
-        fail "value #{value.inspect} is invalid, must be an Ethernet interface"
+        raise "value #{value.inspect} is invalid, must be an Ethernet interface"
       end
     end
   end
@@ -159,7 +159,7 @@ Puppet::Type.newtype(:eos_portchannel) do
 
     validate do |value|
       unless value.to_i.between?(0, 16)
-        fail "value #{value.inspect} is not between 0 and 16"
+        raise "value #{value.inspect} is not between 0 and 16"
       end
     end
   end

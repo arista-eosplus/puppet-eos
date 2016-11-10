@@ -77,7 +77,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def create
     if resource[:name] =~ /^[Et|Ma]/
-      fail 'Creating physical interfaces is not supported'
+      raise 'Creating physical interfaces is not supported'
     end
     node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
@@ -87,7 +87,7 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
 
   def destroy
     if resource[:name] =~ /^[Et|Ma]/
-      fail 'Destroying physical interfaces is not supported'
+      raise 'Destroying physical interfaces is not supported'
     end
     node.api('interfaces').delete(resource[:name])
     @property_hash = { name: resource[:name], ensure: :absent }

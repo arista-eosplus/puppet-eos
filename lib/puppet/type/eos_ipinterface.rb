@@ -106,7 +106,7 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be an IP address"
+        raise "value #{value.inspect} is invalid, must be an IP address"
       end
     end
   end
@@ -126,7 +126,7 @@ Puppet::Type.newtype(:eos_ipinterface) do
 
     validate do |value|
       unless value.to_i.between?(68, 9214)
-        fail "value #{value.inspect} must be in the range of 68 and 9214"
+        raise "value #{value.inspect} must be in the range of 68 and 9214"
       end
     end
   end

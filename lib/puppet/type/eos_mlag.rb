@@ -75,7 +75,7 @@ Puppet::Type.newtype(:eos_mlag) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a string."
+      else raise "value #{value.inspect} is invalid, must be a string."
       end
     end
   end
@@ -91,7 +91,7 @@ Puppet::Type.newtype(:eos_mlag) do
 
     validate do |value|
       unless value =~ /^Vlan\d+$/
-        fail "value #{value.inspect} is invalid, must be a VLAN SVI"
+        raise "value #{value.inspect} is invalid, must be a VLAN SVI"
       end
     end
   end
@@ -107,7 +107,7 @@ Puppet::Type.newtype(:eos_mlag) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be an IP address"
+        raise "value #{value.inspect} is invalid, must be an IP address"
       end
     end
   end
@@ -124,7 +124,7 @@ Puppet::Type.newtype(:eos_mlag) do
 
     validate do |value|
       unless value =~ /^[Et|Po].+/
-        fail "value #{value.inspect} is invalid, must be a valid " \
+        raise "value #{value.inspect} is invalid, must be a valid " \
              'Ethernet or Port-Channel interface identifier'
       end
     end

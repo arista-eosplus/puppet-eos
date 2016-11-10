@@ -57,7 +57,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -77,7 +77,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
     validate do |value|
       unless value.to_i.between?(1, 65_535)
-        fail "value #{value.inspect} is not between 1 and 65535"
+        raise "value #{value.inspect} is not between 1 and 65535"
       end
     end
   end
@@ -116,7 +116,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be a IP address"
+        raise "value #{value.inspect} is invalid, must be a IP address"
       end
     end
   end
@@ -131,7 +131,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
     validate do |value|
       unless value.to_i.between?(1, 128)
-        fail "value #{value.inspect} is not between 1 and 128"
+        raise "value #{value.inspect} is not between 1 and 128"
       end
     end
   end
@@ -146,10 +146,10 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
     validate do |value|
       unless value.to_i.between?(1, 128)
-        fail "value #{value.inspect} is not between 1 and 128"
+        raise "value #{value.inspect} is not between 1 and 128"
       end
       unless @resource.validate_within_range(value)
-        fail "value #{value.inspect} is not greater or equal to maximum-paths"
+        raise "value #{value.inspect} is not greater or equal to maximum-paths"
       end
     end
   end
