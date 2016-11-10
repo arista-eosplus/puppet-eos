@@ -100,9 +100,12 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
           '1.2.3.4/32/Null0' => Puppet::Type.type(:eos_staticroute)
                                             .new(name: '1.2.3.4/32/Null0'),
           '192.0.3.0/24/192.0.3.1' => Puppet::Type.type(:eos_staticroute)
-                                                  .new(name: '192.0.3.0/24/192.0.3.1'),
+                                                  .new(name:
+                                                       '192.0.3.0/24/
+                                                       192.0.3.1'),
           '192.0.4.0/24/Ethernet1' => Puppet::Type.type(:eos_staticroute)
-                                                  .new(name: '192.0.4.0/24/Ethernet1')
+                                                  .new(name:
+                                                       '192.0.4.0/24/Ethernet1')
         }
       end
       subject { described_class.prefetch(resources) }

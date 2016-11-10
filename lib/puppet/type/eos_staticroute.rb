@@ -95,7 +95,8 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       unless value.to_i.between?(1, 255)
-        raise "value #{value.inspect} is invalid, must be an integer from 1-255."
+        raise "value #{value.inspect} is invalid, must be an integer from
+        1-255."
       end
     end
   end
@@ -109,7 +110,8 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       unless value.to_i.between?(0, 255)
-        raise "value #{value.inspect} is invalid, must be an integer from 0-255."
+        raise "value #{value.inspect} is invalid, must be an integer from
+        0-255."
       end
     end
   end
