@@ -67,10 +67,10 @@ Puppet::Type.newtype(:eos_varp) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
       unless value == 'settings'
-        fail "value #{value.inspect} is invalid, namevar must be 'settings'."
+        raise "value #{value.inspect} is invalid, namevar must be 'settings'."
       end
     end
   end
@@ -88,7 +88,7 @@ Puppet::Type.newtype(:eos_varp) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

@@ -68,7 +68,7 @@ Puppet::Type.newtype(:eos_acl_entry) do
     EOS
 
     validate do |value|
-      fail "value #{value.inspect} must contain a colon" unless value =~ /:/
+      raise "value #{value.inspect} must contain a colon" unless value =~ /:/
     end
   end
 
@@ -106,7 +106,7 @@ Puppet::Type.newtype(:eos_acl_entry) do
       w = value.split
       unless value =~ IPADDR_REGEXP || value =~ /^any$/ ||
              (w.length == 2 && w[0].eql?('host') && w[1] =~ IPADDR_REGEXP)
-        fail "value #{value.inspect} is invalid, must be a network " \
+        raise "value #{value.inspect} is invalid, must be a network " \
              "address, 'any', or 'host IP address'"
       end
     end
@@ -122,7 +122,7 @@ Puppet::Type.newtype(:eos_acl_entry) do
 
     validate do |value|
       unless value.to_i.between?(0, 32)
-        fail "value #{value.inspect} must be between 0 and 32"
+        raise "value #{value.inspect} must be between 0 and 32"
       end
     end
   end

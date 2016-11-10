@@ -100,9 +100,9 @@ describe Puppet::Type.type(:eos_snmp).provider(:eos) do
       let :resources do
         {
           'settings' => Puppet::Type.type(:eos_snmp)
-            .new(name: 'settings'),
+                                    .new(name: 'settings'),
           'alternative' => Puppet::Type.type(:eos_snmp)
-            .new(name: 'alternative')
+                                       .new(name: 'alternative')
         }
       end
 

@@ -93,9 +93,9 @@ describe Puppet::Type.type(:eos_mlag_interface).provider(:eos) do
       let :resources do
         {
           'Port-Channel1' => Puppet::Type.type(:eos_mlag_interface)
-            .new(name: 'Port-Channel1'),
+                                         .new(name: 'Port-Channel1'),
           'Port-Channel3' => Puppet::Type.type(:eos_mlag_interface)
-            .new(name: 'Port-Channel3')
+                                         .new(name: 'Port-Channel3')
         }
       end
 

@@ -74,7 +74,7 @@ Puppet::Type.type(:eos_varp_interface).provide(:eos) do
   end
 
   def create
-    fail('shared_ip property must be included') if resource[:shared_ip].nil?
+    raise('shared_ip property must be included') if resource[:shared_ip].nil?
     @property_flush = resource.to_hash
   end
 

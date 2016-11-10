@@ -97,9 +97,9 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_ipinterface)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_ipinterface)
-            .new(name: 'Ethernet2')
+                                     .new(name: 'Ethernet2')
         }
       end
 

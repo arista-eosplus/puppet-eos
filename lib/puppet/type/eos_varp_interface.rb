@@ -57,7 +57,7 @@ Puppet::Type.newtype(:eos_varp_interface) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -76,7 +76,7 @@ Puppet::Type.newtype(:eos_varp_interface) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be an IP address"
+        raise "value #{value.inspect} is invalid, must be an IP address"
       end
     end
   end

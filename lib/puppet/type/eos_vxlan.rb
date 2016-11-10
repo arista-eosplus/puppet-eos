@@ -62,7 +62,7 @@ Puppet::Type.newtype(:eos_vxlan) do
 
     validate do |value|
       unless value =~ /^Vxlan\d+/
-        fail 'value #{value.inspect} is invalid, must be a valid ' \
+        raise 'value #{value.inspect} is invalid, must be a valid ' \
              'Vxlan interface name'
       end
     end
@@ -82,7 +82,7 @@ Puppet::Type.newtype(:eos_vxlan) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -112,7 +112,7 @@ Puppet::Type.newtype(:eos_vxlan) do
     validate do |value|
       case value
       when String then super(resource)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -132,7 +132,7 @@ Puppet::Type.newtype(:eos_vxlan) do
 
     validate do |value|
       unless value =~ MCAST_REGEXP
-        fail "value #{value.inspect} is invalid, must a multicast address"
+        raise "value #{value.inspect} is invalid, must a multicast address"
       end
     end
   end
@@ -151,7 +151,7 @@ Puppet::Type.newtype(:eos_vxlan) do
 
     validate do |value|
       unless value.to_i.between?(1024, 65_535)
-        fail "value #{value.inspect} must be between 1024 and 65535"
+        raise "value #{value.inspect} must be between 1024 and 65535"
       end
     end
   end

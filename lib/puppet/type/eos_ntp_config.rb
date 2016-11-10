@@ -67,7 +67,7 @@ Puppet::Type.newtype(:eos_ntp_config) do
 
     validate do |value|
       unless value =~ /^[EMPLV]/
-        fail "value #{value.inspect} is invalid, must be an interface name"
+        raise "value #{value.inspect} is invalid, must be an interface name"
       end
     end
   end

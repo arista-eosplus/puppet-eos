@@ -57,7 +57,7 @@ Puppet::Type.newtype(:eos_mlag_interface) do
 
     validate do |value|
       unless value =~ /^Port-Channel/
-        fail "value #{value.inspect} is invalid, must be a Port-Channel"
+        raise "value #{value.inspect} is invalid, must be a Port-Channel"
       end
     end
   end
@@ -83,7 +83,7 @@ Puppet::Type.newtype(:eos_mlag_interface) do
 
     validate do |value|
       unless value.to_i.between?(1, 2_000)
-        fail "value #{value.inspect} is not between 1 and 2000"
+        raise "value #{value.inspect} is not between 1 and 2000"
       end
     end
   end

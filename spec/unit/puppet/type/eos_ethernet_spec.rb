@@ -92,12 +92,12 @@ describe Puppet::Type.type(:eos_ethernet) do
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values', ['default', '100full', '10full', 'auto',
-      'auto 100full', 'auto 10full', 'auto 40gfull', 'forced 10000full',
-      'forced 1000full', 'forced 1000half', 'forced 100full',
-      'forced 100gfull', 'forced 100half', 'forced 10full', 'forced 10half',
-      'forced 40gfull', 'sfp-1000baset auto 100full']
+                                        'auto 100full', 'auto 10full', 'auto 40gfull', 'forced 10000full',
+                                        'forced 1000full', 'forced 1000half', 'forced 100full',
+                                        'forced 100gfull', 'forced 100half', 'forced 10full', 'forced 10half',
+                                        'forced 40gfull', 'sfp-1000baset auto 100full']
     include_examples 'rejects values', [0, 15, '0', '15', { two: :three },
-      :'abc']
+                                        :abc]
   end
 
   describe 'lacp_priority' do
@@ -106,7 +106,7 @@ describe Puppet::Type.type(:eos_ethernet) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', [0, 65535]
-    include_examples 'rejects values', [[-1], -1, 65536, { two: :three }]
+    include_examples 'accepts values without munging', [0, 65_535]
+    include_examples 'rejects values', [[-1], -1, 65_536, { two: :three }]
   end
 end

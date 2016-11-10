@@ -40,7 +40,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       ensure: :present,
       name: 'Ethernet1',
       mode: :trunk,
-      trunk_allowed_vlans: ['1','10','100-500','1000'],
+      trunk_allowed_vlans: ['1', '10', '100-500', '1000'],
       trunk_native_vlan: '1',
       access_vlan: '1',
       trunk_groups: [],
@@ -102,9 +102,9 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet2')
+                                     .new(name: 'Ethernet2')
         }
       end
 
@@ -239,7 +239,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     end
 
     describe '#trunk_allowed_vlans=(val)' do
-      let(:vlans) { ['1','10','100-500','1000'] }
+      let(:vlans) { ['1', '10', '100-500', '1000'] }
 
       it 'updates trunk_allowed_vlans in the provider' do
         expect(api).to receive(:set_trunk_allowed_vlans)

@@ -59,7 +59,7 @@ Puppet::Type.newtype(:eos_vlan) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -79,7 +79,7 @@ Puppet::Type.newtype(:eos_vlan) do
 
     validate do |value|
       unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} must be between 1 and 4094"
+        raise "value #{value.inspect} must be between 1 and 4094"
       end
     end
   end
@@ -96,7 +96,7 @@ Puppet::Type.newtype(:eos_vlan) do
 
     validate do |value|
       unless value =~ /[^\s]/
-        fail "value #{value.inspect} is invalid, must not contain spaces"
+        raise "value #{value.inspect} is invalid, must not contain spaces"
       end
     end
   end
@@ -142,7 +142,7 @@ Puppet::Type.newtype(:eos_vlan) do
     validate do |value|
       case value
       when String then super(value)
-      else fail "value #{value.inspect} is invalid, elements must be Strings"
+      else raise "value #{value.inspect} is invalid, elements must be Strings"
       end
     end
   end

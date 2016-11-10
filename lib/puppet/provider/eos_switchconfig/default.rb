@@ -96,11 +96,9 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
                  @property_flush[:staging_file],
                  '"'].join
       result = `#{command}`
-      if $CHILD_STATUS.to_i.nonzero? || !result.empty?
-        fail result
-      end
+      raise result if $CHILD_STATUS.to_i.nonzero? || !result.empty?
     rescue Exception => msg
-      fail msg
+      raise msg
     end
 
     # Merge in values that have changed

@@ -70,7 +70,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
 
     validate do |value|
       unless value.to_s =~ /^running-config$/
-        fail 'value #{value.inspect} is invalid, must be ' \
+        raise 'value #{value.inspect} is invalid, must be ' \
             '"running-config"'
       end
     end
@@ -78,7 +78,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
 
   # Properties (state management)
 
-  newproperty(:source, :array_matching => :all) do
+  newproperty(:source, array_matching: :all) do
     desc <<-EOS
       Source is a list of templates which will be concatenated to create the
       desired running-config.
@@ -93,9 +93,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
     # TODO: Not implemented?
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      raise "value #{value.inspect} is not a String" unless value.is_a? String
     end
   end
 
@@ -105,9 +103,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
       running-config.
     EOS
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      raise "value #{value.inspect} is not a String" unless value.is_a? String
     end
 
     def insync?(current)
@@ -148,9 +144,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
     EOS
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      raise "value #{value.inspect} is not a String" unless value.is_a? String
     end
 
     def insync?(_current)

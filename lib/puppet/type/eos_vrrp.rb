@@ -59,7 +59,7 @@ Puppet::Type.newtype(:eos_vrrp) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -81,10 +81,10 @@ Puppet::Type.newtype(:eos_vrrp) do
     EOS
 
     validate do |value|
-      fail "value #{value.inspect} must contain a colon" unless value =~ /:/
+      raise "value #{value.inspect} must contain a colon" unless value =~ /:/
       w = value.split(':')
       unless w[1].to_i.between?(1, 255)
-        fail "value #{value.inspect} is invalid, " \
+        raise "value #{value.inspect} is invalid, " \
                'virtual router ID must be between 1 and 255'
       end
     end
@@ -101,7 +101,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be a IP address"
+        raise "value #{value.inspect} is invalid, must be a IP address"
       end
     end
   end
@@ -116,7 +116,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i.between?(1, 254)
-        fail "value #{value.inspect} is not between 1 and 254"
+        raise "value #{value.inspect} is not between 1 and 254"
       end
     end
   end
@@ -132,7 +132,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i.between?(1, 255)
-        fail "value #{value.inspect} is not between 1 and 255"
+        raise "value #{value.inspect} is not between 1 and 255"
       end
     end
   end
@@ -180,7 +180,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value =~ IPADDR_REGEXP
-        fail "value #{value.inspect} is invalid, must be a IP address"
+        raise "value #{value.inspect} is invalid, must be a IP address"
       end
     end
   end
@@ -195,7 +195,7 @@ Puppet::Type.newtype(:eos_vrrp) do
       when String
         super(value)
         validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -231,28 +231,28 @@ Puppet::Type.newtype(:eos_vrrp) do
         super(value)
         validate_features_per_value(value)
         # Make sure the correct keys are in the hash
-        value.keys.each do|key|
+        value.keys.each do |key|
           unless valid_keys.include?(key)
-            fail "Invalid key: #{key.inspect} valid keys #{valid_keys}"
+            raise "Invalid key: #{key.inspect} valid keys #{valid_keys}"
           end
         end
         # Make sure the action value is correct
         action = value['action']
         unless valid_acts.include?(action)
-          fail "Invalid action: #{action.inspect} valid actions #{valid_acts}"
+          raise "Invalid action: #{action.inspect} valid actions #{valid_acts}"
         end
         # Make sure the decrement has amount specified and shutdown does not
         case action
         when 'decrement'
           unless value.key?('amount')
-            fail 'decrement action requires amount to be specified'
+            raise 'decrement action requires amount to be specified'
           end
         when 'shutdown'
           if value.key?('amount')
-            fail 'amount cannot be specified when action is shutdown'
+            raise 'amount cannot be specified when action is shutdown'
           end
         end
-      else fail "value #{value.inspect} is invalid, must be a Hash."
+      else raise "value #{value.inspect} is invalid, must be a Hash."
       end
     end
   end
@@ -266,7 +266,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i.between?(2, 3)
-        fail "value #{value.inspect} is not between 2 and 3"
+        raise "value #{value.inspect} is not between 2 and 3"
       end
     end
   end
@@ -280,7 +280,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i >= 0
-        fail "value #{value.inspect} must be a positive integer"
+        raise "value #{value.inspect} must be a positive integer"
       end
     end
   end
@@ -295,7 +295,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i >= 0
-        fail "value #{value.inspect} must be a positive integer"
+        raise "value #{value.inspect} must be a positive integer"
       end
     end
   end
@@ -310,7 +310,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i >= 0
-        fail "value #{value.inspect} must be a positive integer"
+        raise "value #{value.inspect} must be a positive integer"
       end
     end
   end
@@ -324,7 +324,7 @@ Puppet::Type.newtype(:eos_vrrp) do
 
     validate do |value|
       unless value.to_i >= 0
-        fail "value #{value.inspect} must be a positive integer"
+        raise "value #{value.inspect} must be a positive integer"
       end
     end
   end

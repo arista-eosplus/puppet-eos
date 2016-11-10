@@ -97,11 +97,11 @@ describe Puppet::Type.type(:eos_stp_interface).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_stp_interface)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_stp_interface)
-            .new(name: 'Ethernet2'),
+                                     .new(name: 'Ethernet2'),
           'Ethernet3' => Puppet::Type.type(:eos_stp_interface)
-            .new(name: 'Ethernet3')
+                                     .new(name: 'Ethernet3')
         }
       end
       subject { described_class.prefetch(resources) }

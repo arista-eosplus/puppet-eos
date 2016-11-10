@@ -95,9 +95,9 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
       let :resources do
         {
           'Vlan99' => Puppet::Type.type(:eos_varp_interface)
-            .new(name: 'Vlan99'),
+                                  .new(name: 'Vlan99'),
           'Vlan100' => Puppet::Type.type(:eos_varp_interface)
-            .new(name: 'Vlan100')
+                                   .new(name: 'Vlan100')
         }
       end
 

@@ -49,7 +49,7 @@ Puppet::Type.newtype(:eos_system) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -79,7 +79,7 @@ Puppet::Type.newtype(:eos_system) do
     validate do |value|
       case value
       when String then super(resource)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

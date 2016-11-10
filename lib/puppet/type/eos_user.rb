@@ -59,7 +59,7 @@ Puppet::Type.newtype(:eos_user) do
     when false, 'false', :false, 'no', 'off'
       :false
     else
-      fail('munge_boolean only takes booleans')
+      raise('munge_boolean only takes booleans')
     end
   end
 
@@ -70,7 +70,7 @@ Puppet::Type.newtype(:eos_user) do
     when 'sha512', :sha512
       'sha512'
     else
-      fail('munge_encryption only takes md5 or sha512')
+      raise('munge_encryption only takes md5 or sha512')
     end
   end
 
@@ -83,7 +83,7 @@ Puppet::Type.newtype(:eos_user) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -125,7 +125,7 @@ Puppet::Type.newtype(:eos_user) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -139,7 +139,7 @@ Puppet::Type.newtype(:eos_user) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -154,7 +154,7 @@ Puppet::Type.newtype(:eos_user) do
 
     validate do |value|
       unless value.to_i.between?(0, 15)
-        fail "value #{value.inspect} must be in the range of 0 and 15"
+        raise "value #{value.inspect} must be in the range of 0 and 15"
       end
     end
   end
@@ -168,7 +168,7 @@ Puppet::Type.newtype(:eos_user) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end

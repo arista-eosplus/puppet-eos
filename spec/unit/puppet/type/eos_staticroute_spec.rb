@@ -49,7 +49,7 @@ describe Puppet::Type.type(:eos_staticroute) do
     include_examples 'parameter'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
-                     %w(1.2.3.4/24, 3012:D678::/64)
+                     %w(1.2.3.4/24 3012:D678::/64)
     include_examples 'rejects values', [[1], { two: :three }]
   end
 

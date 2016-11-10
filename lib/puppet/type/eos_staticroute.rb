@@ -67,7 +67,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       if value.is_a? String then super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      else raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -81,7 +81,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       unless value.is_a? String
-        fail "value #{value.inspect} is invalid, must be a String."
+        raise "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -95,7 +95,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       unless value.to_i.between?(1, 255)
-        fail "value #{value.inspect} is invalid, must be an integer from 1-255."
+        raise "value #{value.inspect} is invalid, must be an integer from 1-255."
       end
     end
   end
@@ -109,7 +109,7 @@ Puppet::Type.newtype(:eos_staticroute) do
 
     validate do |value|
       unless value.to_i.between?(0, 255)
-        fail "value #{value.inspect} is invalid, must be an integer from 0-255."
+        raise "value #{value.inspect} is invalid, must be an integer from 0-255."
       end
     end
   end
