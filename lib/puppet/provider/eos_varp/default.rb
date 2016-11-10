@@ -77,7 +77,8 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
   end
 
   def create
-    raise('mac_address property must be included') if resource[:mac_address].nil?
+    raise('mac_address property must be
+          included') if resource[:mac_address].nil?
     @property_flush = resource.to_hash
   end
 
