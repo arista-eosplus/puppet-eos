@@ -36,7 +36,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
 
     Use files, templates, or concatenated files/template blocks to build
     and manage the entire EOS configuration as a single object.  By default,
-    changes will be written to flash:startup-config then the 'configure
+    changes will be written to flash:puppet-config then the 'configure
     replace' in EOS will safely overwrite the running-config.
 
     Examples:
