@@ -129,14 +129,17 @@ Puppet::Type.newtype(:eos_ethernet) do
       * 'forced 100half'
       * 'forced 10full'
       * 'forced 10half'
+      * 'forced 25gfull'
       * 'forced 40gfull'
+      * 'forced 50gfull'
       * 'sfp-1000baset auto 100full'
     EOS
     newvalues('default', '100full', '10full', 'auto', 'auto 100full',
               'auto 10full', 'auto 40gfull', 'forced 10000full',
               'forced 1000full', 'forced 1000half', 'forced 100full',
               'forced 100gfull', 'forced 100half', 'forced 10full',
-              'forced 10half', 'forced 40gfull', 'sfp-1000baset auto 100full')
+              'forced 10half', 'forced 25gfull', 'forced 40gfull',
+              'forced 50gfull', 'sfp-1000baset auto 100full')
   end
 
   newproperty(:lacp_priority) do
