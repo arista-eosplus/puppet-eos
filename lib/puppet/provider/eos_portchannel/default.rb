@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ Puppet::Type.type(:eos_portchannel).provide(:eos) do
       provider_hash[:enable] = attrs[:shutdown] ? :false : :true
       provider_hash[:lacp_mode] = attrs[:lacp_mode].to_sym
       provider_hash[:lacp_fallback] = attrs[:lacp_fallback].to_sym
-      Puppet.debug("#{provider_hash}")
+      Puppet.debug(provider_hash.to_s)
       arry << new(provider_hash)
     end
   end

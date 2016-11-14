@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2015-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -231,7 +231,7 @@ Puppet::Type.newtype(:eos_vrrp) do
         super(value)
         validate_features_per_value(value)
         # Make sure the correct keys are in the hash
-        value.keys.each do|key|
+        value.keys.each do |key|
           unless valid_keys.include?(key)
             fail "Invalid key: #{key.inspect} valid keys #{valid_keys}"
           end

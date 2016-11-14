@@ -39,3 +39,6 @@ Gemfile.lock
 results
 spec/fixtures/manifests/*
 spec/fixtures/modules/*
+
+# TestKitchen
+.kitchen

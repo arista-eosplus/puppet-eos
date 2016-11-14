@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -101,9 +101,9 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_ethernet)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_ethernet)
-            .new(name: 'Ethernet2')
+                                     .new(name: 'Ethernet2')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -155,7 +155,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
           set_flowcontrol_send: true,
           set_flowcontrol_receive: true,
           set_speed: true,
-          set_lacp_priority: true,
+          set_lacp_priority: true
         )
       end
 
@@ -207,7 +207,7 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
     end
 
     describe '#enable=(value)' do
-      %w(true, false).each do |val|
+      %w(true false).each do |val|
         let(:name) { 'Ethernet1' }
 
         it 'updates enable in the provider' do
@@ -256,9 +256,9 @@ describe Puppet::Type.type(:eos_ethernet).provider(:eos) do
     describe '#lacp_priority=(value)' do
       it 'updates lacp priority in the provider' do
         expect(api).to receive(:set_lacp_priority)
-          .with(resource[:name], value: 65000)
-        provider.lacp_priority = 65000
-        expect(provider.lacp_priority).to eq(65000)
+          .with(resource[:name], value: 65_000)
+        provider.lacp_priority = 65_000
+        expect(provider.lacp_priority).to eq(65_000)
       end
     end
   end

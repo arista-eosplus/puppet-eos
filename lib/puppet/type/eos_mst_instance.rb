@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -80,10 +80,9 @@ Puppet::Type.newtype(:eos_mst_instance) do
     end
 
     validate do |value|
-      unless value.to_i.between?(0, 61_440) && (value.to_i % 4096) == 0
+      unless value.to_i.between?(0, 61_440) && (value.to_i % 4096).zero?
         fail "value #{value.inspect} is not between 0 and 65535"
       end
     end
   end
-
 end
