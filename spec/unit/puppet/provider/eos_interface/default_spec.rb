@@ -40,6 +40,7 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       name: 'Loopback0',
       description: 'test interface',
       enable: :true,
+      autostate: :true,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_interface).new(resource_hash)

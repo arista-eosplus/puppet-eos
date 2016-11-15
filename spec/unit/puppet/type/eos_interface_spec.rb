@@ -64,4 +64,14 @@ describe Puppet::Type.type(:eos_interface) do
     include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
+
+  describe 'autostate' do
+    let(:attribute) { :autostate }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+  end
 end
