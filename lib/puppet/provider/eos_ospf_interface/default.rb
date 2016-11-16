@@ -74,7 +74,8 @@ Puppet::Type.type(:eos_ospf_interface).provide(:eos) do
   end
 
   def create
-    fail('network_type property must be included') if resource[:network_type].nil?
+    fail('network_type property must be included') if resource[:network_type]
+                                                      .nil?
     @property_flush = resource.to_hash
   end
 
@@ -88,7 +89,8 @@ Puppet::Type.type(:eos_ospf_interface).provide(:eos) do
 
     case @property_hash[:ensure]
     when :present
-      api.set_network_type(resource[:name], value: @property_flush[:network_type])
+      api.set_network_type(resource[:name], value:
+                           @property_flush[:network_type])
     when :absent
       api.set_network_type(resource[:name], enable: false)
     end

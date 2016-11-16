@@ -108,7 +108,8 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
                                    desired_state[:name], desired_state[:area])
     when :absent
       node.api('ospf').remove_network(desired_state[:instance_id],
-                                      desired_state[:name], desired_state[:area])
+                                      desired_state[:name],
+                                      desired_state[:area])
     end
     @property_hash = desired_state
   end

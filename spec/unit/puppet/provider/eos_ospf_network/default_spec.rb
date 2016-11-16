@@ -80,7 +80,9 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
       end
 
       context "eos_ospf_network { '192.168.10.0/24': }" do
-        subject { described_class.instances.find { |p| p.name == '192.168.10.0/24' } }
+        subject do
+          described_class.instances.find { |p| p.name == '192.168.10.0/24' }
+        end
         include_examples 'provider resource methods',
                          ensure: :present,
                          name: '192.168.10.0/24',
@@ -92,8 +94,10 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '192.168.10.0/24' => Puppet::Type.type(:eos_ospf_network).new(name: '192.168.10.0/24'),
-          '192.168.20.0/24' => Puppet::Type.type(:eos_ospf_network).new(name: '192.168.20.0/24')
+          '192.168.10.0/24' => Puppet::Type.type(:eos_ospf_network)
+                                           .new(name: '192.168.10.0/24'),
+          '192.168.20.0/24' => Puppet::Type.type(:eos_ospf_network)
+                                           .new(name: '192.168.20.0/24')
         }
       end
 
@@ -107,13 +111,15 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['192.168.10.0/24'].provider.name).to eq('192.168.10.0/24')
+        expect(resources['192.168.10.0/24'].provider.name)
+          .to eq('192.168.10.0/24')
         expect(resources['192.168.10.0/24'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['192.168.20.0/24'].provider.name).to eq('192.168.20.0/24')
+        expect(resources['192.168.20.0/24'].provider.name)
+          .to eq('192.168.20.0/24')
         expect(resources['192.168.20.0/24'].provider.exists?).to be_falsey
       end
     end
@@ -138,7 +144,9 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#create' do
       it 'sets ensure on the resource' do
-        expect(api).to receive(:add_network).with(1, '192.168.10.0/24', '0.0.0.0')
+        expect(api).to receive(:add_network).with(1,
+                                                  '192.168.10.0/24',
+                                                  '0.0.0.0')
         provider.create
         provider.flush
         expect(provider.ensure).to eq(:present)
@@ -147,7 +155,9 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#area=(value)' do
       it 'sets area on the resource' do
-        expect(api).to receive(:add_network).with(1, '192.168.10.0/24', '0.0.0.1')
+        expect(api).to receive(:add_network).with(1,
+                                                  '192.168.10.0/24',
+                                                  '0.0.0.1')
         provider.create
         provider.area = '0.0.0.1'
         provider.flush
@@ -157,7 +167,9 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
 
     describe '#instance_id=(value)' do
       it 'sets instance_id on the resource' do
-        expect(api).to receive(:add_network).with(2, '192.168.10.0/24', '0.0.0.0')
+        expect(api).to receive(:add_network).with(2,
+                                                  '192.168.10.0/24',
+                                                  '0.0.0.0')
         provider.create
         provider.instance_id = 2
         provider.flush
@@ -168,7 +180,9 @@ describe Puppet::Type.type(:eos_ospf_network).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:remove_network).with(1, '192.168.10.0/24', '0.0.0.0')
+        expect(api).to receive(:remove_network).with(1,
+                                                     '192.168.10.0/24',
+                                                     '0.0.0.0')
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)

@@ -55,8 +55,10 @@ describe Puppet::Type.type(:eos_managementdefaults).provider(:eos) do
   end
 
   before :each do
-    allow(described_class.node).to receive(:api).with('managementdefaults').and_return(api)
-    allow(provider.node).to receive(:api).with('managementdefaults').and_return(api)
+    allow(described_class.node).to receive(:api).with('managementdefaults')
+      .and_return(api)
+    allow(provider.node).to receive(:api).with('managementdefaults')
+      .and_return(api)
   end
 
   context 'class methods' do
@@ -80,8 +82,10 @@ describe Puppet::Type.type(:eos_managementdefaults).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'settings' => Puppet::Type.type(:eos_managementdefaults).new(name: 'settings'),
-          'alternative' => Puppet::Type.type(:eos_managementdefaults).new(name: 'alternative')
+          'settings' => Puppet::Type.type(:eos_managementdefaults)
+                                    .new(name: 'settings'),
+          'alternative' => Puppet::Type.type(:eos_managementdefaults)
+                                       .new(name: 'alternative')
         }
       end
 

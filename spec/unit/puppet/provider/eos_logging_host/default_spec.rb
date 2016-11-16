@@ -91,8 +91,10 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host).new(:name => '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host).new(:name => '5.6.7.8')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }

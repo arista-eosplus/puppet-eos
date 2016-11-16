@@ -95,7 +95,8 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
 
   def passive_interface_default=(val)
     value = val == :true
-    node.api('ospf').set_passive_interface_default(resource[:name], :value => value)
+    node.api('ospf').set_passive_interface_default(resource[:name],
+                                                   :value => value)
     @property_hash[:passive_interface_default] = val
   end
 
@@ -109,9 +110,15 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     self.router_id = resource[:router_id] if resource[:router_id]
     self.max_lsa = resource[:max_lsa] if resource[:max_lsa]
     self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
-    self.passive_interface_default = resource[:passive_interface_default] if resource[:passive_interface_default]
-    self.passive_interfaces = resource[:passive_interfaces] if resource[:passive_interfaces] && resource[:passive_interface_default]
-    self.active_interfaces = resource[:active_interfaces] if resource[:active_interfaces] && resource[:passive_interface_default]
+    if resource[:passive_interface_default]
+      self.passive_interface_default = resource[:passive_interface_default]
+      if resource[:passive_interfaces]
+        self.passive_interfaces = resource[:passive_interfaces]
+      end
+      if resource[:active_interfaces]
+        self.active_interfaces = resource[:active_interfaces]
+      end
+    end
   end
 
   def destroy

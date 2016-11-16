@@ -58,6 +58,8 @@ describe Puppet::Type.type(:eos_ospf_interface) do
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
                      %w(point-to-point broadcast)
-    include_examples 'rejects values', [[1], { :two => :three }, 'point-to-multipoint']
+    include_examples 'rejects values', [[1],
+                                        { :two => :three },
+                                        'point-to-multipoint']
   end
 end
