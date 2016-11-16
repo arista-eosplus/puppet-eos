@@ -90,7 +90,7 @@ Puppet::Type.newtype(:eos_ospf_redistribution) do
 
   newproperty(:route_map) do
     desc <<-EOS
-      The route_map property attaches a route map to the OSPF redistribution.      
+      The route_map property attaches a route map to the OSPF redistribution.
       By default, no route_map is configured.
 
     EOS

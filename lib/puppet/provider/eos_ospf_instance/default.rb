@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     return [] if !result || result.empty?
     arr = []
     result.map do |(name, attrs)|
-      next if name.eql? "interfaces"
+      next if name.eql? 'interfaces'
       provider_hash = { name: name, ensure: :present }
       provider_hash[:router_id] = attrs[:router_id]
       provider_hash[:max_lsa] = attrs[:max_lsa]
@@ -110,8 +110,8 @@ Puppet::Type.type(:eos_ospf_instance).provide(:eos) do
     self.max_lsa = resource[:max_lsa] if resource[:max_lsa]
     self.maximum_paths = resource[:maximum_paths] if resource[:maximum_paths]
     self.passive_interface_default = resource[:passive_interface_default] if resource[:passive_interface_default]
-    self.passive_interfaces = resource[:passive_interfaces] if (resource[:passive_interfaces] && resource[:passive_interface_default])
-    self.active_interfaces = resource[:active_interfaces] if (resource[:active_interfaces] && resource[:passive_interface_default])
+    self.passive_interfaces = resource[:passive_interfaces] if resource[:passive_interfaces] && resource[:passive_interface_default]
+    self.active_interfaces = resource[:active_interfaces] if resource[:active_interfaces] && resource[:passive_interface_default]
   end
 
   def destroy

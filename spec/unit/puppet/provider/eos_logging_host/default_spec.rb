@@ -119,7 +119,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

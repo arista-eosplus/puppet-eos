@@ -48,8 +48,8 @@ Puppet::Type.newtype(:eos_varp) do
   ensurable
 
   def munge_mac_address(value)
-    value.scan(/\h/).length == 12 or
-      raise "value #{value.inspect} is invalid, must be a mac address."
+    (value.scan(/\h/).length == 12) ||
+      raise("value #{value.inspect} is invalid, must be a mac address.")
     value.gsub!(/\H/, '')
     value.scan(/.{2}/).join(':')
   end

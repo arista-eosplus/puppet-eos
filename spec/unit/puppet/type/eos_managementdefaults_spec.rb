@@ -51,7 +51,6 @@ describe Puppet::Type.type(:eos_managementdefaults) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'rejects values', [[1], { two: :three }, 'foo', '1' ]
+    include_examples 'rejects values', [[1], { two: :three }, 'foo', '1']
   end
-
 end

@@ -70,7 +70,7 @@ Puppet::Type.newtype(:eos_ospf_interface) do
 
       * point-to-point - Configures the ospf network type to point-to-point
       * broadcast - Configures the ospf network type to broadcast
-      
+
       By default, interfaces are configured as broadcast links.
 
     EOS

@@ -63,7 +63,6 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
@@ -121,7 +120,6 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 
@@ -140,7 +138,7 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
 
     describe '#create' do
       it 'sets ensure on the resource' do
-        expect(api).to receive(:set_redistribute).with(1, 'static', {route_map: 'test'})
+        expect(api).to receive(:set_redistribute).with(1, 'static', route_map: 'test')
         provider.create
         provider.flush
         expect(provider.ensure).to eq(:present)
@@ -149,7 +147,7 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
 
     describe '#route_map=(value)' do
       it 'sets route_map on the resource' do
-        expect(api).to receive(:set_redistribute).with(1, 'static', {route_map: 'foo'})
+        expect(api).to receive(:set_redistribute).with(1, 'static', route_map: 'foo')
         provider.create
         provider.route_map = 'foo'
         provider.flush
@@ -159,7 +157,7 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
 
     describe '#instance_id=(value)' do
       it 'sets instance_id on the resource' do
-        expect(api).to receive(:set_redistribute).with(2, 'static', {route_map: 'test'})
+        expect(api).to receive(:set_redistribute).with(2, 'static', route_map: 'test')
         provider.create
         provider.instance_id = 2
         provider.flush
@@ -170,7 +168,7 @@ describe Puppet::Type.type(:eos_ospf_redistribution).provider(:eos) do
     describe '#destroy' do
       it 'sets ensure to :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:set_redistribute).with( 1, 'static', {route_map: 'test', enable: false})
+        expect(api).to receive(:set_redistribute).with(1, 'static', route_map: 'test', enable: false)
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)

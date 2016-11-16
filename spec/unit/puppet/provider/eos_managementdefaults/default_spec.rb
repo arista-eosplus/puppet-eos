@@ -75,7 +75,6 @@ describe Puppet::Type.type(:eos_managementdefaults).provider(:eos) do
         instance = subject.find { |p| p.name == 'settings' }
         expect(instance).to be_a described_class
       end
-
     end
 
     describe '.prefetch' do
@@ -139,7 +138,6 @@ describe Puppet::Type.type(:eos_managementdefaults).provider(:eos) do
         provider.secret_hash = 'sha512'
         expect(provider.secret_hash).to eq('sha512')
       end
-
     end
   end
 end

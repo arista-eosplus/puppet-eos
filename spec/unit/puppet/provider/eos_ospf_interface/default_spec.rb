@@ -64,7 +64,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
@@ -121,7 +120,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

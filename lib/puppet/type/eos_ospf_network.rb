@@ -91,7 +91,6 @@ Puppet::Type.newtype(:eos_ospf_network) do
         fail "value #{value.inspect} is invalid, must contain valid IPv4_Prefix"
       end
     end
-    
   end
 
   newproperty(:instance_id) do
@@ -111,5 +110,4 @@ Puppet::Type.newtype(:eos_ospf_network) do
       end
     end
   end
-
 end

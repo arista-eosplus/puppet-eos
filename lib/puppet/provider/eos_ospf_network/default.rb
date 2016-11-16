@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
     return [] if !ospf || ospf.nil?
     arr = []
     ospf.each do |(instance_id, attrs)|
-      next if instance_id.eql? "interfaces"
+      next if instance_id.eql? 'interfaces'
       areas = attrs[:areas]
       next if areas.nil?
       areas.each do |(area, networks)|
@@ -105,10 +105,10 @@ Puppet::Type.type(:eos_ospf_network).provide(:eos) do
     case desired_state[:ensure]
     when :present
       node.api('ospf').add_network(desired_state[:instance_id],
-                       desired_state[:name], desired_state[:area])
+                                   desired_state[:name], desired_state[:area])
     when :absent
       node.api('ospf').remove_network(desired_state[:instance_id],
-                       desired_state[:name], desired_state[:area])
+                                      desired_state[:name], desired_state[:area])
     end
     @property_hash = desired_state
   end

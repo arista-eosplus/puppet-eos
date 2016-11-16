@@ -60,5 +60,4 @@ describe Puppet::Type.type(:eos_ospf_interface) do
                      %w(point-to-point broadcast)
     include_examples 'rejects values', [[1], { :two => :three }, 'point-to-multipoint']
   end
-
 end
