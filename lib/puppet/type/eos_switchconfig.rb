@@ -93,9 +93,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
     # TODO: Not implemented?
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      fail "value #{value.inspect} is not a String" unless value.is_a? String
     end
   end
 
@@ -105,9 +103,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
       running-config.
     EOS
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      fail "value #{value.inspect} is not a String" unless value.is_a? String
     end
 
     def insync?(current)
@@ -148,9 +144,7 @@ Puppet::Type.newtype(:eos_switchconfig) do
     EOS
 
     validate do |value|
-      unless value.is_a? String
-        fail "value #{value.inspect} is not a String"
-      end
+      fail "value #{value.inspect} is not a String" unless value.is_a? String
     end
 
     def insync?(_current)
