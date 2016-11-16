@@ -39,6 +39,8 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     resource_hash = {
       name: 'Loopback0',
       description: 'test interface',
+      encapsulation: 30,
+      load_interval: 10,
       enable: :true,
       autostate: :true,
       provider: described_class.name
@@ -85,6 +87,8 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         include_examples 'provider resource methods',
                          name: 'Loopback0',
                          description: 'test interface',
+                         encapsulation: 30,
+                         load_interval: 10,
                          enable: :true
       end
     end
@@ -130,7 +134,9 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
           set_shutdown: true,
-          set_description: true
+          set_description: true,
+          set_load_interval: true,
+          set_encapsulation: true
         )
       end
 
@@ -158,6 +164,15 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
           .with(resource[:name], value: 'foo')
         provider.description = 'foo'
         expect(provider.description).to eq('foo')
+      end
+    end
+
+    describe '#load_interval=(value)' do
+      it 'updates load_interval in the provider' do
+        expect(api).to receive(:set_load_interval)
+          .with(resource[:name], value: '7')
+        provider.load_interval = '7'
+        expect(provider.load_interval).to eq('7')
       end
     end
 
