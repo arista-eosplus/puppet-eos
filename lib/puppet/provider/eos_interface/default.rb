@@ -76,22 +76,34 @@ Puppet::Type.type(:eos_interface).provide(:eos) do
     @property_hash[:description] = val
   end
 
+  def encapsulation=(val)
+    node.api('interfaces').set_encapsulation(resource[:name], value: val)
+    @property_hash[:encapsulation] = val
+  end
+
+  def load_interval=(val)
+    node.api('interfaces').set_load_interval(resource[:name], value: val)
+    @property_hash[:load_interval] = val
+  end
+
   def exists?
     @property_hash[:ensure] == :present
   end
 
   def create
-    if resource[:name] =~ /^[Et|Ma]/
+    if resource[:name] =~ /^[Et|Ma]/ and resource[:name] !~ /\./
       fail 'Creating physical interfaces is not supported'
     end
     node.api('interfaces').create(resource[:name])
     @property_hash = { name: resource[:name], ensure: :present }
     self.enable = resource[:enable] if resource[:enable]
     self.description = resource[:description] if resource[:description]
+    self.encapsulation = resource[:encapsulation] if resource[:encapsulation]
+    self.load_interval = resource[:load_interval] if resource[:load_interval]
   end
 
   def destroy
-    if resource[:name] =~ /^[Et|Ma]/
+    if resource[:name] =~ /^[Et|Ma]/ and resource[:name] !~ /\./
       fail 'Destroying physical interfaces is not supported'
     end
     node.api('interfaces').delete(resource[:name])
