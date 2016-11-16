@@ -11,6 +11,9 @@ Metrics/MethodLength:
 Style/AccessorMethodName:
   Enabled: False
 
+Style/HashSyntax:
+  Enabled: false
+
 Style/SignalException:
   Enabled: False
 
