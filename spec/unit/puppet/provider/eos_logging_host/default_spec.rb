@@ -50,7 +50,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   def logging
     logging = Fixtures[:logging]
     return logging if logging
-    file = File.join(File.dirname(__FILE__), 'fixtures/logging.json')
     fixture('logging', dir: File.dirname(__FILE__))
   end
 
