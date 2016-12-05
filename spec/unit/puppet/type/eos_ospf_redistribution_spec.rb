@@ -67,8 +67,7 @@ describe Puppet::Type.type(:eos_ospf_redistribution) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', min: 1, max: 65535
-    include_examples 'rejects values', 0, 65536, 'test', [5, 6]
+    include_examples 'numeric parameter', min: 1, max: 65_535
+    include_examples 'rejects values', 0, 65_536, 'test', [5, 6]
   end
-
 end

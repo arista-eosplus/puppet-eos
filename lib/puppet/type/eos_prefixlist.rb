@@ -58,22 +58,22 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a? String or
-        raise "value #{value.inspect} is invalid, must be a String."
+      value.is_a?(String) ||
+        raise("value #{value.inspect} is invalid, must be a String.")
 
       seqno = value.partition(':').last if value.include?(':')
 
-      seqno or
-        raise "value #{value.inspect} must be a composite 'name:seqno'"
+      seqno ||
+        raise("value #{value.inspect} must be a composite 'name:seqno'")
 
-      seqno.to_i.to_s == seqno or
-        raise "value #{seqno} must be numeric."
+      (seqno.to_i.to_s == seqno) ||
+        raise("value #{seqno} must be numeric.")
 
-      seqno.to_i.is_a? Integer or
-        raise "value #{seqno} must be an integer."
+      seqno.to_i.is_a?(Integer) ||
+        raise("value #{seqno} must be an integer.")
 
-      seqno.to_i.between?(1, 65_535) or
-        raise "value #{seqno} is invalid, it must be between 1-65535."
+      seqno.to_i.between?(1, 65_535) ||
+        raise("value #{seqno} is invalid, it must be between 1-65535.")
     end
   end
 
@@ -85,8 +85,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a? String or
-        raise "value #{value.inspect} is invalid, must be a String."
+      value.is_a?(String) ||
+        raise("value #{value.inspect} is invalid, must be a String.")
     end
   end
 
@@ -98,8 +98,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(0, 65_535) or
-        raise "value #{value.inspect} is not between 0 and 65535"
+      value.to_i.between?(0, 65_535) ||
+        raise("value #{value.inspect} is not between 0 and 65535")
     end
   end
 
@@ -117,8 +117,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a? String or
-        raise "value #{value.inspect} is invalid, must be a String."
+      value.is_a?(String) ||
+        raise("value #{value.inspect} is invalid, must be a String.")
     end
   end
 
@@ -130,8 +130,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(0, 32) or
-        raise "value #{value.inspect} is not between 0 and 32"
+      value.to_i.between?(0, 32) ||
+        raise("value #{value.inspect} is not between 0 and 32")
     end
   end
 
@@ -144,8 +144,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) or
-        raise "value #{value.inspect} is not between 1 and 32"
+      value.to_i.between?(1, 32) ||
+        raise("value #{value.inspect} is not between 1 and 32")
     end
   end
 
@@ -158,8 +158,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) or
-        raise "value #{value.inspect} is not between 1 and 32"
+      value.to_i.between?(1, 32) ||
+        raise("value #{value.inspect} is not between 1 and 32")
     end
   end
 
@@ -172,8 +172,8 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) or
-        raise "value #{value.inspect} is not between 1 and 32"
+      value.to_i.between?(1, 32) ||
+        raise("value #{value.inspect} is not between 1 and 32")
     end
   end
 end

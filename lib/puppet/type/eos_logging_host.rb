@@ -55,5 +55,4 @@ Puppet::Type.newtype(:eos_logging_host) do
   end
 
   # Properties (state management)
-
 end

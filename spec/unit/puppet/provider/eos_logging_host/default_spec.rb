@@ -50,7 +50,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   def logging
     logging = Fixtures[:logging]
     return logging if logging
-    file = File.join(File.dirname(__FILE__), 'fixtures/logging.json')
     fixture('logging', dir: File.dirname(__FILE__))
   end
 
@@ -92,8 +91,10 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host).new(:name => '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host).new(:name => '5.6.7.8')
+          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '1.2.3.4'),
+          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '5.6.7.8')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -119,7 +120,6 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

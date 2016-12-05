@@ -69,9 +69,9 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
 
   before :each do
     allow(described_class.node).to receive(:api).with('prefixlists')
-                                                .and_return(api)
+      .and_return(api)
     allow(provider.node).to receive(:api).with('prefixlists')
-                                         .and_return(api)
+      .and_return(api)
     load_default_settings
   end
 
@@ -126,29 +126,29 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
         subject(:rules) { described_class.prefetch(resources) }
 
         include_examples 'provider resource properties',
-                          name: 'test:10', seqno: 10, action: 'permit',
-                          prefix: '10.10.0.0', masklen: 16,
-                          eq: :absent, ge: :absent, le: :absent
+                         name: 'test:10', seqno: 10, action: 'permit',
+                         prefix: '10.10.0.0', masklen: 16,
+                         eq: :absent, ge: :absent, le: :absent
 
         include_examples 'provider resource properties',
-                          name: 'test:20', seqno: 20, action: 'deny',
-                          prefix: '10.20.0.0', masklen: 16,
-                          eq: :absent, ge: :absent, le: :absent
+                         name: 'test:20', seqno: 20, action: 'deny',
+                         prefix: '10.20.0.0', masklen: 16,
+                         eq: :absent, ge: :absent, le: :absent
 
         include_examples 'provider resource properties',
-                          name: 'test:30', seqno: 30, action: 'permit',
-                          prefix: '10.30.0.0', masklen: 24,
-                          eq: 26, ge: :absent, le: :absent
+                         name: 'test:30', seqno: 30, action: 'permit',
+                         prefix: '10.30.0.0', masklen: 24,
+                         eq: 26, ge: :absent, le: :absent
 
         include_examples 'provider resource properties',
-                          name: 'test:40', seqno: 40, action: 'permit',
-                          prefix: '10.40.0.0', masklen: 16,
-                          eq: :absent, ge: 18, le: 28
+                         name: 'test:40', seqno: 40, action: 'permit',
+                         prefix: '10.40.0.0', masklen: 16,
+                         eq: :absent, ge: 18, le: 28
 
         include_examples 'provider resource properties',
-                          name: 'test1:10', seqno: 10, action: 'permit',
-                          prefix: '10.10.10.0', masklen: 24,
-                          eq: :absent, ge: :absent, le: :absent
+                         name: 'test1:10', seqno: 10, action: 'permit',
+                         prefix: '10.10.10.0', masklen: 24,
+                         eq: :absent, ge: :absent, le: :absent
       end
     end
 
@@ -205,7 +205,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
           name: 'test99:99',
           action: :permit,
           prefix: '10.99.0.0',
-          masklen: 16,
+          masklen: 16
         }
         Puppet::Type.type(:eos_prefixlist).new(resource_hash)
       end
@@ -217,7 +217,6 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
         new_resource.provider.flush
         expect(new_resource.provider.seqno).to eq(99)
         expect(new_resource.provider.prefix_list).to eq('test99')
-
       end
     end
 

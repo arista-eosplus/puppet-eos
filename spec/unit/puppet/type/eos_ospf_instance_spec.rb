@@ -75,8 +75,8 @@ describe Puppet::Type.type(:eos_ospf_instance) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', min: 0, max: 100000
-    include_examples 'rejects values', -1, 100001, 'test', [5, 6]
+    include_examples 'numeric parameter', min: 0, max: 100_000
+    include_examples 'rejects values', -1, 100_001, 'test', [5, 6]
   end
 
   describe 'maximum_paths' do
@@ -92,31 +92,30 @@ describe Puppet::Type.type(:eos_ospf_instance) do
   describe 'passive_interfaces' do
     let(:attribute) { :passive_interfaces }
     subject { described_class.attrclass(attribute) }
-  
+
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
-                     [['Loopback0'], ['Ethernet1', 'Ethernet2', 'Ethernet3']]
+                     [['Loopback0'], %w(Ethernet1 Ethernet2 Ethernet3)]
   end
 
   describe 'active_interfaces' do
     let(:attribute) { :active_interfaces }
     subject { described_class.attrclass(attribute) }
-  
+
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'accepts values without munging',\
-                     [['Loopback0'], ['Ethernet1', 'Ethernet2', 'Ethernet3']]
+                     [['Loopback0'], %w(Ethernet1 Ethernet2 Ethernet3)]
   end
 
   describe 'passive_interface_default' do
     let(:attribute) { :passive_interface_default }
     subject { described_class.attrclass(attribute) }
-  
+
     include_examples 'property'
     include_examples '#doc Documentation'
     include_examples 'boolean value'
     include_examples 'rejected parameter values'
   end
-
 end

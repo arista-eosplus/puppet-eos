@@ -40,10 +40,10 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
       ensure: :present,
       name: '1',
       router_id: '1.1.1.1',
-      max_lsa: 12000,
+      max_lsa: 12_000,
       maximum_paths: 16,
       passive_interfaces: [],
-      active_interfaces: ['Ethernet49', 'Ethernet50', 'Vlan4093'],
+      active_interfaces: %w(Ethernet49 Ethernet50 Vlan4093),
       passive_interface_default: :true,
       provider: described_class.name
     }
@@ -68,7 +68,6 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
@@ -94,7 +93,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
                          max_lsa: '12000',
                          maximum_paths: '16',
                          passive_interfaces: [],
-                         active_interfaces: ['Ethernet49', 'Ethernet50', 'Vlan4093'],
+                         active_interfaces: %w(Ethernet49 Ethernet50 Vlan4093),
                          passive_interface_default: :true
       end
     end
@@ -130,14 +129,13 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
-    
+
       context 'when the resource does not exist on the system' do
         it { is_expected.to be_falsey }
       end
-    
+
       context 'when the resource exists on the system' do
         let(:provider) do
           allow(api).to receive(:getall).and_return(ospf)
@@ -249,7 +247,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     end
 
     describe '#passive_interfaces=(val)' do
-      [['Ethernet1', 'Ethernet2'], ['Loopback0'], []].each do |value|
+      [%w(Ethernet1 Ethernet2), ['Loopback0'], []].each do |value|
         let(:value) { value }
 
         it 'updates passive_interfaces in the provider' do
@@ -262,7 +260,7 @@ describe Puppet::Type.type(:eos_ospf_instance).provider(:eos) do
     end
 
     describe '#active_interfaces=(val)' do
-      [['Ethernet1', 'Ethernet2'], ['Loopback0'], []].each do |value|
+      [%w(Ethernet1 Ethernet2), ['Loopback0'], []].each do |value|
         let(:value) { value }
 
         it 'updates active_interfaces in the provider' do

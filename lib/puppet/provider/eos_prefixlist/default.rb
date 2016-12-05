@@ -164,12 +164,12 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
   end
 
   def self.parse_prefix(prefix)
-    regex = /
-            ^([^\/]+)\/               # prefix
+    regex = %r{
+            ^([^/]+)/               # prefix
             (\d+)                     # masklen
             (\s([^\s]+)\s([\d]+))?    # first comparison operator
             (\s([^\s]+)\s([\d]+))?$   # second comparison operator
-            /x
+            }x
 
     groups = prefix.match(regex)
     {}.tap do |attrs|

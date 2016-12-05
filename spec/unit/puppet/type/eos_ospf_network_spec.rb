@@ -35,7 +35,9 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:eos_ospf_network) do
   let(:catalog) { Puppet::Resource::Catalog.new }
-  let(:type) { described_class.new(:name => '192.168.10.0/24', :catalog => catalog) }
+  let(:type) do
+    described_class.new(:name => '192.168.10.0/24', :catalog => catalog)
+  end
 
   it_behaves_like 'an ensurable type', name: '192.168.10.0/24'
 
@@ -48,7 +50,8 @@ describe Puppet::Type.type(:eos_ospf_network) do
     include_examples 'accepts values without munging',
                      %w(1.2.3.4/32 8.0.0.0/8)
     include_examples 'rejects values',
-                     %w(1.2 255.255.255.256 host 1.2.3.4/0 8.0.0.0/33 256.0.0.0/8)
+                     %w(1.2 255.255.255.256 host 1.2.3.4/0 8.0.0.0/33
+                        256.0.0.0/8)
     include_examples 'rejected parameter values'
   end
 
@@ -69,8 +72,7 @@ describe Puppet::Type.type(:eos_ospf_network) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'numeric parameter', min: 1, max: 65535
-    include_examples 'rejects values', 0, 65536, 'test', [5, 6]
+    include_examples 'numeric parameter', min: 1, max: 65_535
+    include_examples 'rejects values', 0, 65_536, 'test', [5, 6]
   end
-
 end

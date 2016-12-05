@@ -64,7 +64,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'class methods' do
-
     before { allow(api).to receive(:getall).and_return(ospf) }
 
     describe '.instances' do
@@ -93,8 +92,10 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          'Ethernet1' => Puppet::Type.type(:eos_ospf_interface).new(name: 'Ethernet1'),
-          'Ethernet10' => Puppet::Type.type(:eos_ospf_interface).new(name: 'Ethernet10')
+          'Ethernet1' => Puppet::Type.type(:eos_ospf_interface)
+                                     .new(name: 'Ethernet1'),
+          'Ethernet10' => Puppet::Type.type(:eos_ospf_interface)
+                                      .new(name: 'Ethernet10')
         }
       end
 
@@ -121,7 +122,6 @@ describe Puppet::Type.type(:eos_ospf_interface).provider(:eos) do
   end
 
   context 'resource (instance) methods' do
-
     describe '#exists?' do
       subject { provider.exists? }
 

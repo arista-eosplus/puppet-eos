@@ -54,7 +54,7 @@ Puppet::Type.type(:eos_ospf_redistribution).provide(:eos) do
     return [] if !ospf || ospf.nil?
     arr = []
     ospf.each do |(instance_id, attrs)|
-      next if name.eql? "interfaces"
+      next if name.eql? 'interfaces'
       redistribute = attrs[:redistribute]
       next if redistribute.nil?
       redistribute.each do |(protocol, routemap)|
