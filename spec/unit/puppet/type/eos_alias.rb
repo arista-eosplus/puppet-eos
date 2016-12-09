@@ -55,5 +55,4 @@ describe Puppet::Type.type(:eos_alias) do
     include_examples 'property'
     include_examples '#doc Documentation'
   end
-
 end

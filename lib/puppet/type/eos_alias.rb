@@ -86,5 +86,4 @@ Puppet::Type.newtype(:eos_alias) do
       end
     end
   end
-
 end
