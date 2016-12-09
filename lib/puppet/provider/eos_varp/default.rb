@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2015-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -55,11 +55,11 @@ Puppet::Type.type(:eos_varp).provide(:eos) do
     return [] if !attrs || attrs.empty?
     provider_hash = { name: 'settings',
                       mac_address: attrs[:mac_address] }
-    if attrs[:mac_address] == ''
-      provider_hash[:ensure] = :absent
-    else
-      provider_hash[:ensure] = :present
-    end
+    provider_hash[:ensure] = if attrs[:mac_address] == ''
+                               :absent
+                             else
+                               :present
+                             end
     [new(provider_hash)]
   end
 

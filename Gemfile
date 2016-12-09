@@ -39,6 +39,8 @@ group :development, :test do
   gem 'metadata-json-lint', require: false
   gem 'ci_reporter'
   gem 'ci_reporter_rspec'
+  gem 'test-kitchen'
+  gem 'kitchen-vagrant'
 end
 
 ENV['GEM_PUPPET_VERSION'] ||= ENV['PUPPET_GEM_VERSION']
@@ -55,4 +57,19 @@ if rbeapiversion
 else
   gem 'rbeapi', require: false
 end
+
+# Ensure this remains usable with Ruby 1.9
+if RUBY_VERSION.to_f < 2.0
+  gem 'json', '< 2.0'
+  group :development, :test do
+    gem 'rubocop', '>=0.35.1', '< 0.38'
+    gem 'listen', '< 3.1.0'
+  end
+else
+  gem 'json'
+  group :development, :test do
+    gem 'rubocop', '>=0.35.1'
+  end
+end
+
 # vim:ft=ruby

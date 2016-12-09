@@ -120,6 +120,7 @@ Puppet::Type.type(:eos_user).provide(:eos) do
         @property_hash[:nopassword] = :true
       else
         @property_flush[:secret] = @property_hash[:secret]
+        @property_flush[:encryption] = @property_hash[:encryption]
       end
       remove_puppet_keys(@property_flush)
       api.create(resource[:name], @property_flush)

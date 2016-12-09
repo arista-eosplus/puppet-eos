@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2015-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -95,9 +95,9 @@ describe Puppet::Type.type(:eos_varp_interface).provider(:eos) do
       let :resources do
         {
           'Vlan99' => Puppet::Type.type(:eos_varp_interface)
-            .new(name: 'Vlan99'),
+                                  .new(name: 'Vlan99'),
           'Vlan100' => Puppet::Type.type(:eos_varp_interface)
-            .new(name: 'Vlan100')
+                                   .new(name: 'Vlan100')
         }
       end
 

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,9 @@ Puppet::Type.newtype(:eos_switchport) do
 
         eos_switchport { 'Ethernet15':
           mode                => trunk,
-          trunk_allowed_vlans => [1, 100, 101, 102, 103, 104],
+          trunk_allowed_vlans => ['1', '100-104', '110', '2000-2099'],
           trunk_native_vlan   => 10,
+          trunk_groups        => [tg1, tg2],
         }
   EOS
 
@@ -75,6 +76,31 @@ Puppet::Type.newtype(:eos_switchport) do
   end
 
   # Properties (state management)
+
+  newproperty(:trunk_groups, array_matching: :all) do
+    desc <<-EOS
+      The trunk_groups property assigns an array of trunk group names to
+      the specified switchport/portchannel. A trunk group is the set of
+      interfaces that comprise the trunk and the collection of VLANs whose traffic
+      is carried only on ports that are members of the trunk groups to which
+      the VLAN belongs.
+
+      Example configuration
+
+      trunk_groups => ['tg1', 'tg2']
+
+      The default configure is an empty list
+    EOS
+
+    # Sort the arrays before comparing
+    def insync?(current)
+      current.sort == should.sort
+    end
+
+    validate do |value|
+      fail "value #{value.inspect} is not a String" unless value.is_a? String
+    end
+  end
 
   newproperty(:mode) do
     desc <<-EOS
@@ -104,18 +130,23 @@ Puppet::Type.newtype(:eos_switchport) do
       VLAN IDs (1-4094).
     EOS
 
-    munge do |value|
-      Integer(value)
-    end
-
     # Sort the arrays before comparing
     def insync?(current)
       current.sort == should.sort
     end
 
     validate do |value|
-      unless value.to_i.between?(1, 4_094)
-        fail "value #{value.inspect} is not between 1 and 4094"
+      if value.to_s.include? '-'
+        vid_start, vid_end = value.split('-')
+        Array(vid_start.to_i..vid_end.to_i).each do |vid|
+          unless vid.to_i.between?(1, 4_094)
+            fail "value #{vid.inspect} is not between 1 and 4094"
+          end
+        end
+      else
+        unless value.to_i.between?(1, 4_094)
+          fail "value #{value.inspect} is not between 1 and 4094"
+        end
       end
     end
   end

@@ -58,8 +58,12 @@ describe Puppet::Type.type(:eos_varp) do
                                                     'FF:FF:FF:FF:FF:FF',
                                                     'ff-ff-ff-ff-ff-ff',
                                                     'ffff.ffff.ffff',
-                                                    '00:00:11:11:22:22']
-    include_examples 'rejects values', [1, :true, 'ffff:ffff:ffff',
-                                        'random$tring']
+                                                    'ffff:ffff:ffff',
+                                                    '00:00:11:11:22:22',
+                                                    '0a:0a:1b:1b:2c:2c',
+                                                    'aabbccddeeff',
+                                                    '001122AABBCC']
+    include_examples 'rejects values', [1, :true, 'random$tring',
+                                        'aa:bb::dd:ee:ff']
   end
 end

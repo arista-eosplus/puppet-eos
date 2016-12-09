@@ -53,7 +53,7 @@ RSpec.shared_examples 'boolean' do |opts|
   fail unless attribute
   name = opts[:name] || 'emanon'
 
-  describe "#{attribute}" do
+  describe attribute.to_s do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:attribute) { attribute }
     let(:type) { described_class.new(name: name, catalog: catalog) }
@@ -184,7 +184,7 @@ RSpec.shared_examples 'vlan id value' do
 end
 
 RSpec.shared_examples 'vlan range value' do
-  [1, 10, 100, 4094].each do |val|
+  ['1', '10', '100', '2000-2099', '4094'].each do |val|
     it "munges #{val.inspect} to [#{val}]" do
       type[attribute] = val
       expect(type[attribute]).to eq([val])
@@ -241,7 +241,7 @@ end
 RSpec.shared_examples 'array of strings property' do |opts|
   attribute = opts[:attribute]
   name = opts[:name] || 'emanon'
-  describe "#{attribute}" do
+  describe attribute.to_s do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:type) { described_class.new(name: name, catalog: catalog) }
     let(:attribute) { attribute }
@@ -311,7 +311,11 @@ end
 RSpec.shared_examples 'speed property' do
   include_examples 'property'
 
-  %w(auto 1g 10g 40g 56g 100g 100m 10m).each do |val|
+  [:default, '100full', '10full', 'auto', 'auto 100full', 'auto 10full',
+   'auto 40gfull', 'forced 10000full', 'forced 1000full', 'forced 1000half',
+   'forced 100full', 'forced 100gfull', 'forced 100half', 'forced 10full',
+   'forced 10half', 'forced 40gfull',
+   'sfp-1000baset auto 100full'].each do |val|
     it "accepts #{val.inspect}" do
       type[attribute] = val
     end
@@ -384,10 +388,10 @@ end
 
 RSpec.shared_examples 'string' do |opts|
   attribute = opts[:attribute]
-  fail unless attribute
+  raise unless attribute
   name = opts[:name] || 'emanon'
 
-  describe "#{attribute}" do
+  describe attribute.to_s do
     let(:catalog) { Puppet::Resource::Catalog.new }
     let(:attribute) { attribute }
     let(:type) { described_class.new(name: name, catalog: catalog) }
@@ -469,7 +473,7 @@ RSpec.shared_examples 'accepts values without munging' do |values|
 end
 
 RSpec.shared_examples 'it has a string property' do |attribute|
-  describe "#{attribute}" do
+  describe attribute.to_s do
     let(:attribute) { attribute }
     include_examples '#doc Documentation'
     include_examples 'string value'

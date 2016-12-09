@@ -11,6 +11,15 @@ Metrics/MethodLength:
 Style/AccessorMethodName:
   Enabled: False
 
+Style/HashSyntax:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: False
+
+Style/GuardClause:
+  Enabled: False
+
 Metrics/PerceivedComplexity:
   Max: 20 
 
@@ -19,3 +28,6 @@ Metrics/AbcSize:
 
 Metrics/ClassLength:
   Max: 130
+
+Metrics/BlockLength:
+  Enabled: False

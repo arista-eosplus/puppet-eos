@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -102,9 +102,9 @@ describe Puppet::Type.type(:eos_portchannel).provider(:eos) do
       let :resources do
         {
           'Port-Channel1' => Puppet::Type.type(:eos_portchannel)
-            .new(name: 'Port-Channel1'),
+                                         .new(name: 'Port-Channel1'),
           'Port-Channel5' => Puppet::Type.type(:eos_portchannel)
-            .new(name: 'Port-Channel5')
+                                         .new(name: 'Port-Channel5')
         }
       end
 

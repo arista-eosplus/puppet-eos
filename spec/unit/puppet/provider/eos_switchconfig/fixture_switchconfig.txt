@@ -1,0 +1,144 @@
+! Command: show running-config
+! device: localhost (vEOS, EOS-4.16.7M)
+!
+! boot system flash:/vEOS-lab.swi
+!
+event-handler dhclient
+   trigger on-boot
+   action bash sudo /mnt/flash/initialize_ma1.sh
+!
+transceiver qsfp default-mode 4x10G
+hostname localhost
+ip domain-list foo
+ip domain-list bar
+ip domain-list baz
+ntp server 192.0.2.1
+aaa group server radius blah
+aaa group server radius blahtwo
+snmp-server community foo ro eng
+no snmp-server enable traps bgp
+spanning-tree mode mstp
+spanning-tree mst 1 priority 4096
+spanning-tree mst configuration
+   instance 10 vlan  100
+aaa authorization exec default local
+aaa root secret 5 $1$5MQr5dCU$VRuBKo7bmkoByOH2m6VES1
+username eapiuser privilege 15 role network-admin secret 5 $1$qv1mezdc$X.TYKV6BNzVfNpFG6p6RQ.
+username rbeapi nopassword
+username vagrant privilege 15 role network-admin secret 5 $1$R2mQ.JJx$zk8JfNvE6zQ..ns4RWRD80
+interface Port-Channel1
+   port-channel lacp fallback timeout 100
+interface Port-Channel20
+interface Ethernet1
+interface Ethernet2
+interface Loopback0
+   description foo bar
+interface Management1
+   !! This is
+   !! a multiline
+   !! comment.
+   ip address 10.0.2.15/24
+interface Vlan99
+interface Vlan100
+   !! This is a comment
+   shutdown
+interface Vlan150
+   ip address 40.10.5.8/24
+   no vrrp 30 preempt
+   vrrp 30 ip 40.10.5.31
+   vrrp 30 description The description
+   vrrp 30 shutdown
+   vrrp 30 track Ethernet1 decrement 5
+   vrrp 40 priority 200
+   vrrp 40 ip 40.10.5.32
+   vrrp 40 track Ethernet3 decrement 33
+   vrrp 40 track Ethernet2 decrement 22
+   vrrp 40 track Ethernet2 shutdown
+interface Vlan4094
+interface Vxlan1
+   vxlan multicast-group 239.10.10.10
+   vxlan udp-port 4789
+ip access-list standard test1
+   10 permit host 1.2.3.4 log 
+   20 permit 1.2.3.4 255.255.0.0 log 
+   40 permit 5.6.7.0/24
+   50 permit 9.10.11.0 255.255.255.0 log 
+ip access-list standard test2
+   10 deny 16.0.0.0/8
+ip routing
+ip prefix-list test1
+   seq 10 permit 1.2.3.0/24
+   seq 20 permit 2.3.4.0/24 le 30
+   seq 30 deny 3.4.5.0/24 ge 26 le 30
+   seq 40 permit 5.6.7.0/28
+ip prefix-list test2
+   seq 10 permit 10.11.0.0/16
+   seq 20 permit 10.12.0.0/16 le 24
+ip prefix-list test3
+ip prefix-list test4
+ip prefix-list test5
+ip prefix-list test6
+   seq 10 deny 2.2.2.0/24
+ip prefix-list test7
+   seq 10 permit 7.7.0.0/16
+ip prefix-list test8
+   seq 10 permit 8.8.0.0/16
+route-map test permit 10
+   description temp
+route-map test1 permit 10
+   description descript
+route-map test2 permit 10
+route-map test2 permit 20
+router bgp 1000
+router ospf 1
+   redistribute static
+   max-lsa 12000
+banner login
+this
+  is
+ another
+multiline banner
+EOF
+management api http-commands
+   no protocol https
+   protocol http
+   protocol unix-socket
+   no shutdown
+management cim-provider
+   ssl certificate
+   -----BEGIN CERTIFICATE-----
+   MIICsjCCAhugAwIBAgIJAIvdE0FU+XIsMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNV
+   BAYTAlVTMQswCQYDVQQIDAJDQTEUMBIGA1UEBwwLU2FudGEgQ2xhcmExGDAWBgNV
+   BAoMD0FyaXN0YSBOZXR3b3JrczESMBAGA1UECwwJVGVzdCBjZXJ0MRIwEAYDVQQD
+   DAlUZXN0IGNlcnQwHhcNMTYwOTI3MTgyMzQ3WhcNMjYwOTI1MTgyMzQ3WjByMQsw
+   CQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExFDASBgNVBAcMC1NhbnRhIENsYXJhMRgw
+   FgYDVQQKDA9BcmlzdGEgTmV0d29ya3MxEjAQBgNVBAsMCVRlc3QgY2VydDESMBAG
+   A1UEAwwJVGVzdCBjZXJ0MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+OY7i
+   G7yvfgsYP2rheWKzvyMTRkH0dUV5EgX1xQHkHWIFr8GbYpxSpwx30nNRayXlxoDf
+   n/1VGn9d8w0xYFWU8rKMLdjJJ0/lgMFLpFtRVtwTF2FIlCDtmEyomyvhwin7SVlh
+   7QlymvDZmP1j5gQWpluPovNVvdXuMgLMlqIP9wIDAQABo1AwTjAdBgNVHQ4EFgQU
+   lthX7ffXqBdzq62MkbiMnPzGC5wwHwYDVR0jBBgwFoAUlthX7ffXqBdzq62MkbiM
+   nPzGC5wwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOBgQAFyN85Z9NBxaxF
+   uxac9ft1E+wjMyulhgyeSZslC7b21tyB/UwlOCNBifIIu1e9lzI+LrN4CXn2V3D6
+   y+5l4MsMvPO76KQt5BJWrrk1J8ZbT66SJChqmsVN+amq7TaAkGSEuMGIZWMKtAMO
+   SEhQYHrXoZQ8rB8XQC9Z4MkFmc71UQ==
+   -----END CERTIFICATE-----
+   EOF
+   ssl key
+   -----BEGIN RSA PRIVATE KEY-----
+   MIICXAIBAAKBgQC+OY7iG7yvfgsYP2rheWKzvyMTRkH0dUV5EgX1xQHkHWIFr8Gb
+   YpxSpwx30nNRayXlxoDfn/1VGn9d8w0xYFWU8rKMLdjJJ0/lgMFLpFtRVtwTF2FI
+   lCDtmEyomyvhwin7SVlh7QlymvDZmP1j5gQWpluPovNVvdXuMgLMlqIP9wIDAQAB
+   AoGAcH0TDIzAeLq9jto5txoUDx0xfb1nVUtgCOdqlNqqcp4ZkClOAThAHvRgAB94
+   SCZno8hN/2/Z3FCuDv2iyJciI8ycOrhQfsb8o/wbv0bF/7jauNT56rDnzXdtKGx4
+   SSjT4Y7Ud52XuO5tMX5We2oPWrAzLxHx4qsXVsQiJFmidOECQQDem/QHm02NVVvz
+   xJdzKBLLmMlBndNH9bt20PoYR2irIpxPPTKAROE8B1AdDvDEQlBerJmMUyK4TLzP
+   pYZ6dPxnAkEA2sIRIJj580AltXELtoM3DDAgrXHQr+qoGvPif/R0U5oULVYbV+zJ
+   L+SM45tCrRw09ALbcnhnMwxmn0uFfFQV8QJBANrQqVsgyWZ31V8Ui1pitbbzhEC/
+   hoNhhNgSKwPajYRLDSLGoPF8w3liJtmpaflAxgeJ2ZUZ0zMeGypxJnMQs1kCQGa8
+   /AQ+NC1s9AjJxcF60JCVzdMHgAYOg9LctYR4j2VwGIfOR9s8ZqRqh0yh72eTtr7e
+   1KdnKriL22p2soNYjlECQFTaJg9fJfgvJVob2dPwXpc+JzCYrfv7+ZtipwU+g8sf
+   rqS+qgng/mLD+v3N5M7GgxiEnjVmtwtb+EM3qLFYRJw=
+   -----END RSA PRIVATE KEY-----
+   EOF
+end

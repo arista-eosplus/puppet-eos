@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -97,9 +97,9 @@ describe Puppet::Type.type(:eos_ipinterface).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_ipinterface)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_ipinterface)
-            .new(name: 'Ethernet2')
+                                     .new(name: 'Ethernet2')
         }
       end
 

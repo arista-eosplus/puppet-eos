@@ -30,7 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-require 'puppet_x/eos/utils/helpers'
+# Work around due to autoloader issues: https://projects.puppetlabs.com/issues/4248
+require File.dirname(__FILE__) + '/../../puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_bgp_config) do
   @doc = <<-EOS
@@ -85,11 +86,7 @@ Puppet::Type.newtype(:eos_bgp_config) do
 
   def validate_within_range(value)
     # Return true if maximum_ecmp_paths is within valid range
-    if value.to_i >= self[:maximum_paths].to_i
-      return true
-    else
-      return false
-    end
+    value.to_i >= self[:maximum_paths].to_i ? true : false
   end
 
   newproperty(:enable, boolean: true) do

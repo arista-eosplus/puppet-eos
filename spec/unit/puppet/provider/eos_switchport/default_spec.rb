@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       ensure: :present,
       name: 'Ethernet1',
       mode: :trunk,
-      trunk_allowed_vlans: %w(1 10 100 1000),
+      trunk_allowed_vlans: ['1', '10', '100-500', '1000'],
       trunk_native_vlan: '1',
       access_vlan: '1',
+      trunk_groups: [],
       provider: described_class.name
     }
     Puppet::Type.type(:eos_switchport).new(resource_hash)
@@ -90,9 +91,10 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
                          ensure: :present,
                          name: 'Ethernet1',
                          mode: :trunk,
-                         trunk_allowed_vlans: [1, 10, 100, 1000],
+                         trunk_allowed_vlans: ['1', '10', '100-500', '1000'],
                          trunk_native_vlan: '1',
-                         access_vlan: '1'
+                         access_vlan: '1',
+                         trunk_groups: []
       end
     end
 
@@ -100,9 +102,9 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       let :resources do
         {
           'Ethernet1' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet1'),
+                                     .new(name: 'Ethernet1'),
           'Ethernet2' => Puppet::Type.type(:eos_switchport)
-            .new(name: 'Ethernet2')
+                                     .new(name: 'Ethernet2')
         }
       end
 
@@ -114,6 +116,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
           expect(rsrc.provider.trunk_native_vlan).to eq(:absent)
           expect(rsrc.provider.access_vlan).to eq(:absent)
           expect(rsrc.provider.trunk_allowed_vlans).to eq(:absent)
+          expect(rsrc.provider.trunk_groups).to eq(:absent)
         end
       end
 
@@ -125,7 +128,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet1'].provider.access_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_native_vlan).to eq '1'
         expect(resources['Ethernet1'].provider.trunk_allowed_vlans).to \
-          eq [1, 10, 100, 1000]
+          eq ['1', '10', '100-500', '1000']
+        expect(resources['Ethernet1'].provider.trunk_groups).to eq []
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -137,6 +141,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
         expect(resources['Ethernet2'].provider.trunk_native_vlan).to eq :absent
         expect(resources['Ethernet2'].provider.trunk_allowed_vlans).to \
           eq :absent
+        expect(resources['Ethernet2'].provider.trunk_groups).to eq :absent
       end
     end
   end
@@ -167,7 +172,8 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
           set_mode: true,
           set_access_vlan: true,
           set_trunk_native_vlan: true,
-          set_trunk_allowed_vlans: true
+          set_trunk_allowed_vlans: true,
+          set_trunk_groups: true
         )
       end
 
@@ -195,6 +201,11 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
       it 'sets access_vlan to the resource value' do
         provider.create
         expect(provider.access_vlan).to eq resource[:access_vlan]
+      end
+
+      it 'sets trunk_groups to the resource value array' do
+        provider.create
+        expect(provider.trunk_groups).to eq(provider.resource[:trunk_groups])
       end
     end
 
@@ -228,7 +239,7 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
     end
 
     describe '#trunk_allowed_vlans=(val)' do
-      let(:vlans) { %w(1 10 100 1000) }
+      let(:vlans) { ['1', '10', '100-500', '1000'] }
 
       it 'updates trunk_allowed_vlans in the provider' do
         expect(api).to receive(:set_trunk_allowed_vlans)
@@ -244,6 +255,17 @@ describe Puppet::Type.type(:eos_switchport).provider(:eos) do
           .with(resource[:name], value: 1000)
         provider.access_vlan = 1000
         expect(provider.access_vlan).to eq(1000)
+      end
+    end
+
+    describe '#trunk_groups=(value)' do
+      let(:vid) { resource[:name] }
+      let(:tgs) { %w(tg1 tg2 tg3) }
+
+      it 'updates trunk_groups with array [tg1, tg2, tg3]' do
+        expect(api).to receive(:set_trunk_groups).with(vid, value: tgs)
+        provider.trunk_groups = tgs
+        expect(provider.trunk_groups).to eq(tgs)
       end
     end
   end

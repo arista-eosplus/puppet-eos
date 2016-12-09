@@ -40,6 +40,11 @@ Puppet::Type.newtype(:eos_interface) do
         eos_interface { 'Management1':
           enable      => true,
           description => 'OOB management to mgmt-sw1 Ethernet42',
+          autostate   => true,
+        }
+        eos_interface { 'Ethernet1.10':
+          enable        => true,
+          encapsulation => '10',
         }
   EOS
 
@@ -71,6 +76,31 @@ Puppet::Type.newtype(:eos_interface) do
     end
   end
 
+  newproperty(:encapsulation) do
+    desc <<-EOS
+      The vlan ID to use in encapsulation dot1q vlab configurations for sub interfaces.
+    EOS
+    munge { |value| Integer(value).to_s }
+
+    validate do |value|
+      unless value.to_i.between?(1, 4_094)
+        fail "value #{value.inspect} is not between 1 and 4094"
+      end
+    end
+  end
+
+  newproperty(:load_interval) do
+    desc <<-EOS
+      The load interval of an interface.
+    EOS
+    munge { |value| Integer(value).to_s }
+    validate do |value|
+      unless value.to_i.between?(5, 600)
+        fail "value #{value.inspect} must be between 5 and 600"
+      end
+    end
+  end
+
   newproperty(:enable) do
     desc <<-EOS
       The enable value configures the administrative state of the
@@ -78,6 +108,17 @@ Puppet::Type.newtype(:eos_interface) do
 
       * true - Administratively enables the interface
       * false - Administratively disables the interface
+    EOS
+    newvalues(:true, :false)
+  end
+
+  newproperty(:autostate) do
+    desc <<-EOS
+      This option configures autostate on a VLAN interface.
+      Valid values for enable are:
+
+      * true - Enable autostate (default setting on EOS)
+      * false - Set no autostate
     EOS
     newvalues(:true, :false)
   end

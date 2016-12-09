@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,10 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
     resource_hash = {
       name: 'Loopback0',
       description: 'test interface',
+      encapsulation: 30,
+      load_interval: 10,
       enable: :true,
+      autostate: :true,
       provider: described_class.name
     }
     Puppet::Type.type(:eos_interface).new(resource_hash)
@@ -84,6 +87,8 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         include_examples 'provider resource methods',
                          name: 'Loopback0',
                          description: 'test interface',
+                         encapsulation: 30,
+                         load_interval: 10,
                          enable: :true
       end
     end
@@ -92,9 +97,9 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
       let :resources do
         {
           'Loopback0' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback0'),
+                                     .new(name: 'Loopback0'),
           'Loopback2' => Puppet::Type.type(:eos_interface)
-            .new(name: 'Loopback2')
+                                     .new(name: 'Loopback2')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -129,7 +134,9 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
         expect(api).to receive(:create).with(resource[:name])
         allow(api).to receive_messages(
           set_shutdown: true,
-          set_description: true
+          set_description: true,
+          set_load_interval: true,
+          set_encapsulation: true
         )
       end
 
@@ -157,6 +164,15 @@ describe Puppet::Type.type(:eos_interface).provider(:eos) do
           .with(resource[:name], value: 'foo')
         provider.description = 'foo'
         expect(provider.description).to eq('foo')
+      end
+    end
+
+    describe '#load_interval=(value)' do
+      it 'updates load_interval in the provider' do
+        expect(api).to receive(:set_load_interval)
+          .with(resource[:name], value: '7')
+        provider.load_interval = '7'
+        expect(provider.load_interval).to eq('7')
       end
     end
 

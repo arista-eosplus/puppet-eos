@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Arista Networks, Inc.
+# Copyright (c) 2015-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-require 'puppet_x/eos/utils/helpers'
+# Work around due to autoloader issues: https://projects.puppetlabs.com/issues/4248
+require File.dirname(__FILE__) + '/../../puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_vrrp) do
   @doc = <<-EOS
@@ -230,7 +231,7 @@ Puppet::Type.newtype(:eos_vrrp) do
         super(value)
         validate_features_per_value(value)
         # Make sure the correct keys are in the hash
-        value.keys.each do|key|
+        value.keys.each do |key|
           unless valid_keys.include?(key)
             fail "Invalid key: #{key.inspect} valid keys #{valid_keys}"
           end

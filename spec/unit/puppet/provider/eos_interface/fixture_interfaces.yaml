@@ -1,5 +1,8 @@
 ---
 Loopback0:
   :description: test interface
+  :encapsulation: 30
+  :load_interval: 10
   :shutdown: false
+  :autostate: true
 

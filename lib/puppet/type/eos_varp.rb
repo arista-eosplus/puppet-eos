@@ -30,8 +30,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-require 'puppet_x/eos/utils/helpers'
-require 'netaddr'
+# Work around due to autoloader issues: https://projects.puppetlabs.com/issues/4248
+require File.dirname(__FILE__) + '/../../puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_varp) do
   @doc = <<-EOS
@@ -48,12 +48,10 @@ Puppet::Type.newtype(:eos_varp) do
   ensurable
 
   def munge_mac_address(value)
-    begin
-      addr = NetAddr::EUI.create(value)
-    rescue
-      raise "value #{value.inspect} is invalid, must be a mac address."
-    end
-    addr.address(Delimiter: ':')
+    (value.scan(/\h/).length == 12) ||
+      raise("value #{value.inspect} is invalid, must be a mac address.")
+    value.gsub!(/\H/, '')
+    value.scan(/.{2}/).join(':')
   end
 
   # Parameters

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Arista Networks, Inc.
+# Copyright (c) 2014-2016, Arista Networks, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -95,16 +95,18 @@ describe Puppet::Type.type(:eos_staticroute).provider(:eos) do
     end
 
     describe '.prefetch' do
+      # rubocop:disable LineLength
       let :resources do
         {
           '1.2.3.4/32/Null0' => Puppet::Type.type(:eos_staticroute)
-            .new(name: '1.2.3.4/32/Null0'),
+                                            .new(name: '1.2.3.4/32/Null0'),
           '192.0.3.0/24/192.0.3.1' => Puppet::Type.type(:eos_staticroute)
-            .new(name: '192.0.3.0/24/192.0.3.1'),
+                                                  .new(name: '192.0.3.0/24/192.0.3.1'),
           '192.0.4.0/24/Ethernet1' => Puppet::Type.type(:eos_staticroute)
-            .new(name: '192.0.4.0/24/Ethernet1')
+                                                  .new(name: '192.0.4.0/24/Ethernet1')
         }
       end
+      # rubocop:enable LineLength
       subject { described_class.prefetch(resources) }
 
       it 'resource providers are absent prior to calling .prefetch' do

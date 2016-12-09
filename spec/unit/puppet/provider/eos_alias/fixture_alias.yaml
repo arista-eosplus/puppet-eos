@@ -1,0 +1,7 @@
+---
+'Alias':
+  :name: 'Alias'
+  :command: 'a command'
+'Multi':
+  :name: 'desc'
+  :command: '1 conf\n2 int %1\n3 description %2\n4 end\nend'
