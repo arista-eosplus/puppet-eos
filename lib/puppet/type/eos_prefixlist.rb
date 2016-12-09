@@ -58,22 +58,26 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a?(String) ||
-        raise("value #{value.inspect} is invalid, must be a String.")
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
 
       seqno = value.partition(':').last if value.include?(':')
 
-      seqno ||
-        raise("value #{value.inspect} must be a composite 'name:seqno'")
+      if seqno
+        fail "value #{seqno} must be numeric." unless seqno.to_i.to_s == seqno
 
-      (seqno.to_i.to_s == seqno) ||
-        raise("value #{seqno} must be numeric.")
+        unless seqno.to_i.is_a? Integer
+          fail "value #{seqno} must be an integer."
+        end
 
-      seqno.to_i.is_a?(Integer) ||
-        raise("value #{seqno} must be an integer.")
-
-      seqno.to_i.between?(1, 65_535) ||
-        raise("value #{seqno} is invalid, it must be between 1-65535.")
+        unless seqno.to_i.between?(1, 65_535)
+          fail "value #{seqno} is invalid,
+               must be an integer between 1-65535."
+        end
+      else
+        fail "value #{value.inspect} must be a composite 'name:seqno'"
+      end
     end
   end
 
@@ -85,8 +89,9 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a?(String) ||
-        raise("value #{value.inspect} is invalid, must be a String.")
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
     end
   end
 
@@ -98,8 +103,9 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(0, 65_535) ||
-        raise("value #{value.inspect} is not between 0 and 65535")
+      unless value.to_i.between?(0, 65_535)
+        fail "value #{value.inspect} is not between 0 and 65535"
+      end
     end
   end
 
@@ -117,8 +123,9 @@ Puppet::Type.newtype(:eos_prefixlist) do
     EOS
 
     validate do |value|
-      value.is_a?(String) ||
-        raise("value #{value.inspect} is invalid, must be a String.")
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
     end
   end
 
@@ -130,50 +137,51 @@ Puppet::Type.newtype(:eos_prefixlist) do
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(0, 32) ||
-        raise("value #{value.inspect} is not between 0 and 32")
+      unless value.to_i.between?(0, 32)
+        fail "value #{value.inspect} is not between 0 and 32"
+      end
     end
   end
 
   newproperty(:eq) do
     @doc = <<-EOS
-      Mask length for the comparison operator 'equal'.
-      Allowed values 1-32.
+      Mask length for the conditional operator 'equal'. Allowed values 1-32.
     EOS
 
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) ||
-        raise("value #{value.inspect} is not between 1 and 32")
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
+      end
     end
   end
 
   newproperty(:ge) do
     @doc = <<-EOS
-      Mask length for the comparison operator 'greater than'.
-      Allowed values 1-32.
+      Mask length for the conditional operator 'greater than'. Allowed values 1-32.
     EOS
 
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) ||
-        raise("value #{value.inspect} is not between 1 and 32")
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
+      end
     end
   end
 
   newproperty(:le) do
     @doc = <<-EOS
-      Mask length for the comparison operator 'less than'.
-      Allowed values 1-32.
+      Mask length for the conditional operator 'less than'. Allowed values 1-32.
     EOS
 
     munge { |value| Integer(value) }
 
     validate do |value|
-      value.to_i.between?(1, 32) ||
-        raise("value #{value.inspect} is not between 1 and 32")
+      unless value.to_i.between?(1, 32)
+        fail "value #{value.inspect} is not between 1 and 32"
+      end
     end
   end
 end

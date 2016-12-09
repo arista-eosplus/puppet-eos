@@ -42,3 +42,6 @@ spec/fixtures/modules/*
 
 # TestKitchen
 .kitchen
+
+# Release Note generator cache
+github*.json
