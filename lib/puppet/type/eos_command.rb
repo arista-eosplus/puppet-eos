@@ -41,6 +41,7 @@ Puppet::Type.newtype(:eos_command) do
         eos_command { 'Save running-config':
           mode     => 'enable',
           commands => 'copy running-config startup-config',
+          refreshonly => true,
         }
   EOS
 
@@ -78,5 +79,15 @@ Puppet::Type.newtype(:eos_command) do
       else fail 'value #{value.inspect} is invalid, must be a string.'
       end
     end
+  end
+
+  newproperty(:refreshonly, boolean: true) do
+    desc <<-EOS
+      When set to true, the exec will only run when it receives an event.
+      Only allows Puppet to run the command when some other resource is
+      changed.
+    EOS
+    defaultto(:false)
+    newvalues(:true, :false)
   end
 end

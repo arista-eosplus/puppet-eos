@@ -64,4 +64,16 @@ describe Puppet::Type.type(:eos_command) do
     include_examples 'array of strings value'
     include_examples 'rejects values', [0, [1], { two: :three }]
   end
+
+  describe 'refreshonly' do
+    let(:attribute) { :refreshonly }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'boolean value'
+    include_examples 'rejected parameter values'
+    include_examples 'rejects values', ['blah', 123, [123]]
+    include_examples 'accepts values', [:true, :false]
+  end
 end
