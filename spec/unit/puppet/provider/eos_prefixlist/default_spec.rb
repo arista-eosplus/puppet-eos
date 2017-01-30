@@ -48,7 +48,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
     resource_hash = {
       name: @name,
       prefix_list: @prefix_list,
-      # seqno: @seqno,
+      seqno: @seqno,
       action: @action,
       prefix: @prefix,
       masklen: @masklen,
@@ -147,7 +147,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
 
         include_examples 'provider resource properties',
                          name: 'test1:10', seqno: 10, action: 'permit',
-                         prefix: '1.10.10.0', masklen: 24,
+                         prefix: '10.10.10.0', masklen: 24,
                          eq: :absent, ge: :absent, le: :absent
       end
     end
@@ -204,7 +204,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
           name: 'test99:99',
           ensure: :present,
           action: :permit,
-          prefix: '99.99.0.0',
+          prefix: '10.99.0.0',
           masklen: 16
         }
         Puppet::Type.type(:eos_prefixlist).new(resource_hash)
@@ -214,7 +214,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
         allow(new_resource.provider.node).to receive(:api).with('prefixlists')
           .and_return(api)
         expect(api).to receive(:add_rule).with('test99', :permit,
-                                               '99.99.0.0/16', 99)
+                                               '10.99.0.0/16', 99)
         new_resource.provider.create
         new_resource.provider.flush
         expect(new_resource.provider.seqno).to eq(99)
