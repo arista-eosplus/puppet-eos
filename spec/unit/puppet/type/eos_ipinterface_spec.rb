@@ -67,6 +67,15 @@ describe Puppet::Type.type(:eos_ipinterface) do
     include_examples 'accepts values without munging', [['1.1.1.1', '2.2.2.2']]
   end
 
+  describe 'secondary_addresses' do
+    let(:attribute) { :secondary_addresses }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values without munging', [['1.1.1.1/31', '2.2.2.2/31']]
+  end
+
   describe 'mtu' do
     let(:attribute) { :mtu }
     subject { described_class.attrclass(attribute) }

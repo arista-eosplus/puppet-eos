@@ -69,6 +69,11 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     @property_hash[:helper_addresses] = val
   end
 
+  def secondary_addresses=(val)
+    node.api('ipinterfaces').set_secondary_addresses(resource['name'], value: val)
+    @property_hash[:secondary_addresses] = val
+  end
+
   def mtu=(val)
     node.api('ipinterfaces').set_mtu(resource['name'], value: val)
     @property_hash[:mtu] = val
@@ -85,6 +90,8 @@ Puppet::Type.type(:eos_ipinterface).provide(:eos) do
     self.mtu = resource[:mtu] if resource[:mtu]
     self.helper_addresses = resource[:helper_addresses] \
       if resource[:helper_addresses]
+    self.secondary_addresses = resource[:secondary_addresses] \
+      if resource[:secondary_addresses]
   end
 
   def destroy
