@@ -201,8 +201,8 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
 
       let(:new_resource) do
         resource_hash = {
-          name: 'test99:99',
           ensure: :present,
+          name: 'test99:99',
           action: :permit,
           prefix: '10.99.0.0',
           masklen: 16
