@@ -211,9 +211,10 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
       end
 
       it 'extracts seqno and prefix_list from name' do
-        require 'pry'
-        # expect(api).to receive(:add_rule).with('test99', :permit,
-        #                                       '10.99.0.0/16', 99)
+        allow(new_resource.provider.node).to receive(:api).with('prefixlists')
+          .and_return(api)
+        expect(api).to receive(:add_rule).with('test99', :permit,
+                                               '10.99.0.0/16', 99)
         new_resource.provider.create
         new_resource.provider.flush
         expect(new_resource.provider.seqno).to eq(99)
@@ -224,7 +225,7 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
     describe '#destroy' do
       it 'deletes a rule when ensure :absent' do
         resource[:ensure] = :absent
-        expect(api).to receive(:delete)
+        expect(api).to receive(:delete).with('test', 10)
         provider.destroy
         provider.flush
         expect(provider.ensure).to eq(:absent)
@@ -233,7 +234,8 @@ describe Puppet::Type.type(:eos_prefixlist).provider(:eos) do
 
     describe '#*=(val)' do
       it 'sets resource attributes' do
-        expect(api).to receive(:add_rule)
+        expect(api).to receive(:add_rule).with('testme', :permit,
+                                               '10.10.0.0/16', 99)
         provider.create
         provider.prefix_list = 'testme'
         provider.seqno = 99
