@@ -40,6 +40,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
       name: 'settings',
       hostname: 'localhost',
       ip_routing: :true,
+      timezone: 'Europe/Berlin',
       provider: described_class.name
     }
     Puppet::Type.type(:eos_system).new(resource_hash)
@@ -82,7 +83,8 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         include_examples 'provider resource methods',
                          name: 'settings',
                          hostname: 'localhost',
-                         ip_routing: :true
+                         ip_routing: :true,
+                         timezone: 'Europe/Berlin'
       end
     end
 
@@ -110,6 +112,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(resources['settings'].provider.exists?).to be_truthy
         expect(resources['settings'].provider.hostname).to eq('localhost')
         expect(resources['settings'].provider.ip_routing).to eq(:true)
+        expect(resources['settings'].provider.timezone).to eq('Europe/Berlin')
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
@@ -118,6 +121,7 @@ describe Puppet::Type.type(:eos_system).provider(:eos) do
         expect(resources['alternative'].provider.exists?).to be_falsey
         expect(resources['alternative'].provider.hostname).to eq(:absent)
         expect(resources['alternative'].provider.ip_routing).to eq(:absent)
+        expect(resources['alternative'].provider.timezone).to eq(:absent)
       end
     end
   end

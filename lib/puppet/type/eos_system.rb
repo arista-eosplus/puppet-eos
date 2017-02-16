@@ -39,6 +39,7 @@ Puppet::Type.newtype(:eos_system) do
         eos_system { 'settings':
           hostname   => 'dc02-pod2-rack3-leaf1',
           ip_routing => true,
+          timezone   => 'Europe/Berlin',
         }
   EOS
 
@@ -93,6 +94,21 @@ Puppet::Type.newtype(:eos_system) do
 
     munge do |value|
       @resource.munge_boolean(value)
+    end
+  end
+
+  newproperty(:timezone) do
+    desc <<-EOS
+      Configures the clock timezone of the device.
+
+      It expects a string with a valid timezone (in tz format)
+    EOS
+
+    validate do |value|
+      case value
+      when String then super(resource)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
     end
   end
 end

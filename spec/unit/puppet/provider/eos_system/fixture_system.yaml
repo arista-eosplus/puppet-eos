@@ -1,3 +1,4 @@
 ---
 :hostname: localhost
 :iprouting: true
+:timezone: Europe/Berlin
