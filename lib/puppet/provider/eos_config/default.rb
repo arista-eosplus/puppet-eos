@@ -63,14 +63,6 @@ Puppet::Type.type(:eos_config).provide(:eos) do
     @property_flush[:command] = value
   end
 
-  def section=(value)
-    @property_flush[:section] = value
-  end
-
-  def regexp=(value)
-    @property_flush[:regexp] = value
-  end
-
   ##
   # get_config returns the part of the running-config to evaluate.
   # If the section property is set then return the part of the
@@ -81,36 +73,25 @@ Puppet::Type.type(:eos_config).provide(:eos) do
   #
   # @return [String] Part or all of the running config
   def get_config
-    if @property_hash[:section]
-      return node.get_config(param: @property_hash[:section], as_string: true)
+    if @resource[:section]
+      return node.get_config(params: "section #{@resource[:section]}", as_string: true)
     end
     node.running_config
   end
   private :get_config
 
-  ##
-  # config_exists? checks the regexp against the running config if the
-  # regexp is known. If not, and the command is known, then check to see
-  # if the command is set in the running config.
-  #
-  # @api private
-  #
-  # @return [Boolean] Configuration is set
-  def config_exists?
+  def config_exists?(value)
     exists = false
     cfg = get_config
-    return exists unless cfg
-    if !@property_hash[:regexp].nil?
-      regexp = Regexp.new(@property_hash[:regexp])
-      exists = true unless cfg.scan(regexp).empty?
-    else
-      unless @property_hash[:command].nil?
-        exists = true unless cfg.scan(@property_hash[:command]).empty?
-      end
+    if !@resource[:regexp].nil?
+      regexp = Regexp.new(@resource[:regexp])
+      return true if cfg.scan(regexp).empty?
+    end
+    unless value.nil?
+      exists = true unless cfg.scan(value).empty?
     end
     exists
   end
-  private :config_exists?
 
   ##
   # run_cmd runs resource[:command] on the switch.
@@ -119,18 +100,18 @@ Puppet::Type.type(:eos_config).provide(:eos) do
   #
   # @return [String] Part or all of the running config
   def run_cmd
-    commands = []
-    commands << @property_hash[:section] if @property_hash[:section]
-    commands << @property_hash[:command]
-    node.config(commands)
+    cmds = []
+    cmds << @resource[:section] if @resource[:section]
+    cmds << @property_flush[:command]
+    node.config(cmds)
   end
   private :run_cmd
 
   def flush
     @property_hash.merge!(@property_flush)
 
-    # Run the command if the resource does not exist
-    run_cmd unless config_exists?
+    # Run the command
+    run_cmd
 
     @property_flush = {}
   end
