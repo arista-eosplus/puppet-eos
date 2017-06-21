@@ -56,7 +56,7 @@ Puppet::Type.newtype(:eos_config) do
 
   # Parameters
 
-  newparam(:name) do
+  newparam(:name, namevar: true) do
     desc <<-EOS
       The name parameter is the name associated with the resource.
     EOS
@@ -64,6 +64,9 @@ Puppet::Type.newtype(:eos_config) do
     validate do |value|
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
+      end
+      if @resource.original_parameters[:command].nil?
+        fail "Required property 'command' is missing."
       end
     end
   end
@@ -109,10 +112,8 @@ Puppet::Type.newtype(:eos_config) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
       end
     end
 
