@@ -57,6 +57,12 @@ Puppet::Type.newtype(:eos_logging_host) do
       The parameter specifies the name for the logging host. It should be in
       either IP format or FQDN format.
     EOS
+
+    validate do |value|
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 
   # Properties (state management)
@@ -66,13 +72,14 @@ Puppet::Type.newtype(:eos_logging_host) do
       Port to which logs will be sent on the host. Default: 514
     EOS
 
+    munge { |value| Integer(value) }
+
     validate do |value|
       unless value.to_i.between?(1, 65_535)
         fail "value #{value.inspect} must be between 1 and 65535"
       end
     end
   end
-
 
   newproperty(:protocol) do
     desc <<-EOS
@@ -85,5 +92,11 @@ Puppet::Type.newtype(:eos_logging_host) do
     desc <<-EOS
       If present, configures the logging host in a non-default VRF.
     EOS
+
+    validate do |value|
+      if value.is_a? String then super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
   end
 end

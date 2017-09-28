@@ -37,7 +37,7 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
   # Puppet RAL memoized methods
   let(:resource) do
     resource_hash = {
-      :name => '1.2.3.4',
+      :name => '192.0.2.4',
       :provider => described_class.name
     }
     Puppet::Type.type(:eos_logging_host).new(resource_hash)
@@ -61,29 +61,30 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
   context 'class methods' do
     before { allow(api).to receive(:get).and_return(logging) }
+
     describe '.instances' do
       subject { described_class.instances }
 
       it { is_expected.to be_an Array }
 
-      it 'has one instance' do
-        expect(subject.size).to eq(1)
+      it 'has five instances' do
+        expect(subject.size).to eq(5)
       end
 
-      it 'has an instance for 1.2.3.4' do
-        instance = subject.find { |p| p.name == '1.2.3.4' }
+      it 'has an instance for 192.0.2.4' do
+        instance = subject.find { |p| p.name == '192.0.2.4' }
         expect(instance).to be_a described_class
       end
 
-      context 'eos_logging_host { 1.2.3.4: }' do
+      context 'eos_logging_host { 192.0.2.4: }' do
         subject do
           described_class.instances.find do |p|
-            p.name == '1.2.3.4'
+            p.name == '192.0.2.4'
           end
         end
 
         include_examples 'provider resource methods',
-                         :name => '1.2.3.4',
+                         :name => '192.0.2.4',
                          :ensure => :present
       end
     end
@@ -91,10 +92,10 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '.prefetch' do
       let :resources do
         {
-          '1.2.3.4' => Puppet::Type.type(:eos_logging_host)
-                                   .new(:name => '1.2.3.4'),
-          '5.6.7.8' => Puppet::Type.type(:eos_logging_host)
-                                   .new(:name => '5.6.7.8')
+          '192.0.2.4' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '192.0.2.4'),
+          '10.0.0.99' => Puppet::Type.type(:eos_logging_host)
+                                   .new(:name => '10.0.0.99')
         }
       end
       subject { described_class.prefetch(resources) }
@@ -107,14 +108,14 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
 
       it 'sets the provider instance of the managed resource' do
         subject
-        expect(resources['1.2.3.4'].provider.name).to eq('1.2.3.4')
-        expect(resources['1.2.3.4'].provider.exists?).to be_truthy
+        expect(resources['192.0.2.4'].provider.name).to eq('192.0.2.4')
+        expect(resources['192.0.2.4'].provider.exists?).to be_truthy
       end
 
       it 'does not set the provider instance of the unmanaged resource' do
         subject
-        expect(resources['5.6.7.8'].provider.name).to eq('5.6.7.8')
-        expect(resources['5.6.7.8'].provider.exists?).to be_falsey
+        expect(resources['10.0.0.99'].provider.name).to eq('10.0.0.99')
+        expect(resources['10.0.0.99'].provider.exists?).to be_falsey
       end
     end
   end
@@ -139,20 +140,61 @@ describe Puppet::Type.type(:eos_logging_host).provider(:eos) do
     describe '#create' do
       let(:name) { resource[:name] }
 
-      before do
-        expect(api).to receive(:add_host).with(name)
-      end
+      #before do
+      #  expect(api).to receive(:add_host).with(name)
+      #end
 
       it 'sets ensure to :present' do
+        expect(api).to receive(:add_host).with(resource[:name],
+                                               :port => 514,
+                                               :protocol => :udp)
         provider.create
+        provider.flush
         expect(provider.ensure).to eq(:present)
+      end
+    end
+
+    describe '#port' do
+      it 'sets the port' do
+        expect(api).to receive(:add_host).with(resource[:name],
+                                               :port => 555,
+                                               :protocol => :udp)
+        provider.port = 555
+        provider.flush
+        expect(provider.port).to eq(555)
+      end
+    end
+
+    describe '#protocol' do
+      it 'sets the protocol' do
+        expect(api).to receive(:add_host).with(resource[:name],
+                                               :port => 514,
+                                               :protocol => 'tcp')
+        provider.protocol = 'tcp'
+        provider.flush
+        expect(provider.protocol).to eq('tcp')
+      end
+    end
+
+    describe '#vrf' do
+      it 'sets the VRF' do
+        expect(api).to receive(:add_host).with(resource[:name],
+                                               :port => 514,
+                                               :protocol => :udp,
+                                               :vrf => 'blue')
+        provider.vrf = 'blue'
+        provider.flush
+        expect(provider.vrf).to eq('blue')
       end
     end
 
     describe '#destroy' do
       it 'sets ensure to :absent' do
-        expect(api).to receive(:remove_host).with(resource[:name])
+        expect(api).to receive(:remove_host).with(resource[:name],
+                                                 :port => 514,
+                                                 :protocol => :udp)
         provider.destroy
+        provider.flush
         expect(provider.ensure).to eq(:absent)
       end
     end

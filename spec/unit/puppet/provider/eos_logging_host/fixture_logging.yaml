@@ -1,3 +1,23 @@
 ---
-'hosts':
-  '1.2.3.4':
+:enable: true
+:hosts:
+  192.0.2.2:
+    :port: '514'
+    :protocol: tcp
+    :vrf: 
+  192.0.2.3:
+    :port: '123'
+    :protocol: udp
+    :vrf: 
+  192.0.2.4:
+    :port: '514'
+    :protocol: udp
+    :vrf: 
+  192.0.2.5:
+    :port: '8514'
+    :protocol: tcp
+    :vrf: 
+  192.0.2.6:
+    :port: '514'
+    :protocol: udp
+    :vrf: mgmt
