@@ -15,6 +15,10 @@
         !ruby/sym srcaddr: '1.2.3.0',
         !ruby/sym srcprefixlen: 8
       }
+  15: { !ruby/sym acltype: 'standard',
+        !ruby/sym action: 'remark',
+        !ruby/sym remark: 'this is a comment'
+      }
   20: { !ruby/sym acltype: 'standard',
         !ruby/sym srcaddr: 'any'
       }

@@ -60,9 +60,13 @@ Puppet::Type.type(:eos_acl_entry).provide(:eos) do
         provider_hash[:acltype] = acltype ? acltype.to_sym : :standard
         action = attrs[:action]
         provider_hash[:action] = action ? action.to_sym : :deny
-        provider_hash[:srcaddr] = attrs[:srcaddr]
-        provider_hash[:srcprefixlen] = attrs[:srcprefixlen]
-        provider_hash[:log] = attrs[:log] ? :true : :false
+        if action == 'remark'
+          provider_hash[:remark] = attrs[:remark]
+        else
+          provider_hash[:srcaddr] = attrs[:srcaddr]
+          provider_hash[:srcprefixlen] = attrs[:srcprefixlen]
+          provider_hash[:log] = attrs[:log] ? :true : :false
+        end
         arry << new(provider_hash)
       end
     end
@@ -79,6 +83,10 @@ Puppet::Type.type(:eos_acl_entry).provide(:eos) do
 
   def action=(value)
     @property_flush[:action] = value
+  end
+
+  def remark=(value)
+    @property_flush[:remark] = value
   end
 
   def srcaddr=(value)
