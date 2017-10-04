@@ -111,9 +111,7 @@ Puppet::Type.newtype(:eos_acl_entry) do
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
       end
-      require 'pry'
-      binding.pry
-      if @shouldorig and @shouldorig.size > 1
+      if @shouldorig && @shouldorig.size > 1
         unless @shouldorig.is_a? String
           fail "value #{@shouldorig.inspect} is invalid, must be a String."
         end
