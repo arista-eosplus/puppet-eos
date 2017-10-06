@@ -124,5 +124,7 @@ of your application to communicate and reach the customer.
 How do I take advantage of these capabilities?
 ----------------------------------------------
 
-Contact Arista EOS+ Consulting Services `eosplus-dev@arista.com <eosplus-dev@arista.com>`_ for more information, a demo, or to let us jumpstart your Puppet environent.
+Contact Arista EOS+ Consulting Services `eosplus-dev@arista.com
+<eosplus-dev@arista.com>`_ for more information, a demo, or to let us jumpstart
+your Puppet environent.
 
