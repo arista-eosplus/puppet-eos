@@ -51,7 +51,8 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def self.instances
     result = node.api('logging').get
-    result['hosts'].each.map do |(name, _)|
+    return [] unless result
+    result[:hosts].each.map do |(name, _)|
       provider_hash = { :name => name, :ensure => :present }
       new(provider_hash)
     end
