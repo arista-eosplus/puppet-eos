@@ -76,7 +76,7 @@ else
   # rubocop:disable Bundler/DuplicatedGem
   gem 'json'
   group :development, :test do
-    gem 'rubocop', '>=0.35.1'
+    gem 'rubocop', '>= 0.49.0'
   end
   # rubocop:enable Bundler/DuplicatedGem
 end
