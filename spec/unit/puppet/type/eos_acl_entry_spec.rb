@@ -45,7 +45,7 @@ describe Puppet::Type.type(:eos_acl_entry) do
 
     include_examples 'parameter'
     include_examples '#doc Documentation'
-    include_examples 'accepts values without munging', %w(eng:20)
+    include_examples 'accepts values without munging', %w[eng:20]
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
@@ -55,7 +55,7 @@ describe Puppet::Type.type(:eos_acl_entry) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:standard, :extended]
+    include_examples 'accepts values', %i[standard extended]
     include_examples 'rejects values', [[1], { two: :three }]
   end
 
@@ -65,8 +65,41 @@ describe Puppet::Type.type(:eos_acl_entry) do
 
     include_examples 'property'
     include_examples '#doc Documentation'
-    include_examples 'accepts values', [:permit, :deny]
+    include_examples 'accepts values', %i[permit deny remark]
     include_examples 'rejects values', [[1], { two: :three }]
+  end
+
+  describe 'remark' do
+    let(:attribute) { :remark }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    # type[:action] = :permit
+    # include_examples 'accepts values without munging',
+    # ['this is a comment...', 'Testing']
+    # include_examples 'rejects values', [[1], { two: :three }]
+    it 'accepts a string' do
+      type[:action] = :remark
+      type[:remark] = 'somevalue'
+    end
+
+    it 'rejects non-strings' do
+      type[:action] = :remark
+      expect { type[:remark] = 1 }
+        .to raise_error Puppet::ResourceError,
+                        /is invalid, must be a String./
+      expect { type[:remark] = %w[one two] }
+        .to raise_error Puppet::ResourceError,
+                        /is invalid, must be a String./
+    end
+
+    it 'fails when the action is not "remark"' do
+      type[:action] = :permit
+      expect { type[:remark] = 'somevalue' }
+        .to raise_error Puppet::ResourceError,
+                        /Remark property is only valid when 'action => remark'/
+    end
   end
 
   describe 'srcaddr' do

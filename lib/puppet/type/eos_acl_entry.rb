@@ -47,6 +47,13 @@ Puppet::Type.newtype(:eos_acl_entry) do
           srcprefixlen => 8,
           log          => true,
         }
+
+        eos_acl_entry{ 'test1:12':
+          ensure       => present,
+          acltype      => standard,
+          action       => remark,
+          remark       => 'This leaves a mark',
+        }
   EOS
 
   ensurable
@@ -85,12 +92,34 @@ Puppet::Type.newtype(:eos_acl_entry) do
 
   newproperty(:action) do
     desc <<-EOS
-      The action for the rule can be either permit or deny. Deny is the
+      The action for the rule can be permit, deny, or remark. Deny is the
       default value. Packets filtered by a permit rule are accepted by
       interfaces to which the ACL is applied. Packets filtered by a
       deny rule are dropped by interfaces to which the ACL is applied.
+      Remark leaves a comment within the access-list.
     EOS
-    newvalues(:permit, :deny)
+    newvalues(:permit, :deny, :remark)
+  end
+
+  newproperty(:remark) do
+    desc <<-EOS
+      Remark to insert in the access-list.  Must be used with the
+      'remark' action.
+    EOS
+
+    validate do |value|
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
+      end
+      if @shouldorig && @shouldorig.size > 1
+        unless @shouldorig.is_a? String
+          fail "value #{@shouldorig.inspect} is invalid, must be a String."
+        end
+      end
+      unless @resource[:action] == :remark
+        fail "Remark property is only valid when 'action => remark'"
+      end
+    end
   end
 
   newproperty(:srcaddr) do

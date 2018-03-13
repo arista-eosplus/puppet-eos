@@ -49,7 +49,20 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
     Puppet::Type.type(:eos_acl_entry).new(resource_hash)
   end
 
+  let(:remark_resource) do
+    resource_hash = {
+      name: 'test2:15',
+      ensure: :present,
+      acltype: :standard,
+      action: :remark,
+      remark: 'Test remark.',
+      provider: described_class.name
+    }
+    Puppet::Type.type(:eos_acl_entry).new(resource_hash)
+  end
+
   let(:provider) { resource.provider }
+  let(:remark_provider) { remark_resource.provider }
 
   let(:api) { double('acl_entry') }
 
@@ -62,6 +75,7 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
   before :each do
     allow(described_class.node).to receive(:api).with('acl').and_return(api)
     allow(provider.node).to receive(:api).with('acl').and_return(api)
+    allow(remark_provider.node).to receive(:api).with('acl').and_return(api)
   end
 
   context 'class methods' do
@@ -73,11 +87,11 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
       it { is_expected.to be_an Array }
 
       it 'has four entries' do
-        expect(subject.size).to eq 4
+        expect(subject.size).to eq 5
       end
 
       it 'has an instance for test1 and test2 entries' do
-        %w(test1:10 test1:20 test2:10 test2:20).each do |name|
+        %w[test1:10 test1:20 test2:10 test2:15 test2:20].each do |name|
           instance = subject.find { |p| p.name == name }
           expect(instance).to be_a described_class
         end
@@ -92,6 +106,15 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
                          srcaddr: 'host 1.2.3.4',
                          srcprefixlen: :absent,
                          log: :true
+      end
+
+      context 'eos_acl_entry { test2:15 } remark' do
+        subject { described_class.instances.find { |p| p.name == 'test2:15' } }
+
+        include_examples 'provider resource methods',
+                         acltype: :standard,
+                         action: :remark,
+                         remark: 'this is a comment'
       end
     end
 
@@ -210,6 +233,43 @@ describe Puppet::Type.type(:eos_acl_entry).provider(:eos) do
         provider.create
         provider.flush
         expect(provider.log).to eq(:true)
+      end
+    end
+
+    describe '#create a remark' do
+      before do
+        update_values = remark_resource.to_hash
+        update_values[:seqno] = 15
+        expect(api).to receive(:update_entry).with('test2', update_values)
+        allow(api).to receive_messages(
+          acltype: true,
+          action: true,
+          srcaddr: false,
+          srcprefixlen: false,
+          log: true,
+          remark: true
+        )
+      end
+
+      it 'sets remark on the resource' do
+        remark_provider.create
+        remark_provider.flush
+        expect(remark_provider.action).to eq(:remark)
+        expect(remark_provider.remark).to eq('Test remark.')
+      end
+
+      it '#remark updates the remark' do
+        remark_provider.create
+        remark_provider.flush
+        update_values = remark_resource.to_hash
+        update_values[:seqno] = 15
+        update_values[:remark] = 'Change me!'
+        expect(api).to receive(:update_entry).with('test2', update_values)
+        remark_provider.remark = 'Change me!'
+
+        remark_provider.flush
+        expect(remark_provider.action).to eq(:remark)
+        expect(remark_provider.remark).to eq('Change me!')
       end
     end
 
