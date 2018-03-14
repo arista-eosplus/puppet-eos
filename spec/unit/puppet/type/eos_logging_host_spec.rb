@@ -44,6 +44,40 @@ describe Puppet::Type.type(:eos_logging_host) do
     subject { described_class.attrclass(attribute) }
 
     include_examples 'parameter'
+    include_examples 'name is the namevar'
     include_examples '#doc Documentation'
+  end
+
+  describe 'port' do
+    let(:attribute) { :port }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'numeric parameter', min: 1, max: 65_535
+    include_examples 'rejects values', 0, 65_536, 'test', [5, 6]
+  end
+
+  describe 'protocol' do
+    let(:attribute) { :protocol }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'accepts values',
+                     %w(tcp udp)
+    include_examples 'rejects values', 0, 65_536, 'test', [5, 6]
+  end
+
+  describe 'vrf' do
+    let(:attribute) { :vrf }
+    subject { described_class.attrclass(attribute) }
+
+    include_examples 'property'
+    include_examples '#doc Documentation'
+    include_examples 'string value'
+    #include_examples 'accepts values',
+    #                 %w(default mgmt red blue)
+    include_examples 'rejects values', 0, 65_536, [5, 6]
   end
 end

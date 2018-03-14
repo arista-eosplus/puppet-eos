@@ -35,11 +35,10 @@ require File.dirname(__FILE__) + '/../../puppet_x/eos/utils/helpers'
 
 Puppet::Type.newtype(:eos_config) do
   @doc = <<-EOS
-    Apply arbitrary configuration commands in Arista EOS.  Commands will only
-    be applied based on the absence or presence of regular expression matches.
-    configuration for a specific command.  If the command are either
-    present or absent, the eos_config will configure the node using
-    the command argument.
+    Apply arbitrary configuration commands to Arista EOS.  Commands will only
+    be applied based on the matching a regular expression, if supplied. If the
+    command is not already present, within the given section, if provided,
+    eos_config will configure the node using the supplied command.
 
     Examples:
 
@@ -47,6 +46,7 @@ Puppet::Type.newtype(:eos_config) do
           command => 'snmp-server location Here',
         }
 
+        # Only manage the description if an description exists
         eos_config { 'Set interface description':
           section => 'interface Ethernet1',
           command => 'description My Description',
@@ -56,7 +56,7 @@ Puppet::Type.newtype(:eos_config) do
 
   # Parameters
 
-  newparam(:name) do
+  newparam(:name, namevar: true) do
     desc <<-EOS
       The name parameter is the name associated with the resource.
     EOS
@@ -64,6 +64,41 @@ Puppet::Type.newtype(:eos_config) do
     validate do |value|
       unless value.is_a? String
         fail "value #{value.inspect} is invalid, must be a String."
+      end
+      if @resource.original_parameters[:command].nil?
+        fail "Required property 'command' is missing."
+      end
+    end
+  end
+
+  newparam(:section) do
+    desc <<-EOS
+      Restricts the configuration evaluation to a single configuration
+      section.  If the configuration section argument is not provided,
+      then the global configuration is used.
+    EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
+      end
+    end
+  end
+
+  newparam(:regexp) do
+    desc <<-EOS
+      Specifies the regular expression to use to evaluate the current nodes
+      running configuration.  This optional argument will default to use the
+      command argument if none is provided.
+    EOS
+
+    validate do |value|
+      case value
+      when String
+        super(value)
+      else fail "value #{value.inspect} is invalid, must be a String."
       end
     end
   end
@@ -77,45 +112,20 @@ Puppet::Type.newtype(:eos_config) do
     EOS
 
     validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+      unless value.is_a? String
+        fail "value #{value.inspect} is invalid, must be a String."
       end
     end
-  end
 
-  newproperty(:section) do
-    desc <<-EOS
-      Restricts the configuration evaluation to a single configuration
-      section.  If the configuration section argument is not provided,
-      then the global configuration is used.
-    EOS
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
-      end
-    end
-  end
-
-  newproperty(:regexp) do
-    desc <<-EOS
-      Specifies the regular expression to use to evaluate the current nodes
-      running configuration.  This optional argument will default to use the
-      command argument if none is provided.
-    EOS
-
-    validate do |value|
-      case value
-      when String
-        super(value)
-        validate_features_per_value(value)
-      else fail "value #{value.inspect} is invalid, must be a String."
+    # First verify that all of our checks pass.
+    def retrieve
+      # Return self.should if the command exists to trick Puppet into thinking we are in_sync?
+      # Return :notrun to trigger evaluation
+      # Wouldn't just setting in_sync? work?
+      if provider.config_exists?(value)
+        return self.should
+      else
+        return :notrun
       end
     end
   end

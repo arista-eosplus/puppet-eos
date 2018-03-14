@@ -51,24 +51,61 @@ Puppet::Type.type(:eos_logging_host).provide(:eos) do
 
   def self.instances
     result = node.api('logging').get
-    return [] unless result
-    result[:hosts].each.map do |(name, _)|
-      provider_hash = { :name => name, :ensure => :present }
-      new(provider_hash)
+    result[:hosts].each_with_object([]) do |(host, attr), arry|
+      provider_hash = { :name => host, :ensure => :present }
+      provider_hash[:port] = attr[:port]
+      provider_hash[:protocol] = attr[:protocol]
+      provider_hash[:vrf] = attr[:vrf] if attr[:vrf]
+      arry << new(provider_hash)
     end
+  end
+
+  def initialize(resource = {})
+    super(resource)
+    @property_flush = {}
   end
 
   def exists?
     @property_hash[:ensure] == :present
   end
 
+  def port=(value)
+    @property_flush[:port] = value
+  end
+
+  def protocol=(value)
+    @property_flush[:protocol] = value
+  end
+
+  def vrf=(value)
+    @property_flush[:vrf] = value
+  end
+
   def create
-    node.api('logging').add_host(resource[:name])
-    @property_hash = { :name => resource[:name], :ensure => :present }
+    @property_flush = resource.to_hash
+    @property_flush[:ensure] = :present
   end
 
   def destroy
-    node.api('logging').remove_host(resource[:name])
-    @property_hash = { :name => resource[:name], :ensure => :absent }
+    @property_flush = resource.to_hash
+    @property_flush[:ensure] = :absent
+  end
+
+  def flush
+    @property_hash.merge!(@property_flush)
+    opts = {}
+    opts[:port] = @property_hash[:port] ? @property_hash[:port] : 514
+    protocol = @property_hash[:protocol]
+    opts[:protocol] = protocol ? protocol : :udp
+    opts[:vrf] = @property_hash[:vrf] if @property_hash[:vrf]
+
+    if @property_flush[:ensure] == :absent
+      node.api('logging').remove_host(resource[:name], opts)
+      @property_hash = { name: resource[:name], ensure: :absent }
+      return
+    end
+
+    node.api('logging').add_host(resource[:name], opts)
+    @property_flush = {}
   end
 end
