@@ -85,7 +85,7 @@ Puppet::Type.type(:eos_config).provide(:eos) do
     cfg = get_config
     if !@resource[:regexp].nil?
       regexp = Regexp.new(@resource[:regexp])
-      return true if cfg.scan(regexp).empty?
+      return true if ! cfg.scan(regexp).empty?
     end
     unless value.nil?
       exists = true unless cfg.scan(value).empty?
