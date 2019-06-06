@@ -140,9 +140,15 @@ Puppet::Type.type(:eos_prefixlist).provide(:eos) do
     validate_identity(desired_state)
     case desired_state[:ensure]
     when :present
-      api.add_rule(name, action, prefix, seqno)
+      if !  api.add_rule(name, action, prefix, seqno) then
+        msg = "malformed entry 'ip prefix-list #{name} #{seqno} #{action} #{prefix}'"
+        raise ArgumentError, msg
+      end
     when :absent
-      api.delete(name, seqno)
+      if ! api.delete(name, seqno) then
+        msg = "deleting '#{name}' with sequence #{seqno}"
+        raise ArgumentError, msg
+      end
     end
     @property_hash = desired_state
   end
