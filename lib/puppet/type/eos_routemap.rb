@@ -122,6 +122,7 @@ Puppet::Type.newtype(:eos_routemap) do
 
     # Sort the arrays before comparing
     def insync?(current)
+      return false if current == :absent
       current.sort == should.sort
     end
 
@@ -139,6 +140,7 @@ Puppet::Type.newtype(:eos_routemap) do
 
     # Sort the arrays before comparing
     def insync?(current)
+      return false if current == :absent
       current.sort == should.sort
     end
 
