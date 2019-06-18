@@ -54,7 +54,6 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
     conf = node.get_config(config: 'running-config', as_string: true)
     provider_hash = { name: 'running-config', ensure: :present }
     provider_hash[:content] = conf
-    provider_hash[:staging_file] = 'puppet-config'
     [new(provider_hash)]
   end
 
@@ -86,15 +85,17 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
 
   def flush
     begin
+      staging_file = @property_flush.fetch('staging_file', 'puppet-config')
+
       # Write staging_file to flash
-      File.open('/mnt/flash/' + @property_flush[:staging_file], 'w') do |f|
+      File.open('/mnt/flash/' + staging_file, 'w') do |f|
         f.puts @property_flush[:content]
       end
 
       # Run 'configure replace' on the switch
       command = ['FastCli -p15 -c "',
                  'configure replace flash:',
-                 @property_flush[:staging_file],
+                 staging_file,
                  '"'].join
       result = `#{command}`
       fail result if $CHILD_STATUS.to_i.nonzero? || !result.empty?
@@ -103,6 +104,7 @@ Puppet::Type.type(:eos_switchconfig).provide(:eos) do
     end
 
     # Merge in values that have changed
+    @property_flush.delete('staging_file')
     @property_hash.merge!(@property_flush)
   end
 end
