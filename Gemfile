@@ -33,7 +33,7 @@ group :development, :test do
   gem 'puppet-lint'
   gem 'puppetlabs_spec_helper'
   gem 'rake', '~> 12.3.3', require: false
-  gem 'redcarpet', '~> 3.1.2'
+  gem "redcarpet", ">= 3.5.1"
   gem 'rspec', '~> 3.0.0'
   gem 'rspec-mocks', '~> 3.0.0'
   gem 'simplecov',               require: false
