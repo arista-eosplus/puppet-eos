@@ -74,7 +74,7 @@ if RUBY_VERSION.to_f < 2.0
 else
   # Rubocop thinks these are duplicates.
   # rubocop:disable Bundler/DuplicatedGem
-  gem 'json'
+  gem "json", ">= 2.3.0"
   group :development, :test do
     gem 'rubocop', '>= 0.49.0'
   end
