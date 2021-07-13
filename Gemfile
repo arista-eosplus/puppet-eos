@@ -64,21 +64,11 @@ else
   # rubocop:enable Bundler/DuplicatedGem
 end
 
-# Ensure this remains usable with Ruby 1.9
-if RUBY_VERSION.to_f < 2.0
-  gem 'json', '< 2.0'
-  group :development, :test do
-    gem 'listen', '< 3.1.0'
-    gem 'rubocop', '>=0.35.1', '< 0.38'
-  end
-else
-  # Rubocop thinks these are duplicates.
-  # rubocop:disable Bundler/DuplicatedGem
-  gem "json", ">= 2.3.0"
-  group :development, :test do
-    gem 'rubocop', '>= 0.49.0'
-  end
-  # rubocop:enable Bundler/DuplicatedGem
+# Rubocop thinks these are duplicates.
+# rubocop:disable Bundler/DuplicatedGem
+gem "json", ">= 2.3.0"
+group :development, :test do
+  gem 'rubocop', '>= 0.49.0'
 end
 
 # vim:ft=ruby
